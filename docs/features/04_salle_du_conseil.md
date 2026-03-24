@@ -100,7 +100,7 @@ Un prototype de 4 cartes d'événements (une par catégorie) a été créé, ill
 - La hiérarchie d'information dans la carte
 - Le ton et le niveau d'humour cible
 
-*(voir widget interactif "salle_du_conseil_event_cards" généré en session)*
+[Salle du conseil](salle_du_conseil_event_cards.html)
 
 ---
 

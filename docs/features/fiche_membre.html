@@ -1,0 +1,97 @@
+<style>
+.member-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
+.member-header { display: flex; align-items: center; gap: 12px; }
+.member-avatar { width: 48px; height: 48px; border-radius: 50%; background: #EEEDFE; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; color: #3C3489; flex-shrink: 0; }
+.member-name { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+.member-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md); }
+.tag-role { background: #EEEDFE; color: #3C3489; }
+.tag-trait { background: #F1EFE8; color: #444441; }
+.tag-trait-bad { background: #FCEBEB; color: #791F1F; }
+.section-title { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.stat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.stat-label { font-size: 12px; color: var(--color-text-secondary); width: 80px; flex-shrink: 0; }
+.stat-bar-bg { flex: 1; height: 5px; background: var(--color-border-tertiary); border-radius: 3px; }
+.stat-bar-fill { height: 5px; border-radius: 3px; }
+.stat-val { font-size: 12px; font-weight: 500; color: var(--color-text-primary); width: 28px; text-align: right; }
+.gear-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.gear-slot { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 6px 10px; font-size: 11px; color: var(--color-text-secondary); display: flex; flex-direction: column; gap: 2px; }
+.gear-name { font-size: 12px; color: var(--color-text-primary); font-weight: 500; }
+.mood-bar-bg { width: 100%; height: 6px; background: var(--color-border-tertiary); border-radius: 3px; }
+.divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 0; }
+</style>
+
+<div class="member-card">
+  <div class="member-header">
+    <div class="member-avatar">K3</div>
+    <div>
+      <div class="member-name">Kévin3000</div>
+      <div class="member-sub">Mage — 347 pts d'équipement moyen</div>
+    </div>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag tag-role">DPS</span>
+    <span class="tag tag-trait">Enthousiaste</span>
+    <span class="tag tag-trait">Loyal</span>
+    <span class="tag tag-trait-bad">AFK fréquent</span>
+  </div>
+
+  <hr class="divider">
+
+  <div>
+    <div class="section-title">Statistiques</div>
+    <div class="stat-row">
+      <span class="stat-label">Skill</span>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:45%;background:#7F77DD;"></div></div>
+      <span class="stat-val">45</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Fiabilité</span>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:30%;background:#E24B4A;"></div></div>
+      <span class="stat-val">30</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Moral</span>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:72%;background:#1D9E75;"></div></div>
+      <span class="stat-val">72</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-label">Expérience</span>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:60%;background:#EF9F27;"></div></div>
+      <span class="stat-val">60</span>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div>
+    <div class="section-title">Équipement</div>
+    <div class="gear-row">
+      <div class="gear-slot">
+        <span class="gear-name">Bâton de l'Aube</span>
+        <span>Arme — 412 pts</span>
+      </div>
+      <div class="gear-slot">
+        <span class="gear-name">Robe Trouée</span>
+        <span>Torse — 280 pts</span>
+      </div>
+      <div class="gear-slot">
+        <span class="gear-name">Chapeau de Pluie</span>
+        <span>Tête — 349 pts</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div>
+    <div class="section-title">Relation avec la guilde</div>
+    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary); margin-bottom:4px;">
+      <span>Loyauté</span><span style="color:var(--color-text-primary);font-weight:500;">68 / 100</span>
+    </div>
+    <div class="mood-bar-bg"><div style="width:68%;height:6px;border-radius:3px;background:#1D9E75;"></div></div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px;">"Se plaint du loot mais ne part jamais vraiment."</div>
+  </div>
+</div>

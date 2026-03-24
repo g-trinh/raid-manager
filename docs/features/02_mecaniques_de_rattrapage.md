@@ -14,7 +14,13 @@ La version retenue tire parti du **ton humoristique du jeu** : les mécaniques d
 
 ---
 
-## Les quatre mécaniques de rattrapage
+## Définition
+
+Une mécanique de rattrapage est un événement proposant un bonus à la guilde. Elle doit être prévisible (déclencheur), apporter un bonus au prix d'autre chose (un effect mécanique et une contrepartie)
+
+---
+
+## Exemples de mécaniques de rattrapage
 
 ### 1 — Le Héros du Désespoir
 Quand la guilde est en difficulté, un membre aléatoire "pète un câble dans le bon sens" et devient temporairement surpuissant.
@@ -25,35 +31,14 @@ Quand la guilde est en difficulté, un membre aléatoire "pète un câble dans l
 - **Effet mécanique** : bonus massif sur une tentative
 - **Contrepartie** : le membre retombe à son niveau normal après
 
-### 2 — Le Recrutement Désespéré
-Sous le seuil critique de membres actifs, des candidats improbables apparaissent — impossibles à recruter en temps normal.
-
-> *"Un chasseur niveau 12 postule. Son message de candidature est juste : 'jai un chat'."*
-> *"Un ancien membre banni revient avec des excuses (peut-être)."*
-
-- **Déclencheur** : guilde sous le seuil de masse critique
-- **Effet mécanique** : profils risqués mais potentiellement game-changing
-- **Contrepartie** : ces membres ont souvent des traits négatifs marqués
-
-### 3 — Le Rage Quit inversé
+### 2 — Le Rage Quit inversé
 Quand le moral collectif est au plus bas, certains membres deviennent irrationnellement motivés par la honte plutôt que de partir.
 
 > *"Après le 8ème wipe, Pandapower écrit 'ON Y RETOURNE' en majuscules. Le groupe est galvanisé."*
 
 - **Déclencheur** : moral collectif sous un seuil critique
 - **Effet mécanique** : regain temporaire de moral pour toute la guilde
-- **Contrepartie** : effet de courte durée, n'empêche pas la chute si rien ne change
-
-### 4 — L'Événement Externe Absurde
-Des événements aléatoires arrivent uniquement en situation de crise.
-
-> *"Un streamer mentionne votre guilde par erreur. Vous recevez 5 candidatures dont une semble compétente."*
-> *"La banque a été vidée par erreur. Le coupable rembourse le double par culpabilité."*
-> *"Un boss bug et meurt tout seul. Les membres débattent encore si ça compte."*
-
-- **Déclencheur** : combinaison de conditions défavorables simultanées
-- **Effet mécanique** : variable — peut résoudre une crise ou en créer une nouvelle
-- **Contrepartie** : totalement imprévisible, pas fiable comme plan de secours
+- **Contrepartie** : en cas d'échec du try, tous les membres de la guilde gagnent 1 niveau de conflit envers Pandapower.
 
 ---
 
@@ -82,7 +67,7 @@ Les mécaniques de rattrapage sont intégrées dans la boucle de jeu principale 
 - Le chemin "Wipe → Événement comique → Salle du Conseil" représente leur point d'insertion dans le flux
 - Elles ne court-circuitent pas la boucle — elles s'y greffent comme une branche conditionnelle
 
-*(voir diagramme interactif "guild_game_loop" généré en session)*
+![Game loop](game_loop_macro.svg)
 
 ---
 

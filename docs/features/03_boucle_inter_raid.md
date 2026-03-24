@@ -67,9 +67,13 @@ Chaque événement propose 2 à 3 choix avec des conséquences visibles **et** c
 
 La structure complète a été modélisée dans deux supports :
 
-**Diagramme de flux** — boucle complète incluant les deux phases inter-raid, leurs connexions avec les tentatives de boss et les sorties (patch terminé / dissolution). *(voir diagramme interactif "guild_game_loop" généré en session)*
+**Diagramme de flux** — boucle complète incluant les deux phases inter-raid, leurs connexions avec les tentatives de boss et les sorties (patch terminé / dissolution).
 
-**Prototype de cartes d'événements** — 4 exemples de cartes (une par catégorie) avec leur mise en page, leurs choix et leurs effets affichés/cachés. *(voir widget interactif "salle_du_conseil_event_cards" généré en session)*
+![Game loop](game_loop_macro.svg)
+
+**Prototype de cartes d'événements** — 4 exemples de cartes (une par catégorie) avec leur mise en page, leurs choix et leurs effets affichés/cachés.
+
+[Salle du conseil](salle_du_conseil_event_cards.html)
 
 ---
 

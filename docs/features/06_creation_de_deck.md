@@ -63,7 +63,7 @@ Un prototype interactif de l'écran de draft a été créé, illustrant :
 - La composition en cours de construction en bas de l'écran
 - Le bouton skip et son comportement (désactivé à 0 skip restant)
 
-*(voir widget interactif "deck_creation_screen" généré en session)*
+[Création du deck](deck_creation_screen.html)
 
 ---
 

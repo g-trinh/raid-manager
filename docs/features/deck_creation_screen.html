@@ -1,0 +1,174 @@
+<style>
+.dc-wrap { padding: 1rem 0; }
+.dc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+.dc-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.dc-meta { display: flex; gap: 16px; align-items: center; }
+.dc-slots { font-size: 13px; color: var(--color-text-secondary); }
+.dc-slots span { font-weight: 500; color: var(--color-text-primary); }
+.skip-counter { display: flex; gap: 4px; align-items: center; font-size: 13px; color: var(--color-text-secondary); }
+.skip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-secondary); }
+.skip-dot.active { background: #EF9F27; }
+.profiles-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.profile-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: border-color 0.15s; }
+.profile-card:hover { border-color: var(--color-border-primary); }
+.profile-card.selected { border: 2px solid #1D9E75; }
+.p-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+.av-tank { background: #E6F1FB; color: #0C447C; }
+.av-heal { background: #EAF3DE; color: #27500A; }
+.av-dps  { background: #EEEDFE; color: #3C3489; }
+.p-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.p-role { font-size: 11px; color: var(--color-text-secondary); }
+.p-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.p-tag { font-size: 10px; padding: 2px 7px; border-radius: var(--border-radius-md); }
+.tag-pos { background: #EAF3DE; color: #27500A; }
+.tag-neg { background: #FCEBEB; color: #791F1F; }
+.p-bars { display: flex; flex-direction: column; gap: 4px; }
+.p-bar-row { display: flex; align-items: center; gap: 6px; }
+.p-bar-label { font-size: 10px; color: var(--color-text-tertiary); width: 52px; flex-shrink: 0; }
+.p-bar-bg { flex: 1; height: 4px; background: var(--color-border-tertiary); border-radius: 2px; }
+.p-bar-fill { height: 4px; border-radius: 2px; }
+.p-hidden { font-size: 10px; color: var(--color-text-tertiary); font-style: italic; }
+.recruit-btn { width: 100%; padding: 7px; font-size: 12px; font-weight: 500; background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; color: var(--color-text-primary); transition: background 0.15s; }
+.recruit-btn:hover { background: var(--color-background-secondary); }
+.recruit-btn.chosen { background: #EAF3DE; border-color: #1D9E75; color: #27500A; }
+.bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; }
+.skip-btn { background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 8px 20px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; transition: background 0.15s; }
+.skip-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
+.skip-btn:disabled { opacity: 0.35; cursor: default; }
+.roster-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--color-border-tertiary); }
+.roster-slot { width: 36px; height: 36px; border-radius: 50%; border: 0.5px dashed var(--color-border-secondary); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--color-text-tertiary); }
+.roster-slot.filled { border-style: solid; border-color: var(--color-border-primary); font-weight: 500; font-size: 11px; }
+.rs-tank { background: #E6F1FB; color: #0C447C; border-color: #85B7EB; }
+.rs-heal { background: #EAF3DE; color: #27500A; border-color: #97C459; }
+.rs-dps  { background: #EEEDFE; color: #3C3489; border-color: #AFA9EC; }
+</style>
+
+<div class="dc-wrap">
+  <div class="dc-header">
+    <div class="dc-title">Tirage 3 / 8 — Choisissez un membre</div>
+    <div class="dc-meta">
+      <div class="dc-slots">Slots restants : <span>5</span></div>
+      <div class="skip-counter">
+        Skips :
+        <div class="skip-dot active"></div>
+        <div class="skip-dot active"></div>
+        <div class="skip-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profiles-grid">
+    <div class="profile-card" id="c1">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="p-avatar av-tank">FL</div>
+        <div><div class="p-name">Flamius</div><div class="p-role">Tank — Guerrier</div></div>
+      </div>
+      <div class="p-tags">
+        <span class="p-tag tag-pos">Main Froide</span>
+        <span class="p-tag tag-pos">Loyal</span>
+        <span class="p-tag tag-neg">Drama Queen</span>
+      </div>
+      <div class="p-bars">
+        <div class="p-bar-row"><span class="p-bar-label">Skill</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:78%;background:#7F77DD;"></div></div></div>
+        <div class="p-bar-row"><span class="p-bar-label">Moral</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:65%;background:#1D9E75;"></div></div></div>
+        <div class="p-bar-row"><span class="p-bar-label">Fiabilité</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:0%;background:#E24B4A;"></div></div></div>
+      </div>
+      <div class="p-hidden">Fiabilité inconnue avant le 1er raid</div>
+      <button class="recruit-btn" onclick="pick('c1','TK','FL')">Recruter</button>
+    </div>
+
+    <div class="profile-card" id="c2">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="p-avatar av-heal">LU</div>
+        <div><div class="p-name">Luminarys</div><div class="p-role">Healer — Prêtre</div></div>
+      </div>
+      <div class="p-tags">
+        <span class="p-tag tag-pos">Enthousiaste</span>
+        <span class="p-tag tag-pos">Mentor</span>
+        <span class="p-tag tag-neg">Looter</span>
+      </div>
+      <div class="p-bars">
+        <div class="p-bar-row"><span class="p-bar-label">Skill</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:55%;background:#7F77DD;"></div></div></div>
+        <div class="p-bar-row"><span class="p-bar-label">Moral</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:88%;background:#1D9E75;"></div></div></div>
+        <div class="p-bar-row"><span class="p-bar-label">Fiabilité</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:0%;background:#E24B4A;"></div></div></div>
+      </div>
+      <div class="p-hidden">Fiabilité inconnue avant le 1er raid</div>
+      <button class="recruit-btn" onclick="pick('c2','HL','LU')">Recruter</button>
+    </div>
+
+    <div class="profile-card" id="c3">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="p-avatar av-dps">K3</div>
+        <div><div class="p-name">Kévin3000</div><div class="p-role">DPS — Mage</div></div>
+      </div>
+      <div class="p-tags">
+        <span class="p-tag tag-pos">Enthousiaste</span>
+        <span class="p-tag tag-pos">Loyal</span>
+        <span class="p-tag tag-neg">AFK fréquent</span>
+      </div>
+      <div class="p-bars">
+        <div class="p-bar-row"><span class="p-bar-label">Skill</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:42%;background:#7F77DD;"></div></div></div>
+        <div class="p-bar-row"><span class="p-bar-label">Moral</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:72%;background:#1D9E75;"></div></div></div>
+        <div class="p-bar-row"><span class="p-bar-label">Fiabilité</span><div class="p-bar-bg"><div class="p-bar-fill" style="width:0%;background:#E24B4A;"></div></div></div>
+      </div>
+      <div class="p-hidden">Fiabilité inconnue avant le 1er raid</div>
+      <button class="recruit-btn" onclick="pick('c3','DP','K3')">Recruter</button>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div style="font-size:12px;color:var(--color-text-tertiary);">Composition actuelle</div>
+    <button class="skip-btn" id="skipBtn" onclick="doSkip()">Passer ce tirage ↷</button>
+  </div>
+
+  <div class="roster-row" id="roster">
+    <div class="roster-slot filled rs-tank">TK</div>
+    <div class="roster-slot filled rs-heal">HL</div>
+    <div class="roster-slot filled rs-dps">DP</div>
+    <div class="roster-slot">+</div>
+    <div class="roster-slot">+</div>
+    <div class="roster-slot">+</div>
+    <div class="roster-slot">+</div>
+    <div class="roster-slot">+</div>
+  </div>
+</div>
+
+<script>
+var skipsLeft = 2;
+var picked = false;
+
+function pick(cardId, roleCode, initials) {
+  if (picked) return;
+  picked = true;
+  var btn = document.querySelector('#' + cardId + ' .recruit-btn');
+  btn.textContent = 'Recruté !';
+  btn.classList.add('chosen');
+  var slots = document.querySelectorAll('.roster-slot');
+  for (var i = 0; i < slots.length; i++) {
+    if (!slots[i].classList.contains('filled')) {
+      slots[i].classList.add('filled');
+      var cls = roleCode === 'TK' ? 'rs-tank' : roleCode === 'HL' ? 'rs-heal' : 'rs-dps';
+      slots[i].classList.add(cls);
+      slots[i].textContent = initials;
+      break;
+    }
+  }
+  document.getElementById('skipBtn').disabled = true;
+}
+
+function doSkip() {
+  if (skipsLeft <= 0 || picked) return;
+  skipsLeft--;
+  var dots = document.querySelectorAll('.skip-dot');
+  var activeCount = 0;
+  dots.forEach(function(d) { if (d.classList.contains('active')) activeCount++; });
+  if (activeCount > 0) {
+    for (var i = dots.length - 1; i >= 0; i--) {
+      if (dots[i].classList.contains('active')) { dots[i].classList.remove('active'); break; }
+    }
+  }
+  if (skipsLeft === 0) document.getElementById('skipBtn').disabled = true;
+  document.querySelectorAll('.profile-card').forEach(function(c) { c.style.opacity = '0.4'; });
+  document.querySelector('.dc-title').textContent = 'Tirage passé — prochain tirage en cours...';
+}
+</script>

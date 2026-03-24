@@ -39,7 +39,6 @@ La version retenue est un **système de défaite en entonnoir à trois niveaux**
 - Le joueur **voit venir** la dissolution — il ne perd jamais "d'un coup"
 - Chaque défaite locale crée une **pression systémique** lisible : boss raté → ressources perdues → moral en baisse → risque de départ
 - La dissolution est vécue comme une **conclusion narrative**, pas comme un écran de game over frustrant
-- La **méta-progression** (Legs de Guilde) transforme chaque run perdu en investissement pour le suivant
 
 ---
 
@@ -61,13 +60,10 @@ La boucle complète a été modélisée dans un diagramme de flux incluant :
 - Les deux sorties positives (boss tué, patch terminé) et deux négatives (wipe, dissolution)
 - La boucle de retour vers la prochaine tentative via la phase de préparation
 
-*(voir diagramme interactif "guild_game_loop" généré en session)*
+![Game loop](game_loop_macro.svg)
 
 ---
 
 ## Évolutions possibles
 
-- **Conditions de défaite optionnelles** : le joueur peut accepter des "malédictions de patch" (conditions supplémentaires de défaite) en échange de récompenses plus grandes
-- **Défaite partielle récompensée** : tuer X boss sur Y dans un patch débloque quand même un bonus, même sans finir le contenu
-- **États intermédiaires** : une guilde "en crise" (entre niveau 2 et 3) pourrait avoir des événements spéciaux de redressement — recrutement d'urgence, aide d'une guilde rivale, etc.
 - **Niveaux de difficulté** : ajuster les seuils de dissolution (nombre de tries max, taille minimale de la guilde) selon le profil du joueur

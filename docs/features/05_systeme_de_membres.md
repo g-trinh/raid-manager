@@ -107,7 +107,7 @@ Une fiche membre complète a été prototypée, incluant :
 - Slots d'équipement avec nom et valeur de chaque pièce
 - Indicateur de relations avec les autres membres
 
-*(voir widget interactif "fiche_membre" généré en session)*
+[Fiche membre](fiche_membre.html)
 
 ---
 

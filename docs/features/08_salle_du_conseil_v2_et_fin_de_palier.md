@@ -109,7 +109,9 @@ Le reset automatique des conflits crée une tension stratégique pour les joueur
 
 ## Schémas et prototypes
 
-Un prototype de 4 cartes d'événements (une par catégorie) illustrant le format v1 de la Salle du Conseil, toujours valide pour la v2. *(voir widget "salle_du_conseil_event_cards" généré en session)*
+Un prototype de 4 cartes d'événements (une par catégorie) illustrant le format v1 de la Salle du Conseil, toujours valide pour la v2.
+
+[Salle du conseil](salle_du_conseil_event_cards.html)
 
 ---
 

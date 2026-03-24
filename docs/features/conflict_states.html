@@ -1,0 +1,73 @@
+<style>
+.cs-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; padding: 1rem 0; }
+.cs-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; display: flex; flex-direction: column; gap: 6px; }
+.cs-level { display: flex; align-items: center; gap: 8px; }
+.cs-badge { font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: var(--border-radius-md); }
+.lvl1 { background: #FAEEDA; color: #633806; }
+.lvl2 { background: #FAECE7; color: #712B13; }
+.lvl3 { background: #FCEBEB; color: #791F1F; }
+.lvl4 { background: #F7C1C1; color: #501313; }
+.cs-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.cs-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.4; }
+.cs-penalty { font-size: 11px; color: var(--color-text-danger); margin-top: 2px; }
+.cs-quote { font-size: 11px; color: var(--color-text-tertiary); font-style: italic; margin-top: 2px; }
+.cs-resolve { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.resolve-tag { font-size: 10px; padding: 2px 8px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+</style>
+
+<div class="cs-grid">
+  <div class="cs-card">
+    <div class="cs-level">
+      <span class="cs-badge lvl1">Niveau 1</span>
+    </div>
+    <div class="cs-name">Perte d'efficacité</div>
+    <div class="cs-desc">Le membre est distrait, démotivé. Son skill effectif est réduit temporairement.</div>
+    <div class="cs-penalty">−15% skill sur les tentatives</div>
+    <div class="cs-quote">"Sardoche joue bien mais son cœur n'y est plus."</div>
+    <div class="cs-resolve">
+      <span class="resolve-tag">Salle du Conseil</span>
+      <span class="resolve-tag">Action directe</span>
+    </div>
+  </div>
+
+  <div class="cs-card">
+    <div class="cs-level">
+      <span class="cs-badge lvl2">Niveau 2</span>
+    </div>
+    <div class="cs-name">Refus de coordination</div>
+    <div class="cs-desc">Deux membres refusent de jouer ensemble. Impossible de les assigner à des mécaniques qui requièrent de la coopération.</div>
+    <div class="cs-penalty">Certaines compositions de boss bloquées</div>
+    <div class="cs-quote">"Flamius et Kévin ne se parlent plus depuis le wipe du mardi."</div>
+    <div class="cs-resolve">
+      <span class="resolve-tag">Salle du Conseil</span>
+      <span class="resolve-tag">Action directe</span>
+    </div>
+  </div>
+
+  <div class="cs-card">
+    <div class="cs-level">
+      <span class="cs-badge lvl3">Niveau 3</span>
+    </div>
+    <div class="cs-name">Grève partielle</div>
+    <div class="cs-desc">Le membre est présent mais ne fait aucun effort. Il participe sans s'investir, attendant que ça se passe.</div>
+    <div class="cs-penalty">−40% skill + consomme des ressources sans contribuer</div>
+    <div class="cs-quote">"Pandapower est là. Techniquement."</div>
+    <div class="cs-resolve">
+      <span class="resolve-tag">Salle du Conseil</span>
+      <span class="resolve-tag">Action directe (coûteuse)</span>
+    </div>
+  </div>
+
+  <div class="cs-card">
+    <div class="cs-level">
+      <span class="cs-badge lvl4">Niveau 4</span>
+    </div>
+    <div class="cs-name">Sabotage passif</div>
+    <div class="cs-desc">Le membre génère activement des erreurs qui affectent les autres — non par malice, mais par démotivation totale.</div>
+    <div class="cs-penalty">Peut déclencher des wipes même sur des boss maîtrisés</div>
+    <div class="cs-quote">"Kévin vient de marcher dans la zone rouge pour la 5ème fois. Il sourit."</div>
+    <div class="cs-resolve">
+      <span class="resolve-tag">Salle du Conseil uniquement</span>
+    </div>
+  </div>
+</div>

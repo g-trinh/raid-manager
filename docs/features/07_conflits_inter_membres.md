@@ -128,7 +128,9 @@ Deux prototypes ont été créés :
 
 **Les 4 états de conflit** — cards visuelles présentant chaque niveau avec sa pénalité, son ton narratif et ses modes de résolution. *(voir widget "conflict_states" généré en session)*
 
-**La fiche de synergie de conflit** — fiche membre augmentée avec le bloc synergie post-découverte, incluant condition d'activation, effets chiffrés, indicateur de niveau de conflit actuel. *(voir widget "conflict_synergy_reveal" généré en session)*
+**La fiche de synergie de conflit** — fiche membre augmentée avec le bloc synergie post-découverte, incluant condition d'activation, effets chiffrés, indicateur de niveau de conflit actuel.
+
+[Les niveaux de conflit](conflict_states.html)
 
 ---
 
