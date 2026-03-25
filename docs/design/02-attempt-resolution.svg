@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg" font-family="'Georgia', 'Times New Roman', serif">
+
+  <!-- Background: dark red tint for wipe result -->
+  <rect width="390" height="844" fill="#0D0005"/>
+  <rect width="390" height="844" fill="url(#bgGrad)" opacity="0.6"/>
+
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2A0000"/>
+      <stop offset="100%" stop-color="#0D0005"/>
+    </radialGradient>
+    <radialGradient id="explosionGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF4000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FF0000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wipeTitle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF6060"/>
+      <stop offset="100%" stop-color="#CC0000"/>
+    </linearGradient>
+    <linearGradient id="goldGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F0C060"/>
+      <stop offset="100%" stop-color="#C8860A"/>
+    </linearGradient>
+    <linearGradient id="barFull" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF4040"/>
+      <stop offset="100%" stop-color="#CC0000"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="redGlow">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0" in="blur" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- TOP STATUS BAR                          -->
+  <!-- ═══════════════════════════════════════ -->
+  <rect width="390" height="52" fill="#0D0008"/>
+  <rect y="52" width="390" height="1" fill="#6A0000" opacity="0.8"/>
+
+  <rect x="12" y="10" width="68" height="32" rx="4" fill="#1A0800" stroke="#8B4500" stroke-width="1"/>
+  <text x="46" y="21" text-anchor="middle" fill="#C87020" font-size="8" font-weight="bold" letter-spacing="1">PALIER</text>
+  <text x="46" y="35" text-anchor="middle" fill="#F0A030" font-size="13" font-weight="bold">NORMAL</text>
+
+  <text x="195" y="19" text-anchor="middle" fill="#8A0A0A" font-size="9" letter-spacing="2">BOSS</text>
+  <text x="195" y="37" text-anchor="middle" fill="#E8D0A0" font-size="18" font-weight="bold" letter-spacing="3">2 / 5</text>
+
+  <!-- Attempt counter: 3 used now, 2 remaining -->
+  <rect x="310" y="10" width="68" height="32" rx="4" fill="#2A0000" stroke="#CC0000" stroke-width="1.5"/>
+  <text x="344" y="21" text-anchor="middle" fill="#FF4040" font-size="8" font-weight="bold" letter-spacing="1">ESSAI 3/5</text>
+  <text x="327" y="37" fill="#CC3030" font-size="11">☠</text>
+  <text x="337" y="37" fill="#CC3030" font-size="11">☠</text>
+  <!-- 3rd skull just added — pulsing -->
+  <text x="347" y="37" fill="#FF6060" font-size="13" filter="url(#redGlow)">☠</text>
+  <text x="357" y="37" fill="#3A1A1A" font-size="11">☠</text>
+  <text x="367" y="37" fill="#3A1A1A" font-size="11">☠</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- WIPE RESULT — HERO SECTION              -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- Radial glow behind skull -->
+  <circle cx="195" cy="175" r="90" fill="url(#explosionGrad)"/>
+
+  <!-- Giant skull / wipe icon -->
+  <text x="195" y="155" text-anchor="middle" font-size="72" fill="#CC0000" filter="url(#redGlow)">💀</text>
+
+  <!-- WIPE text -->
+  <text x="195" y="210" text-anchor="middle" font-size="42" font-weight="bold" fill="url(#wipeTitle)" letter-spacing="8" filter="url(#redGlow)">WIPE</text>
+
+  <!-- Subtitle -->
+  <text x="195" y="235" text-anchor="middle" fill="#8A3030" font-size="12" letter-spacing="2">TENTATIVE 3 ÉCHOUÉE</text>
+
+  <!-- Attempt meter — visual -->
+  <text x="195" y="260" text-anchor="middle" fill="#6A2020" font-size="10">Tentatives restantes</text>
+  <!-- 5 slots -->
+  <rect x="105" y="268" width="36" height="10" rx="5" fill="#CC3030"/>
+  <rect x="147" y="268" width="36" height="10" rx="5" fill="#CC3030"/>
+  <rect x="189" y="268" width="36" height="10" rx="5" fill="#FF4040" filter="url(#redGlow)"/>
+  <rect x="231" y="268" width="36" height="10" rx="5" fill="#2A0000" stroke="#4A1A1A" stroke-width="1"/>
+  <rect x="273" y="268" width="36" height="10" rx="5" fill="#2A0000" stroke="#4A1A1A" stroke-width="1"/>
+  <text x="105" y="290" fill="#6A2020" font-size="8" text-anchor="middle">1</text>
+  <text x="147" y="290" text-anchor="middle" fill="#6A2020" font-size="8">2</text>
+  <text x="195" y="290" text-anchor="middle" fill="#FF4040" font-size="8" font-weight="bold">3 ←</text>
+  <text x="247" y="290" text-anchor="middle" fill="#3A1A1A" font-size="8">4</text>
+  <text x="289" y="290" text-anchor="middle" fill="#3A1A1A" font-size="8">5</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- BOSS HP STILL REMAINING                 -->
+  <!-- ═══════════════════════════════════════ -->
+  <rect x="12" y="298" width="366" height="52" rx="6" fill="#100000" stroke="#4A1A1A" stroke-width="1"/>
+  <text x="22" y="315" fill="#6A3030" font-size="9" letter-spacing="2">SEIGNEUR KARGOTH — PV RESTANTS</text>
+  <rect x="22" y="320" width="346" height="16" rx="8" fill="#1A0000"/>
+  <rect x="22" y="320" width="242" height="16" rx="8" fill="url(#barFull)"/>
+  <!-- HP sparkle at edge -->
+  <rect x="262" y="320" width="4" height="16" fill="#FF8080" opacity="0.8"/>
+  <text x="195" y="333" text-anchor="middle" fill="#FFD0D0" font-size="9" font-weight="bold">70% PV RESTANTS</text>
+  <text x="22" y="345" fill="#4A1A1A" font-size="8" font-style="italic">Le boss a la dalle. Il mange vos wipes au petit-déj.</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PERFORMANCE BREAKDOWN                   -->
+  <!-- ═══════════════════════════════════════ -->
+  <text x="12" y="368" fill="#C8860A" font-size="11" font-weight="bold" letter-spacing="3">RÉSUMÉ DE TENTATIVE</text>
+  <rect x="12" y="372" width="366" height="1" fill="#5A3A00"/>
+
+  <!-- 4 mini stat cards in 2x2 grid -->
+  <!-- Card: DPS Output -->
+  <rect x="12" y="378" width="174" height="56" rx="5" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="99" y="394" text-anchor="middle" fill="#6A6A80" font-size="9" letter-spacing="1">DPS GLOBAL</text>
+  <text x="99" y="416" text-anchor="middle" fill="#E8D0A0" font-size="22" font-weight="bold">12,450</text>
+  <text x="99" y="430" text-anchor="middle" fill="#CC5050" font-size="9">▼ -18% vs cible</text>
+
+  <!-- Card: Heals -->
+  <rect x="204" y="378" width="174" height="56" rx="5" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="291" y="394" text-anchor="middle" fill="#6A6A80" font-size="9" letter-spacing="1">SOINS GLOBAUX</text>
+  <text x="291" y="416" text-anchor="middle" fill="#E8D0A0" font-size="22" font-weight="bold">8,230</text>
+  <text x="291" y="430" text-anchor="middle" fill="#52C864" font-size="9">▲ +5% vs cible</text>
+
+  <!-- Card: Deaths -->
+  <rect x="12" y="440" width="174" height="56" rx="5" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="99" y="456" text-anchor="middle" fill="#6A6A80" font-size="9" letter-spacing="1">MORTS</text>
+  <text x="99" y="478" text-anchor="middle" fill="#FF6040" font-size="22" font-weight="bold">6 / 8</text>
+  <text x="99" y="492" text-anchor="middle" fill="#CC5050" font-size="9">Wipe à 2m34s</text>
+
+  <!-- Card: Fight Duration -->
+  <rect x="204" y="440" width="174" height="56" rx="5" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="291" y="456" text-anchor="middle" fill="#6A6A80" font-size="9" letter-spacing="1">DURÉE DU COMBAT</text>
+  <text x="291" y="478" text-anchor="middle" fill="#E8D0A0" font-size="22" font-weight="bold">2m34s</text>
+  <text x="291" y="492" text-anchor="middle" fill="#FFB84A" font-size="9">Record du run</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CULPRIT OF THE WIPE HIGHLIGHT           -->
+  <!-- ═══════════════════════════════════════ -->
+  <rect x="12" y="506" width="366" height="58" rx="6" fill="#1A0800" stroke="#8B4500" stroke-width="1.5"/>
+  <!-- Siren icon -->
+  <text x="26" y="536" fill="#FF6020" font-size="24">🚨</text>
+  <text x="58" y="523" fill="#FF8040" font-size="11" font-weight="bold">MVP du wipe</text>
+  <text x="58" y="540" fill="#E8C0A0" font-size="13" font-weight="bold">Sardoche3000</text>
+  <text x="58" y="556" fill="#6A4030" font-size="9" font-style="italic">"A couru dans la zone rouge 4 fois. Affirme que c'était</text>
+  <text x="58" y="566" fill="#6A4030" font-size="9" font-style="italic">intentionnel pour 'tester les limites mécaniques'."</text>
+  <!-- Trait badge -->
+  <rect x="316" y="510" width="56" height="16" rx="8" fill="#2A1A00" stroke="#6A3A00" stroke-width="1"/>
+  <text x="344" y="522" text-anchor="middle" fill="#FFB050" font-size="8">AFK fréq.</text>
+
+  <!-- Morale loss badge -->
+  <rect x="316" y="530" width="56" height="16" rx="8" fill="#1A0000" stroke="#6A0000" stroke-width="1"/>
+  <text x="344" y="542" text-anchor="middle" fill="#FF5050" font-size="8">Moral -8</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- RUBBER BAND WARNING (attempt 3 of 5)    -->
+  <!-- ═══════════════════════════════════════ -->
+  <rect x="12" y="572" width="366" height="36" rx="5" fill="#001A00" stroke="#00AA00" stroke-width="1"/>
+  <text x="22" y="586" fill="#52C864" font-size="10" font-weight="bold">🎯 Événement de rattrapage disponible au prochain inter-raid</text>
+  <text x="22" y="600" fill="#2A5A2A" font-size="9">Les dieux du RNG vous regardent avec pitié. C'est bon signe.</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- ACTION BUTTONS                          -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- Primary: Continue to Debriefing -->
+  <rect x="12" y="618" width="366" height="52" rx="8" fill="#1A0D00" stroke="#C8860A" stroke-width="2"/>
+  <rect x="14" y="620" width="362" height="2" rx="1" fill="#F0C060" opacity="0.2"/>
+  <text x="195" y="648" text-anchor="middle" fill="#F0C060" font-size="14" font-weight="bold" letter-spacing="1">DÉBRIEFING →</text>
+  <text x="195" y="663" text-anchor="middle" fill="#8A6030" font-size="9">Analyser le wipe • Salle du Conseil</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- BOTTOM: DISSOLUTION METER               -->
+  <!-- ═══════════════════════════════════════ -->
+  <rect x="12" y="680" width="366" height="50" rx="6" fill="#0D0008" stroke="#3A0030" stroke-width="1"/>
+  <text x="22" y="696" fill="#6A2060" font-size="9" letter-spacing="2">MORAL DE GUILDE — RISQUE DE DISSOLUTION</text>
+  <!-- Bar -->
+  <rect x="22" y="701" width="346" height="12" rx="6" fill="#1A0010"/>
+  <!-- Fill at 55% morale (medium risk) -->
+  <rect x="22" y="701" width="190" height="12" rx="6" fill="#8B30A0"/>
+  <!-- Danger threshold line -->
+  <rect x="87" y="697" width="2" height="20" fill="#FF4040" opacity="0.6"/>
+  <text x="88" y="731" fill="#FF4040" font-size="8">LIMITE</text>
+  <text x="312" y="714" fill="#8B30A0" font-size="11" font-weight="bold">55%</text>
+  <text x="22" y="726" fill="#4A1A3A" font-size="8" font-style="italic">Encore 2 wipes → gquit collectif probable</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- BOTTOM NAV                              -->
+  <!-- ═══════════════════════════════════════ -->
+  <rect y="744" width="390" height="100" fill="#080003"/>
+  <rect y="744" width="390" height="1" fill="#1E001A"/>
+
+  <g opacity="0.4">
+    <text x="50" y="774" text-anchor="middle" fill="#6A0030" font-size="18">⚔</text>
+    <text x="50" y="790" text-anchor="middle" fill="#6A0030" font-size="9">Raid</text>
+  </g>
+  <g opacity="0.4">
+    <text x="130" y="774" text-anchor="middle" fill="#6A0030" font-size="18">🗺</text>
+    <text x="130" y="790" text-anchor="middle" fill="#6A0030" font-size="9">Tactique</text>
+  </g>
+  <g opacity="0.4">
+    <text x="210" y="774" text-anchor="middle" fill="#6A0030" font-size="18">👥</text>
+    <text x="210" y="790" text-anchor="middle" fill="#6A0030" font-size="9">Membres</text>
+  </g>
+  <g opacity="0.4">
+    <text x="290" y="774" text-anchor="middle" fill="#6A0030" font-size="18">🏦</text>
+    <text x="290" y="790" text-anchor="middle" fill="#6A0030" font-size="9">Banque</text>
+  </g>
+  <g opacity="0.4">
+    <text x="360" y="774" text-anchor="middle" fill="#6A0030" font-size="18">📋</text>
+    <text x="360" y="790" text-anchor="middle" fill="#6A0030" font-size="9">Journal</text>
+  </g>
+
+  <text x="195" y="836" text-anchor="middle" fill="#1E0018" font-size="8" letter-spacing="2">RAID MANAGER — RÉSOLUTION DE TENTATIVE</text>
+
+</svg>

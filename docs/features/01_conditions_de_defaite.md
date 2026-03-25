@@ -6,49 +6,42 @@
 Le jeu est un roguelike de gestion de guilde. Il fallait définir ce que signifie "perdre" dans un contexte où le joueur gère des humains (virtuels), des ressources et une progression raid par raid.
 
 ### Itérations
-La première version envisagée était une défaite unique : la guilde se dissout, game over. Trop brutal et peu satisfaisant pour un jeu mobile où les sessions sont courtes.
+La première version envisagée était un système de défaite en entonnoir à trois niveaux (défaite locale → défaite de patch → dissolution), pour amortir les échecs et éviter les game over brutaux.
 
-La version retenue est un **système de défaite en entonnoir à trois niveaux**, où chaque niveau alimente le suivant sans couper brutalement la session du joueur.
+Cette approche a été abandonnée : trop complexe à calibrer, et elle diluait l'enjeu de chaque tentative. Si rater un boss n'arrête pas la run, le joueur finit par ne plus ressentir la tension des dernières tentatives.
+
+La version retenue est une **condition de défaite unique et directe** : si la guilde échoue à tuer un boss après 5 tentatives, les membres gquit et la guilde se dissout. Game over.
 
 ---
 
-## Les trois niveaux de défaite
+## La condition de défaite
 
-### Niveau 1 — Défaite locale (boss raté)
-- La guilde échoue à tuer un boss après un nombre maximum de tentatives (ex : 10 tries)
-- Chaque tentative ratée consomme des ressources (consommables, moral)
-- La guilde **survit**, mais paie un coût
+### Dissolution par abandon collectif
+- La guilde dispose de **5 tentatives** pour tuer chaque boss
+- Chaque wipe érode le moral, consomme des ressources et fait monter la frustration
+- Si le boss n'est pas tué au bout de 5 tentatives, les membres perdent foi dans la guilde
+- Ils décident collectivement de **gquit** — la guilde se dissout
 
-### Niveau 2 — Défaite de patch (intermédiaire)
-- Le patch est perdu si le dernier boss n'est pas tué avant la fin du timer
-- Ou si les ressources sont insuffisantes pour continuer à raider
-- La guilde repart au patch suivant **affaiblie** : moins de membres, moins de ressources, réputation abîmée
-
-### Niveau 3 — Dissolution (game over)
-| Condition | Description |
-|---|---|
-| Masse critique | Moins de 5 membres actifs simultanément |
-| Banque vide | Plus aucune ressource pour couvrir les frais de raid |
-| Drama fatal | Le moral collectif tombe à 0, départs en masse |
-| Accumulation | X patches ratés consécutifs sans progression |
+La dissolution est une **conclusion narrative** : ce n'est pas un écran de game over abstrait, c'est la fin logique d'une guilde qui n'a pas réussi à se transcender.
 
 ---
 
 ## Pourquoi c'est une bonne idée
 
-- Le joueur **voit venir** la dissolution — il ne perd jamais "d'un coup"
-- Chaque défaite locale crée une **pression systémique** lisible : boss raté → ressources perdues → moral en baisse → risque de départ
-- La dissolution est vécue comme une **conclusion narrative**, pas comme un écran de game over frustrant
+- Chaque tentative a un **enjeu réel** — il n'y a pas de filet de sécurité en dessous
+- La tension monte naturellement sur les tentatives 4 et 5, sans mécanique artificielle
+- Le joueur comprend immédiatement les règles : **tuer le boss ou mourir**
+- La dissolution par gquit est narrativement cohérente avec l'univers WoW parodié
 
 ---
 
 ## Ce à quoi il faut faire attention
 
-**Le death spiral.** Si rater un boss rend automatiquement le suivant encore plus dur, le joueur entre dans une spirale dont il ne peut pas sortir. C'est le risque principal de ce système.
+**Le mur infranchissable.** Un boss trop difficile peut bloquer le joueur définitivement sans qu'il ait les outils pour s'en sortir. Les mécaniques de rattrapage (Système 02) sont le garde-fou — elles doivent se déclencher avant que la 5ème tentative soit consommée.
 
-- Les malus de défaite locale doivent rester **absorbables** individuellement
-- Le joueur doit toujours avoir au moins **une action disponible** pour tenter de renverser la tendance
-- Les seuils de dissolution (moral à 0, banque vide) ne doivent **jamais se déclencher en même temps** — espacer les crises
+- Les événements de rattrapage doivent être **visibles avant la crise** (tentative 3 ou 4, pas 5)
+- Le choix tactique pré-tentative doit toujours offrir **une option crédible**, même dans une situation dégradée
+- La difficulté des boss doit être calibrée pour que 5 tentatives soient **suffisantes pour un joueur attentif**
 
 ---
 
@@ -67,3 +60,4 @@ La boucle complète a été modélisée dans un diagramme de flux incluant :
 ## Évolutions possibles
 
 - **Niveaux de difficulté** : ajuster les seuils de dissolution (nombre de tries max, taille minimale de la guilde) selon le profil du joueur
+- **Héritage entre runs** : Lors d'une dissolution, la guilde suivante hérite d'un vestige du run précédent (un membre survivor, une réputation résiduelle, une dette). Le game over devient un recommencement contextualisé, ce qui est cohérent avec le roguelike et donne du sens à la défaite finale.
