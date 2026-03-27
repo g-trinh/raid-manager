@@ -1,4 +1,6 @@
 extends Node
+const AttemptModifier = preload("res://src/resources/AttemptModifier.gd")
+const TacticalOption = preload("res://src/resources/TacticalOption.gd")
 
 signal options_generated(options: Dictionary)      # int -> Array[TacticalOption]
 signal option_selected(option: TacticalOption)     # preview selection

@@ -1,4 +1,6 @@
 extends Control
+const AttemptModifier = preload("res://src/resources/AttemptModifier.gd")
+const TacticalOption = preload("res://src/resources/TacticalOption.gd")
 
 @onready var boss_info_label: Label = $VBoxContainer/BossInfoLabel
 @onready var composition_tab_btn: Button = $VBoxContainer/CategoryTabs/CompositionTabBtn

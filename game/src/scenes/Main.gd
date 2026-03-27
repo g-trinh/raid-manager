@@ -1,4 +1,5 @@
 extends Node
+const AttemptModifier = preload("res://src/resources/AttemptModifier.gd")
 
 const DraftScreen := preload("res://src/scenes/draft/DraftScreen.tscn")
 const TacticalChoiceScene := preload("res://src/scenes/tactical_choice/TacticalChoiceScreen.tscn")
