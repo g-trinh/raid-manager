@@ -3,12 +3,12 @@ const AttemptModifier = preload("res://src/resources/AttemptModifier.gd")
 const TacticalOption = preload("res://src/resources/TacticalOption.gd")
 
 signal options_generated(options: Dictionary)      # int -> Array[TacticalOption]
-signal option_selected(option: TacticalOption)     # preview selection
-signal choice_confirmed(modifier: AttemptModifier) # final choice
+signal option_selected(option)     # preview selection
+signal choice_confirmed(modifier) # final choice
 
 var current_options: Dictionary = {}
-var selected_option: TacticalOption = null
-var current_modifier: AttemptModifier = null
+var selected_option = null
+var current_modifier = null
 
 # Stub inventory -- will be extracted to its own autoload later
 var inventory: Dictionary = {
@@ -38,7 +38,7 @@ func generate_options(roster: Array, boss: Boss) -> void:
 	emit_signal("options_generated", current_options)
 
 
-func select_option(option: TacticalOption) -> void:
+func select_option(option) -> void:
 	if not option.is_available:
 		return
 	selected_option = option
@@ -59,7 +59,7 @@ func confirm_choice() -> bool:
 	return true
 
 
-func get_modifier() -> AttemptModifier:
+func get_modifier():
 	return current_modifier
 
 
@@ -82,7 +82,7 @@ func _generate_composition_options(roster: Array, _boss: Boss) -> Array:
 			healers += 1
 
 	# Pre-build all possible options
-	var tank_def: TacticalOption = _create_option(
+	var tank_def = _create_option(
 		"comp_tank_def",
 		GameEnums.TacticalCategory.COMPOSITION,
 		"Tank Défensif",
@@ -93,7 +93,7 @@ func _generate_composition_options(roster: Array, _boss: Boss) -> Array:
 		})
 	)
 
-	var tank_off: TacticalOption = _create_option(
+	var tank_off = _create_option(
 		"comp_tank_off",
 		GameEnums.TacticalCategory.COMPOSITION,
 		"Tank Offensif",
@@ -105,7 +105,7 @@ func _generate_composition_options(roster: Array, _boss: Boss) -> Array:
 		})
 	)
 
-	var heal_raid: TacticalOption = _create_option(
+	var heal_raid = _create_option(
 		"comp_heal_raid",
 		GameEnums.TacticalCategory.COMPOSITION,
 		"Healer de Raid",
@@ -117,7 +117,7 @@ func _generate_composition_options(roster: Array, _boss: Boss) -> Array:
 		})
 	)
 
-	var heal_spot: TacticalOption = _create_option(
+	var heal_spot = _create_option(
 		"comp_heal_spot",
 		GameEnums.TacticalCategory.COMPOSITION,
 		"Healer de Spot",
@@ -129,7 +129,7 @@ func _generate_composition_options(roster: Array, _boss: Boss) -> Array:
 		})
 	)
 
-	var balanced: TacticalOption = _create_option(
+	var balanced = _create_option(
 		"comp_balanced",
 		GameEnums.TacticalCategory.COMPOSITION,
 		"Composition Équilibrée",
@@ -197,12 +197,12 @@ func _generate_consumable_options() -> Array:
 
 	var result: Array = []
 	for def in definitions:
-		var mod: AttemptModifier = _create_modifier(
+		var mod = _create_modifier(
 			GameEnums.TacticalCategory.CONSUMABLES,
 			def["id"],
 			def["modifier_kwargs"]
 		)
-		var opt: TacticalOption = _create_option(
+		var opt = _create_option(
 			def["id"],
 			GameEnums.TacticalCategory.CONSUMABLES,
 			def["label"],
@@ -254,12 +254,12 @@ func _generate_strategy_options(_boss: Boss) -> Array:
 
 	var result: Array = []
 	for def in definitions:
-		var mod: AttemptModifier = _create_modifier(
+		var mod = _create_modifier(
 			GameEnums.TacticalCategory.STRATEGY,
 			def["id"],
 			def["modifier_kwargs"]
 		)
-		var opt: TacticalOption = _create_option(
+		var opt = _create_option(
 			def["id"],
 			GameEnums.TacticalCategory.STRATEGY,
 			def["label"],
@@ -281,8 +281,8 @@ func _consume_item(key: String, cost: int) -> bool:
 	return false
 
 
-func _create_modifier(category: int, id: String, kwargs: Dictionary) -> AttemptModifier:
-	var mod: AttemptModifier = AttemptModifier.new()
+func _create_modifier(category: int, id: String, kwargs: Dictionary):
+	var mod = AttemptModifier.new()
 	mod.source_option_id = id
 	mod.category = category
 	for field in kwargs:
@@ -295,11 +295,11 @@ func _create_option(
 	cat: int,
 	label: String,
 	desc: String,
-	mod: AttemptModifier,
+	mod,
 	consumable_key: String = "",
 	consumable_cost: int = 0
-) -> TacticalOption:
-	var opt: TacticalOption = TacticalOption.new()
+):
+	var opt = TacticalOption.new()
 	opt.id = id
 	opt.category = cat
 	opt.label = label

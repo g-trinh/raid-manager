@@ -70,7 +70,7 @@ func _display_category(category: int) -> void:
 
 		if i < options.size():
 			card.visible = true
-			var option := options[i] as TacticalOption
+			var option = options[i]
 			var vbox := card.get_node("HBoxContainer/VBoxContainer")
 			var option_label := vbox.get_node("OptionLabel%d" % i) as Label
 			var desc_label := vbox.get_node("DescLabel%d" % i) as Label
@@ -100,7 +100,7 @@ func _on_select_pressed(index: int) -> void:
 		TacticalChoiceSystem.select_option(options[index])
 
 
-func _on_option_selected(option: TacticalOption) -> void:
+func _on_option_selected(option) -> void:
 	selected_label.text = "Sélection : " + option.label
 	modifier_summary.text = _build_modifier_summary(option.modifier)
 	confirm_button.disabled = false
@@ -111,7 +111,7 @@ func _on_confirm_pressed() -> void:
 	TacticalChoiceSystem.confirm_choice()
 
 
-func _build_modifier_summary(modifier: AttemptModifier) -> String:
+func _build_modifier_summary(modifier) -> String:
 	if modifier == null:
 		return ""
 

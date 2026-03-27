@@ -30,7 +30,7 @@ func _show_tactical_choice() -> void:
 	add_child(screen)
 
 
-func _on_tactical_choice_confirmed(modifier: AttemptModifier) -> void:
+func _on_tactical_choice_confirmed(modifier) -> void:
 	_clear_current_scene()
 	# F07 will handle the actual attempt resolution
 	print("[Main] Tactical choice confirmed: %s" % modifier.source_option_id)
