@@ -11,3 +11,5 @@ var moral: int             # 0–100
 
 var traits_positive: Array[int]   # exactly 2 values from GameEnums.MemberTrait
 var trait_negative: int           # exactly 1 value from GameEnums.MemberTrait
+
+var experience: int               # 0–100
