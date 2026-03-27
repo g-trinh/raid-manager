@@ -15,8 +15,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Raid Manager"
+run/main_scene="res://src/scenes/Main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/run/main_scene="res://src/scenes/Main.tscn"
 
 [autoload]
 
@@ -24,3 +24,8 @@ GameEnums="*res://src/autoloads/GameEnums.gd"
 RelationMatrix="*res://src/autoloads/RelationMatrix.gd"
 MemberGenerator="*res://src/autoloads/MemberGenerator.gd"
 DraftSystem="*res://src/autoloads/DraftSystem.gd"
+TacticalChoiceSystem="*res://src/autoloads/TacticalChoiceSystem.gd"
+
+[dotnet]
+
+project/assembly_name="Raid Manager"

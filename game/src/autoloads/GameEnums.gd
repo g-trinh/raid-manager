@@ -43,8 +43,16 @@ const NEGATIVE_TRAITS: Array = [
     MemberTrait.AFK_FREQUENT,
 ]
 
+enum TacticalCategory { COMPOSITION, CONSUMABLES, STRATEGY }
+
+const TACTICAL_CATEGORY_NAMES: Dictionary = {
+	TacticalCategory.COMPOSITION: "Composition",
+	TacticalCategory.CONSUMABLES: "Consommables",
+	TacticalCategory.STRATEGY: "Strategie",
+}
+
 func trait_name(trait_id: int) -> String:
-    return TRAIT_NAMES.get(trait_id, "Unknown")
+	return TRAIT_NAMES.get(trait_id, "Unknown")
 
 func is_positive_trait(trait_id: int) -> bool:
-    return trait_id in POSITIVE_TRAITS
+	return trait_id in POSITIVE_TRAITS
