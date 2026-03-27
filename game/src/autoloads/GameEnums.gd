@@ -2,6 +2,12 @@ extends Node
 
 enum Role { TANK, HEALER, DPS }
 
+enum Tier { NORMAL = 1, HEROIC = 2, MYTHIC = 3 }
+
+const BOSSES_PER_TIER: int = 5
+const TIER_COUNT: int = 3
+const MAX_ATTEMPTS_PER_BOSS: int = 5
+
 enum MemberTrait {
     # Positive
     ENTHOUSIASTE,
