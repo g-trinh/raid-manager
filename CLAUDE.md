@@ -15,6 +15,8 @@
 – Use subagents liberally to keep main context window clean
 – One task per subagent for focused execution
 – For complex problems, throw more compute at it
+- Always use backend-developer, game-engine-developer or game-logic-developer subagents for all coding tasks. Pick that is the most relevent for the task.
+- Once all changes are verified, commit your changes using the commit rules
 
 ### 3. Self-Improvement Loop
 – After ANY correction: update tasks/lessons.md

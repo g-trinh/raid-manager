@@ -9,18 +9,27 @@ description: General software development organization
 
 2. Select only the tasks that correspond to your team
 3. Implement the code
-4. Commit the generated code, that responds to the feature. The commit message template is :
+4. Commit the generated code
+
+## Commit rules
+
+### Template
 `type(stack): my message`
 
-## Task types
+### Task types
 
 - feature
 - fix
 - chore
 
-## Stacks
+### Stacks
 
 - backend
 - engine
 - logic
 - infra
+
+## Additional rules
+
+- Never leave your changes uncommited
+- Once all changes are verified, commit your changes using the commit rules
