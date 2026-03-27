@@ -23,6 +23,7 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 GameEnums="*res://src/autoloads/GameEnums.gd"
 RelationMatrix="*res://src/autoloads/RelationMatrix.gd"
 MemberGenerator="*res://src/autoloads/MemberGenerator.gd"
+BossDatabase="*res://src/autoloads/BossDatabase.gd"
 DraftSystem="*res://src/autoloads/DraftSystem.gd"
 TacticalChoiceSystem="*res://src/autoloads/TacticalChoiceSystem.gd"
 
