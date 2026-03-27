@@ -53,6 +53,12 @@ func _ready() -> void:
 
 func _on_options_generated(options: Dictionary) -> void:
 	_current_options = options
+	for category in options:
+		var category_name: String = GameEnums.TACTICAL_CATEGORY_NAMES[category]
+		print("[TacticalChoice] Category: %s" % category_name)
+		for opt in options[category]:
+			var availability: String = "" if opt.is_available else " [INDISPONIBLE: %s]" % opt.unavailable_reason
+			print("  - %s: %s%s" % [opt.label, opt.description, availability])
 	_display_category(_current_category)
 
 

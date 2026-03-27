@@ -35,14 +35,14 @@ func generate_options(roster: Array, boss: Boss) -> void:
 		GameEnums.TacticalCategory.STRATEGY:    strategy_opts,
 	}
 
-	emit_signal("options_generated", current_options)
+	options_generated.emit(current_options)
 
 
 func select_option(option) -> void:
 	if not option.is_available:
 		return
 	selected_option = option
-	emit_signal("option_selected", option)
+	option_selected.emit(option)
 
 
 func confirm_choice() -> bool:
@@ -55,7 +55,7 @@ func confirm_choice() -> bool:
 			return false
 
 	current_modifier = selected_option.modifier
-	emit_signal("choice_confirmed", current_modifier)
+	choice_confirmed.emit(current_modifier)
 	return true
 
 

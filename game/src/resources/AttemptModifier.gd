@@ -2,7 +2,7 @@ class_name AttemptModifier
 extends Resource
 
 var source_option_id: String = ""
-var category: int = GameEnums.TacticalCategory.COMPOSITION
+var category: int = 0
 
 # Additive stat modifiers (applied to guild aggregate)
 var skill_bonus: int = 0
