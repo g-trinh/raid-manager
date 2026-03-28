@@ -1,0 +1,24 @@
+# Component: Draft
+
+The phase where the player assembles their team before the boss attempt.
+
+## Role Caps
+
+| Role   | Slots |
+|--------|-------|
+| Tank   | 2     |
+| Healer | 2     |
+| DPS    | 4     |
+| Total  | 8     |
+
+## Rules
+
+- The player is shown members from the hardcoded pool one at a time (or in small groups) and picks until all 8 slots are filled
+- If a role has reached its cap, no further members of that role are offered
+- All available members are hardcoded — none are generated at runtime
+
+## What the Player Sees per Member
+
+- Name
+- Role (Tank / Healer / DPS)
+- Skill value
