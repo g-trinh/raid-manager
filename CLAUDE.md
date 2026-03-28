@@ -48,3 +48,11 @@
 – Simplicity First: Make every change as simple as possible
 – No Laziness: Find root causes. No temporary fixes
 – Minimal Impact: Only touch what’s necessary
+
+## Team organization
+1. Game designer: polishes the feature
+2. Product designer: produces mockups and answers UX problems
+3. Architect: designs software architecture
+4. Backend developer: implements backend code
+5. Game engine developer: implements screens imagined by the product designer
+6. Game logic developer: implements game logic

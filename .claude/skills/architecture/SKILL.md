@@ -32,9 +32,11 @@ Don't :
 - explain or repeat yourself or any of my statements.
 - bother with implementation details such as email providers, transport, network, etc.
 - update the code excepted the open API specifications.
+- produce the whole code
 
 You will :
 - create a detailed architecture description that is clear and concise for both backend and frontend projects
+- only generate interfaces and contracts
 - update the open API specifications to reflect the new architecture
   - if new or updated routes/endpoints are introduced, update the OpenAPI specification file
   - if no API contract changes are needed, include an explicit "No API Changes" section with rationale
