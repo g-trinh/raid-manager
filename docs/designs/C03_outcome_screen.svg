@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  C03 — Outcome Screen
+  Dimensions: 390 × 844 (mobile portrait, iPhone-equivalent)
+  Two states shown side-by-side for reference: WIN (left) and LOSE (right).
+  In the actual game, the screen renders one state only.
+  Consistent with the draft screen's minimal/functional GoDot aesthetic.
+-->
+<svg width="800" height="900" viewBox="0 0 800 900" fill="none"
+     xmlns="http://www.w3.org/2000/svg"
+     font-family="'Georgia', 'Times New Roman', serif">
+
+  <defs>
+    <!-- WIN: gold radial glow -->
+    <radialGradient id="winBgGrad" cx="50%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#1A1400"/>
+      <stop offset="100%" stop-color="#0D0F14"/>
+    </radialGradient>
+    <!-- LOSE: dark red radial glow -->
+    <radialGradient id="loseBgGrad" cx="50%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#1A0000"/>
+      <stop offset="100%" stop-color="#0D0F14"/>
+    </radialGradient>
+    <!-- Gold gradient for WIN title -->
+    <linearGradient id="goldTextGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE080"/>
+      <stop offset="100%" stop-color="#C8860A"/>
+    </linearGradient>
+    <!-- Red gradient for LOSE title -->
+    <linearGradient id="redTextGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF6060"/>
+      <stop offset="100%" stop-color="#990000"/>
+    </linearGradient>
+    <!-- Subtle gold glow filter -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix type="matrix"
+        values="1 0.8 0 0 0  0.6 0.4 0 0 0  0 0 0 0 0  0 0 0 0.6 0"
+        in="blur" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle red glow filter -->
+    <filter id="redGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix type="matrix"
+        values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0"
+        in="blur" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- LABEL ROW: column headers                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <text x="200" y="30" text-anchor="middle" fill="#8A8FA8" font-size="11" letter-spacing="2">WIN STATE</text>
+  <text x="600" y="30" text-anchor="middle" fill="#8A8FA8" font-size="11" letter-spacing="2">LOSE STATE</text>
+  <line x1="400" y1="0" x2="400" y2="900" stroke="#2A2D3E" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- WIN SCREEN  (x-offset: 5, width: 390)                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+
+  <!-- Background -->
+  <rect x="5" y="40" width="390" height="844" fill="#0D0F14"/>
+  <rect x="5" y="40" width="390" height="844" fill="url(#winBgGrad)"/>
+
+  <!-- ── TOP RULE ── -->
+  <rect x="5" y="40" width="390" height="2" fill="#C8860A" opacity="0.4"/>
+
+  <!-- ── RESULT HERO AREA (top third) ── -->
+  <!-- Decorative horizontal dividers flanking the result -->
+  <line x1="25" y1="200" x2="140" y2="200" stroke="#C8860A" stroke-width="1" opacity="0.5"/>
+  <line x1="260" y1="200" x2="375" y2="200" stroke="#C8860A" stroke-width="1" opacity="0.5"/>
+
+  <!-- WIN label -->
+  <text x="200" y="195"
+        text-anchor="middle"
+        font-size="9" font-weight="bold" letter-spacing="3"
+        fill="#C8860A">RÉSULTAT</text>
+
+  <!-- WIN hero text -->
+  <text x="200" y="280"
+        text-anchor="middle"
+        font-size="64" font-weight="bold" letter-spacing="6"
+        fill="url(#goldTextGrad)"
+        filter="url(#goldGlow)">VICTOIRE</text>
+
+  <!-- Subtitle flavor -->
+  <text x="200" y="310"
+        text-anchor="middle"
+        font-size="11" font-style="italic"
+        fill="#8A8FA8">Le boss a été vaincu.</text>
+
+  <!-- Bottom rule under hero -->
+  <line x1="25" y1="330" x2="375" y2="330" stroke="#2A2D3E" stroke-width="1"/>
+
+  <!-- ── SCORE SECTION ── -->
+  <!-- Section header -->
+  <text x="25" y="360"
+        font-size="9" font-weight="bold" letter-spacing="2"
+        fill="#8A8FA8">COMPARAISON DE PUISSANCE</text>
+  <line x1="25" y1="366" x2="375" y2="366" stroke="#C8860A" stroke-width="0.5" opacity="0.6"/>
+
+  <!-- Guild power card -->
+  <rect x="25" y="380" width="168" height="84" rx="6" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="109" y="402"
+        text-anchor="middle"
+        font-size="9" letter-spacing="2"
+        fill="#8A8FA8">PUISSANCE GUILDE</text>
+  <text x="109" y="444"
+        text-anchor="middle"
+        font-size="36" font-weight="bold"
+        fill="#F0C060">247</text>
+  <!-- Win: guild power gets a small indicator that it won -->
+  <text x="109" y="458"
+        text-anchor="middle"
+        font-size="8" letter-spacing="1"
+        fill="#52C864">&#x25B2; SUPÉRIEURE</text>
+
+  <!-- VS divider -->
+  <text x="200" y="428"
+        text-anchor="middle"
+        font-size="14" font-weight="bold"
+        fill="#2A2D3E">VS</text>
+
+  <!-- Boss difficulty card -->
+  <rect x="197" y="380" width="168" height="84" rx="6" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="281" y="402"
+        text-anchor="middle"
+        font-size="9" letter-spacing="2"
+        fill="#8A8FA8">DIFFICULTÉ BOSS</text>
+  <text x="281" y="444"
+        text-anchor="middle"
+        font-size="36" font-weight="bold"
+        fill="#E8D0A0">200</text>
+  <text x="281" y="458"
+        text-anchor="middle"
+        font-size="8" letter-spacing="1"
+        fill="#8A8FA8">SEUIL</text>
+
+  <!-- Delta label -->
+  <text x="200" y="490"
+        text-anchor="middle"
+        font-size="10"
+        fill="#52C864">+47 au-dessus du seuil</text>
+
+  <!-- Divider -->
+  <line x1="25" y1="508" x2="375" y2="508" stroke="#2A2D3E" stroke-width="1"/>
+
+  <!-- ── PLAY AGAIN BUTTON ── -->
+  <!-- Positioned near bottom, fixed -->
+  <rect x="25" y="750" width="350" height="52" rx="8"
+        fill="#12141C" stroke="#C8860A" stroke-width="1.5"/>
+  <!-- Inner highlight strip -->
+  <rect x="26" y="751" width="348" height="2" rx="1" fill="#C8860A" opacity="0.25"/>
+  <text x="200" y="783"
+        text-anchor="middle"
+        font-size="14" font-weight="bold" letter-spacing="2"
+        fill="#F0C060">NOUVELLE PARTIE</text>
+
+  <!-- Bottom safe-area spacing note -->
+  <text x="200" y="830"
+        text-anchor="middle"
+        font-size="8"
+        fill="#2A2D3E">— safe area —</text>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- LOSE SCREEN  (x-offset: 405, width: 390)              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+
+  <!-- Background -->
+  <rect x="405" y="40" width="390" height="844" fill="#0D0F14"/>
+  <rect x="405" y="40" width="390" height="844" fill="url(#loseBgGrad)"/>
+
+  <!-- ── TOP RULE ── -->
+  <rect x="405" y="40" width="390" height="2" fill="#CC3030" opacity="0.4"/>
+
+  <!-- ── RESULT HERO AREA (top third) ── -->
+  <line x1="425" y1="200" x2="540" y2="200" stroke="#CC3030" stroke-width="1" opacity="0.5"/>
+  <line x1="660" y1="200" x2="775" y2="200" stroke="#CC3030" stroke-width="1" opacity="0.5"/>
+
+  <text x="600" y="195"
+        text-anchor="middle"
+        font-size="9" font-weight="bold" letter-spacing="3"
+        fill="#CC3030">RÉSULTAT</text>
+
+  <!-- LOSE hero text -->
+  <text x="600" y="280"
+        text-anchor="middle"
+        font-size="64" font-weight="bold" letter-spacing="6"
+        fill="url(#redTextGrad)"
+        filter="url(#redGlow)">ÉCHEC</text>
+
+  <!-- Subtitle flavor -->
+  <text x="600" y="310"
+        text-anchor="middle"
+        font-size="11" font-style="italic"
+        fill="#8A8FA8">Le raid s'est effondré.</text>
+
+  <!-- Bottom rule under hero -->
+  <line x1="425" y1="330" x2="775" y2="330" stroke="#2A2D3E" stroke-width="1"/>
+
+  <!-- ── SCORE SECTION ── -->
+  <text x="425" y="360"
+        font-size="9" font-weight="bold" letter-spacing="2"
+        fill="#8A8FA8">COMPARAISON DE PUISSANCE</text>
+  <line x1="425" y1="366" x2="775" y2="366" stroke="#CC3030" stroke-width="0.5" opacity="0.6"/>
+
+  <!-- Guild power card (LOSE: below threshold, border uses danger color) -->
+  <rect x="425" y="380" width="168" height="84" rx="6" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="509" y="402"
+        text-anchor="middle"
+        font-size="9" letter-spacing="2"
+        fill="#8A8FA8">PUISSANCE GUILDE</text>
+  <text x="509" y="444"
+        text-anchor="middle"
+        font-size="36" font-weight="bold"
+        fill="#FF6040">152</text>
+  <text x="509" y="458"
+        text-anchor="middle"
+        font-size="8" letter-spacing="1"
+        fill="#CC3030">&#x25BC; INSUFFISANTE</text>
+
+  <!-- VS divider -->
+  <text x="600" y="428"
+        text-anchor="middle"
+        font-size="14" font-weight="bold"
+        fill="#2A2D3E">VS</text>
+
+  <!-- Boss difficulty card -->
+  <rect x="597" y="380" width="168" height="84" rx="6" fill="#12141C" stroke="#2A2D3E" stroke-width="1"/>
+  <text x="681" y="402"
+        text-anchor="middle"
+        font-size="9" letter-spacing="2"
+        fill="#8A8FA8">DIFFICULTÉ BOSS</text>
+  <text x="681" y="444"
+        text-anchor="middle"
+        font-size="36" font-weight="bold"
+        fill="#E8D0A0">200</text>
+  <text x="681" y="458"
+        text-anchor="middle"
+        font-size="8" letter-spacing="1"
+        fill="#8A8FA8">SEUIL</text>
+
+  <!-- Delta label (negative) -->
+  <text x="600" y="490"
+        text-anchor="middle"
+        font-size="10"
+        fill="#CC3030">−48 en dessous du seuil</text>
+
+  <!-- Divider -->
+  <line x1="425" y1="508" x2="775" y2="508" stroke="#2A2D3E" stroke-width="1"/>
+
+  <!-- ── PLAY AGAIN BUTTON (LOSE) ── -->
+  <rect x="425" y="750" width="350" height="52" rx="8"
+        fill="#12141C" stroke="#C8860A" stroke-width="1.5"/>
+  <rect x="426" y="751" width="348" height="2" rx="1" fill="#C8860A" opacity="0.25"/>
+  <text x="600" y="783"
+        text-anchor="middle"
+        font-size="14" font-weight="bold" letter-spacing="2"
+        fill="#F0C060">NOUVELLE PARTIE</text>
+
+  <text x="600" y="830"
+        text-anchor="middle"
+        font-size="8"
+        fill="#2A2D3E">— safe area —</text>
+
+</svg>

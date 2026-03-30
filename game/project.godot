@@ -22,6 +22,7 @@ run/main_scene="res://scenes/draft/draft_screen.tscn"
 
 GameData="*res://scripts/autoloads/game_data.gd"
 DraftState="*res://scripts/autoloads/draft_state.gd"
+RunState="*res://scripts/autoloads/run_state.gd"
 
 [editor_plugins]
 
