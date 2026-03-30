@@ -12,7 +12,7 @@ The target resolutions will be : 4k, 2k, 1080p and 720p.
 ## Technologies
 
 Game engine : GoDot (4.6+)
-Game Logic : GDScript
+Game Logic : GDScript, GUT framework
 Backend : GoLang (1.28+)
 
 ## Project files architecture
