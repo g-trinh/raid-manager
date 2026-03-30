@@ -4,6 +4,7 @@ extends Node
 
 signal member_selected(member: MemberData)
 signal draft_completed
+signal round_drawn
 
 const ROLE_CAPS: Dictionary = {
 	Role.Type.TANK: 2,
@@ -11,8 +12,10 @@ const ROLE_CAPS: Dictionary = {
 	Role.Type.DPS: 4,
 }
 const TEAM_SIZE: int = 8
+const CANDIDATES_PER_ROUND: int = 3
 
 var selected_members: Array[MemberData] = []
+var current_candidates: Array[MemberData] = []
 
 func add_member(member: MemberData) -> bool:
 	if is_role_full(member.role):
@@ -20,7 +23,10 @@ func add_member(member: MemberData) -> bool:
 	selected_members.append(member)
 	emit_signal("member_selected", member)
 	if is_draft_complete():
+		current_candidates.clear()
 		emit_signal("draft_completed")
+	else:
+		draw_candidates()
 	return true
 
 func is_draft_complete() -> bool:
@@ -46,5 +52,13 @@ func get_available_members() -> Array[MemberData]:
 		result.append(member)
 	return result
 
+func draw_candidates() -> void:
+	var available := get_available_members()
+	available.shuffle()
+	var count := mini(CANDIDATES_PER_ROUND, available.size())
+	current_candidates = available.slice(0, count)
+	emit_signal("round_drawn")
+
 func reset() -> void:
 	selected_members.clear()
+	draw_candidates()
