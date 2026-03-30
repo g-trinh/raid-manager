@@ -27,6 +27,7 @@
 – Never mark a task complete without proving it works
 – Ask yourself: “Would a staff engineer approve this?”
 – Run tests, check logs, demonstrate correctness
+- Run the GoDot game
 
 ### 5. Demand Elegance (Balanced)
 – Pause and ask “is there a more elegant way?”
