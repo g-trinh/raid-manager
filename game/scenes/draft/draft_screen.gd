@@ -10,7 +10,6 @@ const MemberCardScene = preload("res://scenes/draft/member_card.tscn")
 @onready var proceed_button: Button = $VBoxContainer/ProceedButton
 
 func _ready() -> void:
-	DraftState.reset()
 	DraftState.member_selected.connect(_on_member_selected)
 	DraftState.draft_completed.connect(_on_draft_completed)
 	proceed_button.pressed.connect(_on_proceed_pressed)
@@ -45,4 +44,5 @@ func _on_draft_completed() -> void:
 	proceed_button.disabled = false
 
 func _on_proceed_pressed() -> void:
-	print("Draft complete! Team: ", DraftState.selected_members.map(func(m): return m.member_name))
+	RunState.resolve()
+	get_tree().change_scene_to_file("res://scenes/outcome/outcome_screen.tscn")
