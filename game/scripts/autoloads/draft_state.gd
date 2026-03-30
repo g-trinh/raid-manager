@@ -17,6 +17,9 @@ const CANDIDATES_PER_ROUND: int = 3
 var selected_members: Array[MemberData] = []
 var current_candidates: Array[MemberData] = []
 
+func _ready() -> void:
+	draw_candidates()
+
 func add_member(member: MemberData) -> bool:
 	if is_role_full(member.role):
 		return false
