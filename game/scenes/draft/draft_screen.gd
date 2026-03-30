@@ -13,6 +13,7 @@ func _ready() -> void:
 	DraftState.reset()
 	DraftState.member_selected.connect(_on_member_selected)
 	DraftState.draft_completed.connect(_on_draft_completed)
+	DraftState.round_drawn.connect(_refresh_available_panel)
 	proceed_button.pressed.connect(_on_proceed_pressed)
 	_refresh_available_panel()
 	_update_slot_tracker()
@@ -20,7 +21,7 @@ func _ready() -> void:
 func _refresh_available_panel() -> void:
 	for child in member_grid.get_children():
 		child.queue_free()
-	for member_data in DraftState.get_available_members():
+	for member_data in DraftState.current_candidates:
 		var card = MemberCardScene.instantiate()
 		member_grid.add_child(card)
 		card.setup(member_data, true)
@@ -33,7 +34,6 @@ func _on_member_selected(member: MemberData) -> void:
 	var card = MemberCardScene.instantiate()
 	team_list.add_child(card)
 	card.setup(member, false)
-	_refresh_available_panel()
 	_update_slot_tracker()
 
 func _update_slot_tracker() -> void:
