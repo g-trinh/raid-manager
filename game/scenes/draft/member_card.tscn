@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://member_card"]
+
+[ext_resource type="Script" path="res://scenes/draft/member_card.gd" id="1_member"]
+
+[node name="MemberCard" type="PanelContainer"]
+script = ExtResource("1_member")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="NameLabel" type="Label" parent="HBoxContainer"]
+size_flags_horizontal = 3
+text = "Name"
+
+[node name="RoleLabel" type="Label" parent="HBoxContainer"]
+size_flags_horizontal = 3
+text = "Role"
+
+[node name="SkillLabel" type="Label" parent="HBoxContainer"]
+size_flags_horizontal = 3
+text = "Skill"

@@ -1,6 +1,7 @@
 # GameData — autoload singleton
 # Do NOT add class_name here: GoDot autoloads must not declare class_name
 # to avoid singleton conflicts.
+extends Node
 
 var member_pool: Array[MemberData] = []
 var boss: BossData = null
