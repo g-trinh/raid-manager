@@ -77,6 +77,7 @@ type: project
 | Salle du Conseil | `docs/design/04-salle-du-conseil.svg` | Done |
 | Game Over / Guild Disbanded | `docs/design/05-game-over.svg` | Done |
 | Draft (Phase 0) | — | Not designed yet |
+| Outcome Screen (C03) | `docs/designs/C03_outcome_screen.svg` | Done |
 | Attempt Resolution (Kill) | — | Not designed yet |
 | Loot Distribution | — | Not designed yet |
 | Tier End Celebration | — | Not designed yet |
