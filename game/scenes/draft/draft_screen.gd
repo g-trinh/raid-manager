@@ -37,7 +37,7 @@ func _on_member_selected(member: MemberData) -> void:
 
 func _update_slot_tracker() -> void:
 	tank_counter.text = "Tanks: %d/2" % DraftState.get_role_count(Role.Type.TANK)
-	healer_counter.text = "Healers: %d/2" % DraftState.get_role_count(Role.Type.HEALER)
+	healer_counter.text = "Heal: %d/2" % DraftState.get_role_count(Role.Type.HEAL)
 	dps_counter.text = "DPS: %d/4" % DraftState.get_role_count(Role.Type.DPS)
 
 func _on_draft_completed() -> void:

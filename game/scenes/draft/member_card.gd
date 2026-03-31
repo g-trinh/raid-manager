@@ -9,6 +9,7 @@ func setup(data: MemberData, interactive: bool = true) -> void:
 	$HBoxContainer/NameLabel.text = data.member_name
 	$HBoxContainer/RoleLabel.text = _role_label(data.role)
 	$HBoxContainer/SkillLabel.text = "Skill: " + str(data.skill)
+	$HBoxContainer/LiabilityLabel.text = "Liability: " + str(data.liability)
 	if interactive:
 		gui_input.connect(_on_gui_input)
 
@@ -19,6 +20,6 @@ func _on_gui_input(event: InputEvent) -> void:
 func _role_label(role: Role.Type) -> String:
 	match role:
 		Role.Type.TANK: return "Tank"
-		Role.Type.HEALER: return "Healer"
+		Role.Type.HEAL: return "Heal"
 		Role.Type.DPS: return "DPS"
 	return "?"

@@ -22,3 +22,7 @@ text = "Role"
 [node name="SkillLabel" type="Label" parent="HBoxContainer"]
 size_flags_horizontal = 3
 text = "Skill"
+
+[node name="LiabilityLabel" type="Label" parent="HBoxContainer"]
+size_flags_horizontal = 3
+text = "Liability"

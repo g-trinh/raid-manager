@@ -1,8 +1,7 @@
 extends Control
 
 @onready var title_label: Label = $VBoxContainer/TitleLabel
-@onready var guild_power_label: Label = $VBoxContainer/GuildPowerLabel
-@onready var boss_difficulty_label: Label = $VBoxContainer/BossDifficultyLabel
+@onready var phases_label: Label = $VBoxContainer/PhasesLabel
 @onready var play_again_button: Button = $VBoxContainer/PlayAgainButton
 
 func _ready() -> void:
@@ -14,9 +13,14 @@ func _ready() -> void:
 	play_again_button.pressed.connect(_on_play_again_pressed)
 
 func _display_result() -> void:
-	title_label.text = "Victory!" if RunState.won else "Defeat!"
-	guild_power_label.text = "Guild Power: %d" % RunState.guild_power
-	boss_difficulty_label.text = "%s Difficulty: %d" % [RunState.get_boss_name(), RunState.boss_difficulty]
+	match RunState.outcome:
+		RunState.Outcome.FULL_VICTORY:
+			title_label.text = "Full Victory"
+		RunState.Outcome.NARROW_VICTORY:
+			title_label.text = "Narrow Victory"
+		RunState.Outcome.DEFEAT:
+			title_label.text = "Defeat"
+	phases_label.text = "%d / 3 phases succeeded" % RunState.phases_succeeded
 
 func _on_play_again_pressed() -> void:
 	RunState.reset()

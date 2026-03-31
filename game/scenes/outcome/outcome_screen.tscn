@@ -18,11 +18,8 @@ anchor_bottom = 1.0
 [node name="TitleLabel" type="Label" parent="VBoxContainer"]
 text = "Victory!"
 
-[node name="GuildPowerLabel" type="Label" parent="VBoxContainer"]
-text = "Guild Power: 0"
-
-[node name="BossDifficultyLabel" type="Label" parent="VBoxContainer"]
-text = "Boss Difficulty: 0"
+[node name="PhasesLabel" type="Label" parent="VBoxContainer"]
+text = "0 / 3 phases succeeded"
 
 [node name="PlayAgainButton" type="Button" parent="VBoxContainer"]
 text = "Play Again"
