@@ -4,12 +4,12 @@ The phase where the player assembles their team before the boss attempt.
 
 ## Role Caps
 
-| Role   | Slots |
-|--------|-------|
-| Tank   | 2     |
-| Healer | 2     |
-| DPS    | 4     |
-| Total  | 8     |
+| Role  | Slots |
+|-------|-------|
+| Tank  | 2     |
+| Heal  | 2     |
+| DPS   | 4     |
+| Total | 8     |
 
 ## Flow
 
@@ -30,5 +30,6 @@ The phase where the player assembles their team before the boss attempt.
 ## What the Player Sees per Member
 
 - Name
-- Role (Tank / Healer / DPS)
+- Role (Tank / Heal / DPS)
 - Skill value
+- Liability value
