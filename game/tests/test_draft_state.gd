@@ -64,7 +64,7 @@ func test_is_draft_complete_false_initially() -> void:
 
 func test_is_draft_complete_true_when_8_selected() -> void:
 	var tanks := GameData.get_members_by_role(Role.Type.TANK)
-	var healers := GameData.get_members_by_role(Role.Type.HEALER)
+	var healers := GameData.get_members_by_role(Role.Type.HEAL)
 	var dps := GameData.get_members_by_role(Role.Type.DPS)
 	DraftState.add_member(tanks[0])
 	DraftState.add_member(tanks[1])
@@ -102,7 +102,7 @@ func test_member_selected_signal_fires() -> void:
 func test_draft_completed_signal_fires_on_8th() -> void:
 	watch_signals(DraftState)
 	var tanks := GameData.get_members_by_role(Role.Type.TANK)
-	var healers := GameData.get_members_by_role(Role.Type.HEALER)
+	var healers := GameData.get_members_by_role(Role.Type.HEAL)
 	var dps := GameData.get_members_by_role(Role.Type.DPS)
 	DraftState.add_member(tanks[0])
 	DraftState.add_member(tanks[1])
@@ -118,7 +118,7 @@ func test_draft_completed_signal_fires_on_8th() -> void:
 func test_draft_completed_not_fired_before_8th() -> void:
 	watch_signals(DraftState)
 	var tanks := GameData.get_members_by_role(Role.Type.TANK)
-	var healers := GameData.get_members_by_role(Role.Type.HEALER)
+	var healers := GameData.get_members_by_role(Role.Type.HEAL)
 	var dps := GameData.get_members_by_role(Role.Type.DPS)
 	DraftState.add_member(tanks[0])
 	DraftState.add_member(tanks[1])
@@ -158,7 +158,7 @@ func test_add_member_refreshes_candidates() -> void:
 
 func test_candidates_empty_after_draft_complete() -> void:
 	var tanks := GameData.get_members_by_role(Role.Type.TANK)
-	var healers := GameData.get_members_by_role(Role.Type.HEALER)
+	var healers := GameData.get_members_by_role(Role.Type.HEAL)
 	var dps := GameData.get_members_by_role(Role.Type.DPS)
 	DraftState.add_member(tanks[0])
 	DraftState.add_member(tanks[1])
@@ -184,7 +184,7 @@ func test_round_drawn_signal_fires_after_add_member() -> void:
 
 func test_round_drawn_not_fired_after_last_pick() -> void:
 	var tanks := GameData.get_members_by_role(Role.Type.TANK)
-	var healers := GameData.get_members_by_role(Role.Type.HEALER)
+	var healers := GameData.get_members_by_role(Role.Type.HEAL)
 	var dps := GameData.get_members_by_role(Role.Type.DPS)
 	DraftState.add_member(tanks[0])
 	DraftState.add_member(tanks[1])

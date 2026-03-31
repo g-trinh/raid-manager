@@ -15,18 +15,19 @@ func _fill_draft_with_skill(skill_per_member: int) -> void:
 		DraftState.selected_members.append(m)
 
 func _fill_draft_winning() -> void:
-	# Gorvak(8)+Shieldara(6)+Lumina(7)+Serenova(9)+Razorfang(8)+Blitzclaw(6)+Vexara(10)+Skarn(4) = 58 > 35
+	# Gorvak(38)+Shieldara(81)+Lumina(12)+Serenova(91)+Razorfang(80)+Blitzclaw(60)+Vexara(95)+Skarn(28) = 485
+	# boss_difficulty stub = 0, so any positive guild_power wins (TODO C03)
 	DraftState.selected_members.clear()
 	var tanks   := GameData.get_members_by_role(Role.Type.TANK)
-	var healers := GameData.get_members_by_role(Role.Type.HEALER)
+	var healers := GameData.get_members_by_role(Role.Type.HEAL)
 	var dps     := GameData.get_members_by_role(Role.Type.DPS)
-	# tanks[0]=Gorvak(8), tanks[1]=Shieldara(6)
+	# tanks[0]=Gorvak(38), tanks[1]=Shieldara(81)
 	DraftState.selected_members.append(tanks[0])
 	DraftState.selected_members.append(tanks[1])
-	# healers[0]=Lumina(7), healers[2]=Serenova(9)
+	# healers[0]=Lumina(12), healers[2]=Serenova(91)
 	DraftState.selected_members.append(healers[0])
 	DraftState.selected_members.append(healers[2])
-	# dps[0]=Razorfang(8), dps[1]=Blitzclaw(6), dps[2]=Vexara(10), dps[3]=Skarn(4)
+	# dps[0]=Razorfang(80), dps[1]=Blitzclaw(60), dps[2]=Vexara(95), dps[3]=Skarn(28)
 	DraftState.selected_members.append(dps[0])
 	DraftState.selected_members.append(dps[1])
 	DraftState.selected_members.append(dps[2])
@@ -56,8 +57,9 @@ func test_resolve_sets_won_true_when_power_exceeds_difficulty() -> void:
 	assert_true(RunState.won)
 
 func test_resolve_sets_won_false_when_power_at_or_below_difficulty() -> void:
-	# 8 members each with skill=1 → sum = 8 <= 35
-	_fill_draft_with_skill(1)
+	# 8 members each with skill=0 → sum = 0, not > 0 (boss_difficulty stub = 0)
+	# TODO(C03): replace with phase-based resolution; threshold will change
+	_fill_draft_with_skill(0)
 	RunState.resolve()
 	assert_false(RunState.won)
 

@@ -16,7 +16,7 @@ func resolve() -> void:
 	guild_power = 0
 	for member in DraftState.selected_members:
 		guild_power += member.skill
-	boss_difficulty = GameData.boss.difficulty
+	boss_difficulty = 0  # TODO(C03): replace with phase-based resolution
 	won = guild_power > boss_difficulty
 	is_resolved = true
 	attempt_resolved.emit(won)

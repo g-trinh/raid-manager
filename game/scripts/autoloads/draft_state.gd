@@ -8,7 +8,7 @@ signal round_drawn
 
 const ROLE_CAPS: Dictionary = {
 	Role.Type.TANK: 2,
-	Role.Type.HEALER: 2,
+	Role.Type.HEAL: 2,
 	Role.Type.DPS: 4,
 }
 const TEAM_SIZE: int = 8

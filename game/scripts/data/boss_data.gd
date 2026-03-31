@@ -2,10 +2,10 @@ class_name BossData
 extends Resource
 
 @export var boss_name: String = ""
-@export var difficulty: int = 0
+@export var phases: Array[BossPhaseData] = []
 
-static func create(p_name: String, p_difficulty: int) -> BossData:
+static func create(p_name: String, p_phases: Array[BossPhaseData]) -> BossData:
 	var boss := BossData.new()
 	boss.boss_name = p_name
-	boss.difficulty = p_difficulty
+	boss.phases = p_phases
 	return boss
