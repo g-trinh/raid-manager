@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { boss } from '../../domain/data/gameData'
+import { bosses } from '../../domain/data/gameData'
 import { MemberData } from '../../domain/data/memberData'
 import { projectPhase } from '../../domain/logic/phaseProjection'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
@@ -21,6 +21,7 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
   const isDraftComplete = useDraftStore((s) => s.isDraftComplete)
   const resolve = useRunStore((s) => s.resolve)
 
+  const boss = bosses[0]
   const full = isDraftComplete()
   const round = Math.min(selectedMembers.length + 1, 8)
   const lastAdded =
@@ -28,7 +29,7 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
 
   const projections = useMemo(
     () => boss.phases.map((phase) => projectPhase(phase, selectedMembers)),
-    [selectedMembers]
+    [boss.phases, selectedMembers]
   )
 
   const handlePick = (member: MemberData): void => {

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
+import { BossData } from '../data/bossData'
 import { BossPhaseData } from '../data/bossPhaseData'
-import { boss } from '../data/gameData'
+import { bosses } from '../data/gameData'
 import { projectPhase } from '../logic/phaseProjection'
 import { useDraftStore } from './useDraftStore'
 
@@ -16,21 +17,52 @@ export interface PhaseResult {
   success: boolean
 }
 
+interface AttemptResult {
+  phaseResults: PhaseResult[]
+  phasesSucceeded: number
+  outcome: Outcome
+}
+
 interface RunState {
+  bossIndex: number
+  boss: BossData
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
   isResolved: boolean
+  isFinalBoss: boolean
+  isRunOver: boolean
 
   resolve: () => void
+  advance: () => void
   reset: () => void
 }
 
-export const useRunStore = create<RunState>((set) => ({
+function attemptBoss(boss: BossData): AttemptResult {
+  const members = useDraftStore.getState().selectedMembers
+  const phaseResults: PhaseResult[] = boss.phases.map((phase) => {
+    const { chance } = projectPhase(phase, members)
+    return { phase, chance, success: Math.random() <= chance }
+  })
+  const phasesSucceeded = phaseResults.filter((r) => r.success).length
+
+  let outcome: Outcome
+  if (phasesSucceeded === 3) outcome = Outcome.FULL_VICTORY
+  else if (phasesSucceeded === 2) outcome = Outcome.NARROW_VICTORY
+  else outcome = Outcome.DEFEAT
+
+  return { phaseResults, phasesSucceeded, outcome }
+}
+
+export const useRunStore = create<RunState>((set, get) => ({
+  bossIndex: 0,
+  boss: bosses[0],
   phaseResults: [],
   phasesSucceeded: 0,
   outcome: Outcome.DEFEAT,
   isResolved: false,
+  isFinalBoss: bosses.length === 1,
+  isRunOver: false,
 
   resolve: () => {
     if (!useDraftStore.getState().isDraftComplete()) {
@@ -38,27 +70,60 @@ export const useRunStore = create<RunState>((set) => ({
       return
     }
 
-    const members = useDraftStore.getState().selectedMembers
-    const phaseResults: PhaseResult[] = boss.phases.map((phase) => {
-      const { chance } = projectPhase(phase, members)
-      return { phase, chance, success: Math.random() <= chance }
+    const bossIndex = 0
+    const boss = bosses[bossIndex]
+    const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
+    const isFinalBoss = bossIndex === bosses.length - 1
+    const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
+
+    set({
+      bossIndex,
+      boss,
+      phaseResults,
+      phasesSucceeded,
+      outcome,
+      isResolved: true,
+      isFinalBoss,
+      isRunOver
     })
-    const phasesSucceeded = phaseResults.filter((r) => r.success).length
+  },
 
-    let outcome: Outcome
-    if (phasesSucceeded === 3) outcome = Outcome.FULL_VICTORY
-    else if (phasesSucceeded === 2) outcome = Outcome.NARROW_VICTORY
-    else outcome = Outcome.DEFEAT
+  advance: () => {
+    const { bossIndex, outcome, isFinalBoss } = get()
+    if (outcome === Outcome.DEFEAT || isFinalBoss) {
+      console.warn('RunState.advance() called when the run is already over')
+      return
+    }
 
-    set({ phaseResults, phasesSucceeded, outcome, isResolved: true })
+    const nextIndex = bossIndex + 1
+    const boss = bosses[nextIndex]
+    const { phaseResults, phasesSucceeded, outcome: nextOutcome } = attemptBoss(boss)
+    const nextIsFinalBoss = nextIndex === bosses.length - 1
+    const isRunOver = nextOutcome === Outcome.DEFEAT || nextIsFinalBoss
+
+    set({
+      bossIndex: nextIndex,
+      boss,
+      phaseResults,
+      phasesSucceeded,
+      outcome: nextOutcome,
+      isResolved: true,
+      isFinalBoss: nextIsFinalBoss,
+      isRunOver
+    })
   },
 
   reset: () => {
-    set({ phaseResults: [], phasesSucceeded: 0, outcome: Outcome.DEFEAT, isResolved: false })
+    set({
+      bossIndex: 0,
+      boss: bosses[0],
+      phaseResults: [],
+      phasesSucceeded: 0,
+      outcome: Outcome.DEFEAT,
+      isResolved: false,
+      isFinalBoss: bosses.length === 1,
+      isRunOver: false
+    })
     useDraftStore.getState().reset()
   }
 }))
-
-export function getBossName(): string {
-  return boss.bossName
-}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { boss } from '../../domain/data/gameData'
+import { bosses } from '../../domain/data/gameData'
 import { PhaseType } from '../../domain/data/bossPhaseData'
 import { Outcome, PhaseResult, useRunStore } from '../../domain/stores/useRunStore'
 import { ROMAN, pct } from '../shared/formatting'
@@ -18,18 +18,18 @@ interface OutcomeMeta {
 const OUTCOME_META: Record<Outcome, OutcomeMeta> = {
   [Outcome.FULL_VICTORY]: {
     color: '#a6b67c',
-    head: 'The Inferno Falls',
-    sub: 'Three trials, three triumphs. The raid stands whole in the ash.'
+    head: 'Flawless Hold',
+    sub: 'Three trials, three triumphs. The raid stands whole and unbroken.'
   },
   [Outcome.NARROW_VICTORY]: {
     color: '#d99a3c',
     head: 'A Costly Triumph',
-    sub: 'Moloch is undone — but the muster paid in blood for it.'
+    sub: 'The foe falls — but the muster paid in blood for it.'
   },
   [Outcome.DEFEAT]: {
     color: '#b8472f',
     head: 'The Guild Is Broken',
-    sub: 'The forge-dark takes them. No retreat, no retry, no dawn.'
+    sub: 'The dark takes them. No retreat, no retry, no dawn.'
   }
 }
 
@@ -72,29 +72,29 @@ function PhaseResolveRow({ result, index, visible }: PhaseResolveRowProps): Reac
   )
 }
 
-export function OutcomeScreen({
-  onPlayAgain,
-  onInvalidState
-}: OutcomeScreenProps): React.JSX.Element | null {
-  const isResolved = useRunStore((s) => s.isResolved)
-  const outcome = useRunStore((s) => s.outcome)
-  const phaseResults = useRunStore((s) => s.phaseResults)
-  const phasesSucceeded = useRunStore((s) => s.phasesSucceeded)
-  const reset = useRunStore((s) => s.reset)
+interface AttemptRevealProps {
+  bossName: string
+  phaseResults: PhaseResult[]
+  phasesSucceeded: number
+  outcome: Outcome
+  onContinue: () => void
+  onPlayAgain: () => void
+  continueLabel: string | null
+}
 
+function AttemptReveal({
+  bossName,
+  phaseResults,
+  phasesSucceeded,
+  outcome,
+  onContinue,
+  onPlayAgain,
+  continueLabel
+}: AttemptRevealProps): React.JSX.Element {
   const [revealed, setRevealed] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
 
   useEffect(() => {
-    if (!isResolved) {
-      console.warn('OutcomeScreen loaded without resolution')
-      onInvalidState()
-    }
-  }, [isResolved, onInvalidState])
-
-  useEffect(() => {
-    if (!isResolved) return undefined
-
     const timers: ReturnType<typeof setTimeout>[] = []
     phaseResults.forEach((_, i) => {
       timers.push(setTimeout(() => setRevealed(i + 1), REVEAL_START_MS + i * REVEAL_STEP_MS))
@@ -106,22 +106,15 @@ export function OutcomeScreen({
       )
     )
     return () => timers.forEach(clearTimeout)
-  }, [isResolved, phaseResults])
-
-  if (!isResolved) return null
+  }, [phaseResults])
 
   const meta = OUTCOME_META[outcome]
-
-  const handlePlayAgain = (): void => {
-    reset()
-    onPlayAgain()
-  }
 
   return (
     <div className="resolution-screen">
       <div className="resolution-screen__header">
         <div className="resolution-screen__kicker">The Attempt</div>
-        <div className="resolution-screen__name">{boss.bossName}</div>
+        <div className="resolution-screen__name">{bossName}</div>
       </div>
 
       <div className="resolution-screen__rows">
@@ -148,14 +141,69 @@ export function OutcomeScreen({
           {meta.head}
         </div>
         <div className="resolution-outcome__sub">{meta.sub}</div>
-        <button
-          className="resolution-outcome__button"
-          style={{ borderTopColor: meta.color }}
-          onClick={handlePlayAgain}
-        >
-          Muster Again
-        </button>
+        {continueLabel ? (
+          <button
+            className="resolution-outcome__button"
+            style={{ borderTopColor: meta.color }}
+            onClick={onContinue}
+          >
+            {continueLabel}
+          </button>
+        ) : (
+          <button
+            className="resolution-outcome__button"
+            style={{ borderTopColor: meta.color }}
+            onClick={onPlayAgain}
+          >
+            Muster Again
+          </button>
+        )}
       </div>
     </div>
+  )
+}
+
+export function OutcomeScreen({
+  onPlayAgain,
+  onInvalidState
+}: OutcomeScreenProps): React.JSX.Element | null {
+  const isResolved = useRunStore((s) => s.isResolved)
+  const outcome = useRunStore((s) => s.outcome)
+  const boss = useRunStore((s) => s.boss)
+  const bossIndex = useRunStore((s) => s.bossIndex)
+  const isRunOver = useRunStore((s) => s.isRunOver)
+  const phaseResults = useRunStore((s) => s.phaseResults)
+  const phasesSucceeded = useRunStore((s) => s.phasesSucceeded)
+  const advance = useRunStore((s) => s.advance)
+  const reset = useRunStore((s) => s.reset)
+
+  useEffect(() => {
+    if (!isResolved) {
+      console.warn('OutcomeScreen loaded without resolution')
+      onInvalidState()
+    }
+  }, [isResolved, onInvalidState])
+
+  if (!isResolved) return null
+
+  const nextBoss = bosses[bossIndex + 1]
+  const continueLabel = isRunOver || !nextBoss ? null : `Onward to ${nextBoss.bossName}`
+
+  const handlePlayAgain = (): void => {
+    reset()
+    onPlayAgain()
+  }
+
+  return (
+    <AttemptReveal
+      key={bossIndex}
+      bossName={boss.bossName}
+      phaseResults={phaseResults}
+      phasesSucceeded={phasesSucceeded}
+      outcome={outcome}
+      onContinue={advance}
+      onPlayAgain={handlePlayAgain}
+      continueLabel={continueLabel}
+    />
   )
 }
