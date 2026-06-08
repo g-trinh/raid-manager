@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { LootItemData } from '../../domain/data/lootData'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
-import { useLootStore } from '../../domain/stores/useLootStore'
+import { BestowResult, useLootStore } from '../../domain/stores/useLootStore'
 import { Outcome, useRunStore } from '../../domain/stores/useRunStore'
 import { SectionLabel } from '../shared/SectionLabel'
 import { LootCard, LootResolution } from './LootCard'
+import { MemberLedgerChip } from './MemberLedgerChip'
 
 interface SpoilsScreenProps {
   onContinue: () => void
@@ -30,6 +31,8 @@ const OUTCOME_META: Record<Outcome.FULL_VICTORY | Outcome.NARROW_VICTORY, Outcom
   }
 }
 
+type Pulse = BestowResult & { token: number }
+
 export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): React.JSX.Element {
   const outcome = useRunStore((s) => s.outcome)
   const boss = useRunStore((s) => s.boss)
@@ -38,6 +41,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
   const bestow = useLootStore((s) => s.bestow)
   const bench = useLootStore((s) => s.bench)
   const discard = useLootStore((s) => s.discard)
+  const effectiveStat = useLootStore((s) => s.effectiveStat)
 
   interface Resolved {
     item: LootItemData
@@ -45,6 +49,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
   }
 
   const [resolved, setResolved] = useState<Record<string, Resolved>>({})
+  const [pulse, setPulse] = useState<Pulse | null>(null)
 
   const droppedItem: LootItemData | null = outcome !== Outcome.DEFEAT ? boss.signatureItem : null
   const droppedAlreadyBenched = droppedItem ? satchel.some((i) => i.id === droppedItem.id) : false
@@ -60,7 +65,8 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
   const resolvedItems = Object.values(resolved)
 
   const handleEquip = (item: LootItemData, member: (typeof selectedMembers)[number]): void => {
-    bestow(item, member, selectedMembers)
+    const result = bestow(item, member, selectedMembers)
+    setPulse({ ...result, token: Date.now() + Math.random() })
     setResolved((prev) => ({
       ...prev,
       [item.id]: { item, resolution: { type: 'equipped', member } }
@@ -131,6 +137,21 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
             </div>
           </div>
         )}
+
+        <div className="spoils-screen__section">
+          <SectionLabel>The Muster</SectionLabel>
+          <div className="spoils-ledger">
+            {selectedMembers.map((member) => (
+              <MemberLedgerChip
+                key={member.memberName}
+                member={member}
+                skill={effectiveStat(member, 'skill')}
+                liability={effectiveStat(member, 'liability')}
+                pulse={pulse}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="spoils-screen__footer">

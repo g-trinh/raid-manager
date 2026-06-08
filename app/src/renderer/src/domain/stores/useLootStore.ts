@@ -7,6 +7,11 @@ import { usePersonalityStore } from './usePersonalityStore'
 type StatKey = 'skill' | 'liability'
 type StatBonus = Record<StatKey, number>
 
+export interface BestowResult {
+  applied: Record<string, StatBonus>
+  recipient: string
+}
+
 function clampStat(value: number): number {
   return Math.max(0, Math.min(100, value))
 }
@@ -20,7 +25,7 @@ interface LootState {
   effectiveStat: (member: MemberData, key: StatKey) => number
   effectiveRoster: (members: MemberData[]) => MemberData[]
   projectedStat: (member: MemberData, item: LootItemData, key: StatKey) => number
-  bestow: (item: LootItemData, member: MemberData, roster: MemberData[]) => void
+  bestow: (item: LootItemData, member: MemberData, roster: MemberData[]) => BestowResult
   bench: (item: LootItemData) => void
   discard: (item: LootItemData) => void
   reset: () => void
@@ -58,52 +63,58 @@ export const useLootStore = create<LootState>((set, get) => ({
     const recipientPersonality = personalityOf(member.memberName)
     const updated: Record<string, StatBonus> = { ...bonuses }
 
-    // Apply item bonus to recipient
-    const recipientBonus = updated[member.memberName] ?? { skill: 0, liability: 0 }
-    updated[member.memberName] = {
-      skill: recipientBonus.skill + item.skillBonus,
-      liability: recipientBonus.liability + item.liabilityBonus
+    const addDelta = (name: string, skill: number, liability: number): void => {
+      const cur = updated[name] ?? { skill: 0, liability: 0 }
+      updated[name] = { skill: cur.skill + skill, liability: cur.liability + liability }
     }
 
-    // Recipient personality reaction
+    // Item bonus to recipient
+    addDelta(member.memberName, item.skillBonus, item.liabilityBonus)
+
+    // Recipient personality — Glory Hound basks
     if (recipientPersonality === Personality.GLORY_HOUND) {
-      updated[member.memberName] = {
-        skill: updated[member.memberName].skill + 10,
-        liability: updated[member.memberName].liability
-      }
+      addDelta(member.memberName, 10, 0)
     }
 
     // Bystander reactions
     for (const bystander of roster) {
       if (bystander.memberName === member.memberName) continue
-      const bystanderPersonality = personalityOf(bystander.memberName)
-      const bystanderBonus = updated[bystander.memberName] ?? { skill: 0, liability: 0 }
+      const bp = personalityOf(bystander.memberName)
+      if (bp === Personality.ALTRUIST) {
+        addDelta(bystander.memberName, recipientPersonality === Personality.GLORY_HOUND ? -10 : 0, 10)
+      } else if (bp === Personality.GLORY_HOUND) {
+        addDelta(bystander.memberName, 0, -10)
+      }
+    }
 
-      if (bystanderPersonality === Personality.ALTRUIST) {
-        // Happy someone got gear
-        let skillDelta = 0
-        let liabilityDelta = 10
-        // But resents if that someone is a Glory Hound
-        if (recipientPersonality === Personality.GLORY_HOUND) {
-          skillDelta = -10
-        }
-        updated[bystander.memberName] = {
-          skill: bystanderBonus.skill + skillDelta,
-          liability: bystanderBonus.liability + liabilityDelta
-        }
-      } else if (bystanderPersonality === Personality.GLORY_HOUND) {
-        // Sulks at being passed over
-        updated[bystander.memberName] = {
-          skill: bystanderBonus.skill,
-          liability: bystanderBonus.liability - 10
-        }
+    // Compute actual applied delta = new effective − old effective (post-clamp)
+    const applied: Record<string, StatBonus> = {}
+    const memberByName = Object.fromEntries(roster.map((m) => [m.memberName, m]))
+    for (const name of Object.keys(updated)) {
+      const base = memberByName[name]
+      if (!base) continue
+      const prevBonus = bonuses[name] ?? { skill: 0, liability: 0 }
+      const newBonus = updated[name]
+      const prevS = clampStat(base.skill + prevBonus.skill)
+      const prevL = clampStat(base.liability + prevBonus.liability)
+      const newS = clampStat(base.skill + newBonus.skill)
+      const newL = clampStat(base.liability + newBonus.liability)
+      const ds = newS - prevS
+      const dl = newL - prevL
+      if (ds !== 0 || dl !== 0) {
+        applied[name] = { skill: ds, liability: dl }
       }
     }
 
     set({
       bonuses: updated,
-      equippedBy: { ...equippedBy, [member.memberName]: [...(equippedBy[member.memberName] ?? []), item] }
+      equippedBy: {
+        ...equippedBy,
+        [member.memberName]: [...(equippedBy[member.memberName] ?? []), item]
+      }
     })
+
+    return { applied, recipient: member.memberName }
   },
 
   bench: (item) => {
