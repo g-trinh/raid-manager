@@ -4,6 +4,7 @@ import { BossPhaseData } from '../data/bossPhaseData'
 import { bosses } from '../data/gameData'
 import { projectPhase } from '../logic/phaseProjection'
 import { useDraftStore } from './useDraftStore'
+import { useLootStore } from './useLootStore'
 
 export enum Outcome {
   FULL_VICTORY = 'FULL_VICTORY',
@@ -39,7 +40,7 @@ interface RunState {
 }
 
 function attemptBoss(boss: BossData): AttemptResult {
-  const members = useDraftStore.getState().selectedMembers
+  const members = useLootStore.getState().effectiveRoster(useDraftStore.getState().selectedMembers)
   const phaseResults: PhaseResult[] = boss.phases.map((phase) => {
     const { chance } = projectPhase(phase, members)
     return { phase, chance, success: Math.random() <= chance }
@@ -125,5 +126,6 @@ export const useRunStore = create<RunState>((set, get) => ({
       isRunOver: false
     })
     useDraftStore.getState().reset()
+    useLootStore.getState().reset()
   }
 }))

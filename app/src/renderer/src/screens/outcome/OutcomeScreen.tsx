@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { bosses } from '../../domain/data/gameData'
 import { PhaseType } from '../../domain/data/bossPhaseData'
 import { Outcome, PhaseResult, useRunStore } from '../../domain/stores/useRunStore'
+import { SpoilsScreen } from '../spoils/SpoilsScreen'
 import { ROMAN, pct } from '../shared/formatting'
 
 interface OutcomeScreenProps {
@@ -93,6 +94,7 @@ function AttemptReveal({
 }: AttemptRevealProps): React.JSX.Element {
   const [revealed, setRevealed] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
+  const [showSpoils, setShowSpoils] = useState(false)
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
@@ -109,6 +111,22 @@ function AttemptReveal({
   }, [phaseResults])
 
   const meta = OUTCOME_META[outcome]
+
+  const performContinue = (): void => {
+    if (continueLabel) onContinue()
+    else onPlayAgain()
+  }
+
+  const handleOutcomeButtonClick = (): void => {
+    if (outcome === Outcome.DEFEAT) onPlayAgain()
+    else setShowSpoils(true)
+  }
+
+  if (showSpoils) {
+    return (
+      <SpoilsScreen onContinue={performContinue} continueLabel={continueLabel ?? 'Muster Again'} />
+    )
+  }
 
   return (
     <div className="resolution-screen">
@@ -141,23 +159,13 @@ function AttemptReveal({
           {meta.head}
         </div>
         <div className="resolution-outcome__sub">{meta.sub}</div>
-        {continueLabel ? (
-          <button
-            className="resolution-outcome__button"
-            style={{ borderTopColor: meta.color }}
-            onClick={onContinue}
-          >
-            {continueLabel}
-          </button>
-        ) : (
-          <button
-            className="resolution-outcome__button"
-            style={{ borderTopColor: meta.color }}
-            onClick={onPlayAgain}
-          >
-            Muster Again
-          </button>
-        )}
+        <button
+          className="resolution-outcome__button"
+          style={{ borderTopColor: meta.color }}
+          onClick={handleOutcomeButtonClick}
+        >
+          {continueLabel ?? 'Muster Again'}
+        </button>
       </div>
     </div>
   )
