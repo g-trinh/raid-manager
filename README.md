@@ -11,22 +11,28 @@ The target resolutions will be : 4k, 2k, 1080p and 720p.
 
 ## Technologies
 
-Game engine : GoDot (4.6+)
-Game Logic : GDScript, GUT framework
+Game engine : Electron + React + Three.js (TypeScript)
+Game Logic : TypeScript, zustand stores
 Backend : GoLang (1.28+)
+
+> Legacy GoDot prototype kept under `/game` for reference.
 
 ## Project files architecture
 
 /raid-manager
-  /game # GoDot project
-    /script # GDScript scripts
-    /scenes # GoDot scenes
+  /app  # Electron + React + Three.js app
+    /src/main      # Electron main process
+    /src/preload   # Electron preload scripts
+    /src/renderer  # React renderer (UI, game logic, screens)
+  /game # Legacy GoDot prototype (reference only)
   /go   # GoLang backend server
 
 ## Run the project
 
-Godot :
+App :
 
 ```
-godot --path game
+cd app
+npm install
+npm run dev
 ```
