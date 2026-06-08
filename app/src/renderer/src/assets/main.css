@@ -1,0 +1,103 @@
+@import './base.css';
+
+body {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+  user-select: none;
+}
+
+#root {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.draft-screen,
+.outcome-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 24px;
+  gap: 16px;
+  color: var(--ev-c-text-1);
+}
+
+.slot-tracker {
+  display: flex;
+  gap: 24px;
+  font-weight: 600;
+}
+
+.hsplit-layout {
+  display: flex;
+  flex: 1;
+  gap: 24px;
+  min-height: 0;
+}
+
+.available-panel,
+.team-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.member-grid,
+.team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member-card {
+  display: flex;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--ev-c-gray-1);
+  border-radius: 8px;
+}
+
+.member-card--interactive {
+  cursor: pointer;
+}
+
+.member-card--interactive:hover {
+  border-color: var(--ev-c-text-2);
+}
+
+.proceed-button,
+.play-again-button {
+  align-self: flex-start;
+  padding: 10px 24px;
+  border-radius: 20px;
+  border: 1px solid var(--ev-button-alt-border);
+  color: var(--ev-button-alt-text);
+  background-color: var(--ev-button-alt-bg);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.proceed-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.proceed-button:not(:disabled):hover,
+.play-again-button:hover {
+  border-color: var(--ev-button-alt-hover-border);
+  color: var(--ev-button-alt-hover-text);
+  background-color: var(--ev-button-alt-hover-bg);
+}
+
+.outcome-screen {
+  align-items: center;
+  justify-content: center;
+}
+
+.title-label {
+  font-size: 36px;
+}
