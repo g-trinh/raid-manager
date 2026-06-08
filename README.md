@@ -15,8 +15,6 @@ Game engine : Electron + React + Three.js (TypeScript)
 Game Logic : TypeScript, zustand stores
 Backend : GoLang (1.28+)
 
-> Legacy GoDot prototype kept under `/game` for reference.
-
 ## Project files architecture
 
 /raid-manager
@@ -24,7 +22,6 @@ Backend : GoLang (1.28+)
     /src/main      # Electron main process
     /src/preload   # Electron preload scripts
     /src/renderer  # React renderer (UI, game logic, screens)
-  /game # Legacy GoDot prototype (reference only)
   /go   # GoLang backend server
 
 ## Run the project
