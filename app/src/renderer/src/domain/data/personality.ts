@@ -46,7 +46,7 @@ export const PERSONALITY_LABELS: Record<Personality, string> = {
 
 export function rollPersonality(): Personality {
   const roll = Math.random()
-  if (roll < 0.1) return Personality.ALTRUIST
-  if (roll < 0.2) return Personality.GLORY_HOUND
+  if (roll < 0.125) return Personality.ALTRUIST
+  if (roll < 0.25) return Personality.GLORY_HOUND
   return Personality.LONER
 }
