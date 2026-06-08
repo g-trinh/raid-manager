@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { LootItemData } from '../data/lootData'
 import { MemberData } from '../data/memberData'
+import { Personality } from '../data/personality'
+import { usePersonalityStore } from './usePersonalityStore'
 
 type StatKey = 'skill' | 'liability'
 type StatBonus = Record<StatKey, number>
@@ -18,7 +20,7 @@ interface LootState {
   effectiveStat: (member: MemberData, key: StatKey) => number
   effectiveRoster: (members: MemberData[]) => MemberData[]
   projectedStat: (member: MemberData, item: LootItemData, key: StatKey) => number
-  bestow: (item: LootItemData, member: MemberData) => void
+  bestow: (item: LootItemData, member: MemberData, roster: MemberData[]) => void
   bench: (item: LootItemData) => void
   discard: (item: LootItemData) => void
   reset: () => void
@@ -49,20 +51,58 @@ export const useLootStore = create<LootState>((set, get) => ({
     return clampStat(get().effectiveStat(member, key) + bonus)
   },
 
-  bestow: (item, member) => {
+  bestow: (item, member, roster) => {
     const { bonuses, equippedBy } = get()
-    const current = bonuses[member.memberName] ?? { skill: 0, liability: 0 }
-    const worn = equippedBy[member.memberName] ?? []
+    const { personalityOf } = usePersonalityStore.getState()
+
+    const recipientPersonality = personalityOf(member.memberName)
+    const updated: Record<string, StatBonus> = { ...bonuses }
+
+    // Apply item bonus to recipient
+    const recipientBonus = updated[member.memberName] ?? { skill: 0, liability: 0 }
+    updated[member.memberName] = {
+      skill: recipientBonus.skill + item.skillBonus,
+      liability: recipientBonus.liability + item.liabilityBonus
+    }
+
+    // Recipient personality reaction
+    if (recipientPersonality === Personality.GLORY_HOUND) {
+      updated[member.memberName] = {
+        skill: updated[member.memberName].skill + 10,
+        liability: updated[member.memberName].liability
+      }
+    }
+
+    // Bystander reactions
+    for (const bystander of roster) {
+      if (bystander.memberName === member.memberName) continue
+      const bystanderPersonality = personalityOf(bystander.memberName)
+      const bystanderBonus = updated[bystander.memberName] ?? { skill: 0, liability: 0 }
+
+      if (bystanderPersonality === Personality.ALTRUIST) {
+        // Happy someone got gear
+        let skillDelta = 0
+        let liabilityDelta = 10
+        // But resents if that someone is a Glory Hound
+        if (recipientPersonality === Personality.GLORY_HOUND) {
+          skillDelta = -10
+        }
+        updated[bystander.memberName] = {
+          skill: bystanderBonus.skill + skillDelta,
+          liability: bystanderBonus.liability + liabilityDelta
+        }
+      } else if (bystanderPersonality === Personality.GLORY_HOUND) {
+        // Sulks at being passed over
+        updated[bystander.memberName] = {
+          skill: bystanderBonus.skill,
+          liability: bystanderBonus.liability - 10
+        }
+      }
+    }
 
     set({
-      bonuses: {
-        ...bonuses,
-        [member.memberName]: {
-          skill: current.skill + item.skillBonus,
-          liability: current.liability + item.liabilityBonus
-        }
-      },
-      equippedBy: { ...equippedBy, [member.memberName]: [...worn, item] }
+      bonuses: updated,
+      equippedBy: { ...equippedBy, [member.memberName]: [...(equippedBy[member.memberName] ?? []), item] }
     })
   },
 

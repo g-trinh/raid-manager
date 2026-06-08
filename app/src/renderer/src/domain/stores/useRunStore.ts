@@ -3,8 +3,10 @@ import { BossData } from '../data/bossData'
 import { BossPhaseData } from '../data/bossPhaseData'
 import { bosses } from '../data/gameData'
 import { projectPhase } from '../logic/phaseProjection'
+import { memberPool } from '../data/gameData'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
+import { usePersonalityStore } from './usePersonalityStore'
 
 export enum Outcome {
   FULL_VICTORY = 'FULL_VICTORY',
@@ -127,5 +129,7 @@ export const useRunStore = create<RunState>((set, get) => ({
     })
     useDraftStore.getState().reset()
     useLootStore.getState().reset()
+    usePersonalityStore.getState().reset()
+    usePersonalityStore.getState().rollForRoster(memberPool)
   }
 }))

@@ -60,7 +60,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
   const resolvedItems = Object.values(resolved)
 
   const handleEquip = (item: LootItemData, member: (typeof selectedMembers)[number]): void => {
-    bestow(item, member)
+    bestow(item, member, selectedMembers)
     setResolved((prev) => ({
       ...prev,
       [item.id]: { item, resolution: { type: 'equipped', member } }

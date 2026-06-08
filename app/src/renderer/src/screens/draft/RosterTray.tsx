@@ -1,7 +1,9 @@
 import { Fragment } from 'react'
 import { MemberData } from '../../domain/data/memberData'
+import { PERSONALITY_LABELS, Personality } from '../../domain/data/personality'
 import { Role, ROLE_LABELS } from '../../domain/data/role'
 import { ROLE_CAPS } from '../../domain/stores/useDraftStore'
+import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
 import { ROLE_HEX, lastInitial } from '../shared/formatting'
 
 interface RosterTrayProps {
@@ -15,9 +17,10 @@ interface RosterSlotProps {
   member: MemberData | null
   role: Role
   justAdded: boolean
+  personality?: Personality
 }
 
-function RosterSlot({ member, role, justAdded }: RosterSlotProps): React.JSX.Element {
+function RosterSlot({ member, role, justAdded, personality }: RosterSlotProps): React.JSX.Element {
   const hex = ROLE_HEX[role]
   if (!member) {
     return (
@@ -29,10 +32,14 @@ function RosterSlot({ member, role, justAdded }: RosterSlotProps): React.JSX.Ele
       </div>
     )
   }
+  const personalityLabel =
+    personality && personality !== Personality.LONER
+      ? ` · ${PERSONALITY_LABELS[personality]}`
+      : ''
   return (
     <div
       className={`roster-slot${justAdded ? ' roster-slot--pop' : ''}`}
-      title={`${member.memberName} — ${ROLE_LABELS[member.role]}`}
+      title={`${member.memberName} — ${ROLE_LABELS[member.role]}${personalityLabel}`}
     >
       <span
         className="roster-slot__diamond"
@@ -48,6 +55,7 @@ function RosterSlot({ member, role, justAdded }: RosterSlotProps): React.JSX.Ele
 }
 
 export function RosterTray({ roster, lastAdded }: RosterTrayProps): React.JSX.Element {
+  const personalityOf = usePersonalityStore((s) => s.personalityOf)
   return (
     <div className="roster-tray">
       <div className="roster-tray__header">
@@ -73,6 +81,7 @@ export function RosterTray({ roster, lastAdded }: RosterTrayProps): React.JSX.El
                       member={m}
                       role={role}
                       justAdded={Boolean(lastAdded && m && m.memberName === lastAdded)}
+                      personality={m ? personalityOf(m.memberName) : undefined}
                     />
                   ))}
                 </div>

@@ -431,7 +431,17 @@
   color: var(--ash);
   font-style: italic;
   margin-top: 1px;
-  margin-bottom: 7px;
+  margin-bottom: 4px;
+}
+
+.candidate-card__personality {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 6px;
 }
 
 .candidate-card__stats {
