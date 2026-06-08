@@ -22,10 +22,34 @@ export const memberPool: MemberData[] = [
   createMember('Duskblade', Role.DPS, 15, 85)
 ]
 
-export const boss: BossData = createBoss('Moloch the Unbound', [
-  createPhase(3, 1, 1, PhaseType.SKILL_HEAVY, 65),
-  createPhase(1, 3, 3, PhaseType.LIABILITY_HEAVY, 70),
-  createPhase(2, 2, 2, PhaseType.SKILL_HEAVY, 60)
+export const boss: BossData = createBoss('Moloch the Unbound', 'The Iron Inferno', [
+  createPhase(
+    'The Searing March',
+    'Its forges roar to life. Strike fast before the iron host overwhelms you.',
+    3,
+    1,
+    1,
+    PhaseType.SKILL_HEAVY,
+    65
+  ),
+  createPhase(
+    'The Branding Rite',
+    'Molten chains seek the careless. Mind the rite, or be claimed by it.',
+    1,
+    3,
+    3,
+    PhaseType.LIABILITY_HEAVY,
+    70
+  ),
+  createPhase(
+    'The Last Smelting',
+    'Moloch bares its core. Endure the final heat — the weary will not last alone.',
+    2,
+    2,
+    2,
+    PhaseType.SKILL_HEAVY,
+    60
+  )
 ])
 
 export function getMembersByRole(role: Role): MemberData[] {
