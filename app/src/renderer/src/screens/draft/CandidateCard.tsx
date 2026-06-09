@@ -1,4 +1,3 @@
-import { Personality } from '../../domain/data/personality'
 import { MemberData } from '../../domain/data/memberData'
 import { ROLE_LABELS } from '../../domain/data/role'
 import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
@@ -26,11 +25,9 @@ export function CandidateCard({ member, onPick }: CandidateCardProps): React.JSX
       <div className="candidate-card__body">
         <div className="candidate-card__name">{member.memberName}</div>
         <div className="candidate-card__role">{ROLE_LABELS[member.role]}</div>
-        {personality !== Personality.LONER && (
-          <div className="candidate-card__personality">
-            <PersonalityMark personality={personality} size={9} />
-          </div>
-        )}
+        <div className="candidate-card__personality">
+          <PersonalityMark personality={personality} size={9} />
+        </div>
         <div className="candidate-card__stats">
           <StatBar label="Skill" value={member.skill} accent="var(--rm-skill)" />
           <StatBar label="Liability" value={member.liability} accent="var(--rm-liability)" />

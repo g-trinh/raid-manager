@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BestowResult } from '../../domain/stores/useLootStore'
 import { MemberData } from '../../domain/data/memberData'
-import { Personality, PERSONALITY_META } from '../../domain/data/personality'
+import { PERSONALITY_META } from '../../domain/data/personality'
 import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
 import { useCountUp } from '../../domain/hooks/useCountUp'
 import { ROLE_HEX } from '../shared/formatting'
@@ -78,11 +78,7 @@ export function MemberLedgerChip({
           : 'none'
       }}
     >
-      {personality !== Personality.LONER ? (
-        <PersonalityMark personality={personality} size={7} />
-      ) : (
-        <span className="ledger-chip__loner-ring" style={{ borderColor: meta.hue }} />
-      )}
+      <PersonalityMark personality={personality} size={7} />
 
       <span className="ledger-chip__name">{member.memberName.split(' ').slice(-1)[0]}</span>
 
