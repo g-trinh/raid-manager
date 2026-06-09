@@ -12,6 +12,7 @@ export interface PersonalityMeta {
   hue: string
   quiet: boolean
   effect: string
+  flavor: string
 }
 
 export const PERSONALITY_META: Record<Personality, PersonalityMeta> = {
@@ -20,21 +21,24 @@ export const PERSONALITY_META: Record<Personality, PersonalityMeta> = {
     glyph: 'ring',
     hue: 'var(--rm-loner)',
     quiet: true,
-    effect: 'Unmoved. Reacts to no loot grant.'
+    effect: 'Unmoved. Reacts to no loot grant.',
+    flavor: 'Keeps their own counsel. The steady baseline of any muster.'
   },
   [Personality.ALTRUIST]: {
     label: 'Altruist',
     glyph: 'tri',
     hue: 'var(--rm-altruist)',
     quiet: false,
-    effect: '+Liability when others are geared · −Skill if a Glory Hound is.'
+    effect: '+Liability when others are geared · −Skill if a Glory Hound is.',
+    flavor: 'Plays for the guild. Glad to see the squad gear up — galled when glory-seekers are rewarded.'
   },
   [Personality.GLORY_HOUND]: {
     label: 'Glory Hound',
     glyph: 'disc',
     hue: 'var(--rm-glory)',
     quiet: false,
-    effect: '+Skill when gifted loot · −Liability when passed over.'
+    effect: '+Skill when gifted loot · −Liability when passed over.',
+    flavor: 'Lives for recognition. Gear them and they shine; overlook them and they curdle.'
   }
 }
 

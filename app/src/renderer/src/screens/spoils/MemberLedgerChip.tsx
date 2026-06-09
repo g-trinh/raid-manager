@@ -5,7 +5,7 @@ import { PERSONALITY_META } from '../../domain/data/personality'
 import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
 import { useCountUp } from '../../domain/hooks/useCountUp'
 import { ROLE_HEX } from '../shared/formatting'
-import { PersonalityMark } from '../shared/PersonalityMark'
+import { PersonalityGlyph } from '../shared/PersonalityMark'
 
 const LOOT_GOLD = '#d9c089'
 
@@ -78,7 +78,7 @@ export function MemberLedgerChip({
           : 'none'
       }}
     >
-      <PersonalityMark personality={personality} size={7} />
+      <PersonalityGlyph glyph={meta.glyph} hue={meta.hue} size={8} glow={!meta.quiet} />
 
       <span className="ledger-chip__name">{member.memberName.split(' ').slice(-1)[0]}</span>
 

@@ -5,7 +5,7 @@ import { BestowResult, useLootStore } from '../../domain/stores/useLootStore'
 import { Outcome, useRunStore } from '../../domain/stores/useRunStore'
 import { SectionLabel } from '../shared/SectionLabel'
 import { LootCard, LootResolution } from './LootCard'
-import { MemberLedgerChip } from './MemberLedgerChip'
+import { MusterReacts } from './MusterReacts'
 
 interface SpoilsScreenProps {
   onContinue: () => void
@@ -98,6 +98,12 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
       </div>
 
       <div className="spoils-screen__body">
+        <MusterReacts
+          roster={selectedMembers}
+          effectiveStat={effectiveStat}
+          pulse={pulse}
+        />
+
         {pendingItems.length > 0 && (
           <div className="spoils-screen__section">
             <SectionLabel>Unclaimed</SectionLabel>
@@ -137,21 +143,6 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
             </div>
           </div>
         )}
-
-        <div className="spoils-screen__section">
-          <SectionLabel>The Muster</SectionLabel>
-          <div className="spoils-ledger">
-            {selectedMembers.map((member) => (
-              <MemberLedgerChip
-                key={member.memberName}
-                member={member}
-                skill={effectiveStat(member, 'skill')}
-                liability={effectiveStat(member, 'liability')}
-                pulse={pulse}
-              />
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="spoils-screen__footer">

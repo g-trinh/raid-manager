@@ -7,7 +7,7 @@ interface PersonalityGlyphProps {
   glow: boolean
 }
 
-function PersonalityGlyph({ glyph, hue, size, glow }: PersonalityGlyphProps): React.JSX.Element {
+export function PersonalityGlyph({ glyph, hue, size, glow }: PersonalityGlyphProps): React.JSX.Element {
   if (glyph === 'ring') {
     return (
       <span
