@@ -13,8 +13,8 @@ export function StatBar({ label, value, accent = 'var(--rm-skill)' }: StatBarPro
           className="stat-bar__fill"
           style={{
             width: `${value}%`,
-            background: `linear-gradient(90deg, ${accent}cc, ${accent})`,
-            boxShadow: `0 0 6px ${accent}55`
+            background: `linear-gradient(90deg, color-mix(in srgb, ${accent} 80%, transparent), ${accent})`,
+            boxShadow: `0 0 6px color-mix(in srgb, ${accent} 33%, transparent)`
           }}
         />
         <div className="stat-bar__notches" />
