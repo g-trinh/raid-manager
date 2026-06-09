@@ -160,8 +160,7 @@ function AttemptReveal({
         </div>
         <div className="resolution-outcome__sub">{meta.sub}</div>
         <button
-          className="resolution-outcome__button"
-          style={{ borderTopColor: meta.color }}
+          className="rm-btn rm-btn--default"
           onClick={handleOutcomeButtonClick}
         >
           {continueLabel ?? 'Muster Again'}

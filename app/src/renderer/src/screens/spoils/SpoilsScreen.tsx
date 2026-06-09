@@ -155,7 +155,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
       </div>
 
       <div className="spoils-screen__footer">
-        <button className="spoils-screen__button" onClick={onContinue}>
+        <button className="rm-btn rm-btn--default" onClick={onContinue}>
           {continueLabel}
         </button>
       </div>

@@ -1,14 +1,64 @@
 /* ── Muster theme: dark-fantasy ink/parchment palette ────────────── */
 :root {
-  --ink: #14110f;
-  --ink2: #1b1714;
-  --panel: #241f1a;
-  --line: rgba(232, 220, 192, 0.14);
-  --parch: #e8dcc0;
-  --ash: #9a8f7d;
-  --ash2: #6b6256;
-  --blood: #b8472f;
-  --gold: #d9b969;
+  /* ── Grounds ── */
+  --rm-void:    #050403;
+  --rm-void-2:  #0a0706;
+  --rm-ink:     #14110f;
+  --rm-ink-2:   #1b1714;
+  --rm-panel:   #241f1a;
+
+  /* ── Text ── */
+  --rm-parchment: #e8dcc0;
+  --rm-ash:       #9a8f7d;
+  --rm-ash-2:     #6b6256;
+
+  /* ── Accent ── */
+  --rm-blood: #b8472f;
+
+  /* ── Hairlines ── */
+  --rm-line:   rgba(232, 220, 192, 0.14);
+  --rm-line-2: rgba(232, 220, 192, 0.08);
+
+  /* ── Roles ── */
+  --rm-tank: #84a0b4;
+  --rm-heal: #a6b67c;
+  --rm-dps:  #cc6a45;
+
+  /* ── Stat channels ── */
+  --rm-skill:     #d9c089;
+  --rm-liability: #9fb2c4;
+
+  /* ── Chance ramp ── */
+  --rm-safe:  #a6b67c;
+  --rm-amber: #d99a3c;
+  --rm-fail:  #b8472f;
+
+  /* ── Temperaments ── */
+  --rm-loner:    oklch(0.71  0.055 290);
+  --rm-altruist: oklch(0.745 0.095 200);
+  --rm-glory:    oklch(0.70  0.115 350);
+
+  /* ── Radii ── */
+  --rm-r-sm:  4px;
+  --rm-r-md:  8px;
+  --rm-r-lg:  10px;
+  --rm-r-xl:  12px;
+  --rm-r-2xl: 14px;
+
+  /* ── Type ── */
+  --rm-font-display: 'Cinzel', serif;
+  --rm-font-body:    'Barlow', sans-serif;
+
+  /* ── Short aliases (keep existing component CSS working) ── */
+  --ink:   var(--rm-ink);
+  --ink2:  var(--rm-ink-2);
+  --panel: var(--rm-panel);
+  --line:  var(--rm-line);
+  --parch: var(--rm-parchment);
+  --ash:   var(--rm-ash);
+  --ash2:  var(--rm-ash-2);
+  --blood: var(--rm-blood);
+  --gold:  var(--rm-skill);
 }
 
 @keyframes fadein {
@@ -1174,4 +1224,55 @@
 
 .loot-option__sep {
   color: var(--ash2);
+}
+
+/* ── Button primitive ─────────────────────────────────────────────── */
+.rm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--rm-font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--rm-parchment);
+  padding: 13px 26px;
+  border-radius: var(--rm-r-md);
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.12s;
+  border: 1px solid transparent;
+}
+
+.rm-btn--primary {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--rm-blood) 32%, #1a120e),
+    #14100d
+  );
+  border-color: var(--rm-blood);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--rm-blood) 28%, transparent);
+}
+
+.rm-btn--primary:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.rm-btn--default {
+  background: linear-gradient(180deg, rgba(54, 44, 36, 0.95), rgba(34, 28, 22, 0.95));
+  border-color: var(--rm-line);
+}
+
+.rm-btn--default:active {
+  transform: translateY(1px);
+}
+
+.rm-btn--ghost {
+  background: rgba(0, 0, 0, 0.25);
+  border-color: var(--rm-line);
+}
+
+.rm-btn--ghost:active {
+  transform: translateY(1px);
 }

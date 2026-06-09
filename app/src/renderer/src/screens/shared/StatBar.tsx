@@ -4,7 +4,7 @@ interface StatBarProps {
   accent?: string
 }
 
-export function StatBar({ label, value, accent = '#e8dcc0' }: StatBarProps): React.JSX.Element {
+export function StatBar({ label, value, accent = 'var(--rm-skill)' }: StatBarProps): React.JSX.Element {
   return (
     <div className="stat-bar">
       <span className="stat-bar__label">{label}</span>

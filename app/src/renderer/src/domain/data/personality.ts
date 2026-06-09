@@ -18,21 +18,21 @@ export const PERSONALITY_META: Record<Personality, PersonalityMeta> = {
   [Personality.LONER]: {
     label: 'Loner',
     glyph: 'ring',
-    hue: 'oklch(0.71 0.055 290)',
+    hue: 'var(--rm-loner)',
     quiet: true,
     effect: 'Unmoved. Reacts to no loot grant.'
   },
   [Personality.ALTRUIST]: {
     label: 'Altruist',
     glyph: 'tri',
-    hue: 'oklch(0.745 0.095 200)',
+    hue: 'var(--rm-altruist)',
     quiet: false,
     effect: '+Liability when others are geared · −Skill if a Glory Hound is.'
   },
   [Personality.GLORY_HOUND]: {
     label: 'Glory Hound',
     glyph: 'disc',
-    hue: 'oklch(0.70 0.115 350)',
+    hue: 'var(--rm-glory)',
     quiet: false,
     effect: '+Skill when gifted loot · −Liability when passed over.'
   }
