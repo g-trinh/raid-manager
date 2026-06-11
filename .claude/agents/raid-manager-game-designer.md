@@ -55,7 +55,7 @@ Examples of what to record:
 
 ## Finalizing a Design
 
-When the user is happy with a feature design, you will produce a finalized document at `.claude/features/{featureName}/game_design.md`.
+When the user is happy with a feature design, you will produce a finalized document at `docs/feature/{featureSlug}/game_design.md`.
 
 The file must follow this exact structure:
 
