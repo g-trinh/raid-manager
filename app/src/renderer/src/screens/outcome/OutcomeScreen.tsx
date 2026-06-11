@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { bosses } from '../../domain/data/gameData'
 import { PhaseType } from '../../domain/data/bossPhaseData'
 import { Outcome, PhaseResult, useRunStore } from '../../domain/stores/useRunStore'
 import { SpoilsScreen } from '../spoils/SpoilsScreen'
@@ -178,6 +177,7 @@ export function OutcomeScreen({
   const outcome = useRunStore((s) => s.outcome)
   const boss = useRunStore((s) => s.boss)
   const bossIndex = useRunStore((s) => s.bossIndex)
+  const runBosses = useRunStore((s) => s.runBosses)
   const isRunOver = useRunStore((s) => s.isRunOver)
   const phaseResults = useRunStore((s) => s.phaseResults)
   const phasesSucceeded = useRunStore((s) => s.phasesSucceeded)
@@ -193,7 +193,7 @@ export function OutcomeScreen({
 
   if (!isResolved) return null
 
-  const nextBoss = bosses[bossIndex + 1]
+  const nextBoss = runBosses[bossIndex + 1]
   const continueLabel = isRunOver || !nextBoss ? null : `Onward to ${nextBoss.bossName}`
 
   const handlePlayAgain = (): void => {

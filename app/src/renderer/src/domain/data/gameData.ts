@@ -23,7 +23,7 @@ export const memberPool: MemberData[] = [
   createMember('Duskblade', Role.DPS, 15, 85)
 ]
 
-export const bosses: BossData[] = [
+export const bossPool: BossData[] = [
   createBoss(
     'Moloch the Unbound',
     'The Iron Inferno',
@@ -150,6 +150,307 @@ export const bosses: BossData[] = [
       3,
       3,
       'Nyxessa, Empress of the Hollow Stars'
+    )
+  ),
+
+  createBoss(
+    'Vrokhar, the Frostbound Warden',
+    'The Glacial Vigil',
+    [
+      createPhase(
+        'The Shattering Approach',
+        'Shards of ancient ice rain down. Move fast, or be entombed before you strike.',
+        3,
+        1,
+        1,
+        PhaseType.SKILL_HEAVY,
+        65
+      ),
+      createPhase(
+        'Wardens of the Frozen Oath',
+        'Frozen sentinels rise to enforce the old pact. Mind their ground, or join their vigil.',
+        1,
+        3,
+        2,
+        PhaseType.LIABILITY_HEAVY,
+        70
+      ),
+      createPhase(
+        'The Last Thaw',
+        'Vrokhar surrenders the cold to one final, desperate surge. Hold until it melts.',
+        2,
+        2,
+        2,
+        PhaseType.SKILL_HEAVY,
+        68
+      )
+    ],
+    createLootItem(
+      'frozen-oathguard',
+      'Frozen Oathguard',
+      "A shield of unmelting ice, etched with a vow Vrokhar's wardens kept past death.",
+      Role.TANK,
+      3,
+      3,
+      'Vrokhar, the Frostbound Warden'
+    )
+  ),
+
+  createBoss(
+    'Zaelith, Herald of the Tempest',
+    'The Storm Unbroken',
+    [
+      createPhase(
+        'Gathering Fury',
+        'Wind howls into a wall of force. Strike before the gale finds your footing.',
+        3,
+        1,
+        1,
+        PhaseType.SKILL_HEAVY,
+        68
+      ),
+      createPhase(
+        'Chainlightning Cascade',
+        'Lightning leaps from soul to soul. Mind the chain, or carry it to the rest.',
+        2,
+        1,
+        3,
+        PhaseType.LIABILITY_HEAVY,
+        74
+      ),
+      createPhase(
+        'Eye of the Maelstrom',
+        'Zaelith calls down the full storm. Endure its eye, or be scattered on the wind.',
+        3,
+        2,
+        2,
+        PhaseType.SKILL_HEAVY,
+        76
+      )
+    ],
+    createLootItem(
+      'stormcallers-edge',
+      "Stormcaller's Edge",
+      'A blade that hums with caught lightning, restless until it strikes again.',
+      Role.DPS,
+      3,
+      3,
+      'Zaelith, Herald of the Tempest'
+    )
+  ),
+
+  createBoss(
+    'Karthus, the Bone Sovereign',
+    'Lord of the Silent Crypt',
+    [
+      createPhase(
+        'March of the Risen',
+        'The crypt empties itself. Cut them down before the column overwhelms you.',
+        4,
+        1,
+        1,
+        PhaseType.SKILL_HEAVY,
+        70
+      ),
+      createPhase(
+        "The Sovereign's Decree",
+        'Karthus speaks, and the dead obey. Heed the decree, or be bound by it.',
+        1,
+        2,
+        3,
+        PhaseType.LIABILITY_HEAVY,
+        72
+      ),
+      createPhase(
+        'Crown of Bones',
+        'The Sovereign rises in his full regalia. Break the crown before it breaks you.',
+        2,
+        3,
+        2,
+        PhaseType.SKILL_HEAVY,
+        78
+      )
+    ],
+    createLootItem(
+      'sovereigns-marrow-draught',
+      "Sovereign's Marrow Draught",
+      "A bitter tonic distilled from Karthus's own marrow — it steadies the hand that drinks it.",
+      Role.HEAL,
+      3,
+      3,
+      'Karthus, the Bone Sovereign'
+    )
+  ),
+
+  createBoss(
+    'Grizzelmaw, the Feral Sovereign',
+    'Fang of the Deep Wood',
+    [
+      createPhase(
+        'The Hunt Begins',
+        'The wood erupts with snarling shapes. Strike fast — Grizzelmaw rewards the bold.',
+        4,
+        1,
+        1,
+        PhaseType.SKILL_HEAVY,
+        66
+      ),
+      createPhase(
+        'Thrash and Bleed',
+        'Claws rake wide and reckless. Mind your footing, or be dragged into the thrash.',
+        2,
+        3,
+        2,
+        PhaseType.LIABILITY_HEAVY,
+        71
+      ),
+      createPhase(
+        "The Alpha's Last Roar",
+        'Grizzelmaw bares everything in one final charge. Hold the line against the roar.',
+        3,
+        2,
+        1,
+        PhaseType.SKILL_HEAVY,
+        74
+      )
+    ],
+    createLootItem(
+      'alphas-bloodfang',
+      "Alpha's Bloodfang",
+      'A curved fang taken from Grizzelmaw, still warm with the hunt.',
+      Role.DPS,
+      3,
+      3,
+      'Grizzelmaw, the Feral Sovereign'
+    )
+  ),
+
+  createBoss(
+    'The Hollow Author',
+    'Writer of Unmade Things',
+    [
+      createPhase(
+        'The First Erasure',
+        'Whole chapters of the world unwrite themselves. Strike before you are edited out.',
+        3,
+        1,
+        2,
+        PhaseType.SKILL_HEAVY,
+        69
+      ),
+      createPhase(
+        'Pages of the Unwritten',
+        'Blank pages drift through the air, hungry for a story. Mind what they take.',
+        1,
+        2,
+        3,
+        PhaseType.LIABILITY_HEAVY,
+        75
+      ),
+      createPhase(
+        'The Final Sentence',
+        'The Author reaches for the last word. Survive it, and the story is yours.',
+        3,
+        3,
+        3,
+        PhaseType.SKILL_HEAVY,
+        80
+      )
+    ],
+    createLootItem(
+      'ink-of-the-unwritten-verse',
+      'Ink of the Unwritten Verse',
+      'Ink that has never touched a page — it writes only what its bearer needs to hear.',
+      Role.HEAL,
+      3,
+      3,
+      'The Hollow Author'
+    )
+  ),
+
+  createBoss(
+    'Countess Mireth, the Crimson Thirst',
+    'The Eternal Banquet',
+    [
+      createPhase(
+        'Invitation to the Feast',
+        'The hall doors swing open on a banquet of knives. Strike before you are seated.',
+        3,
+        2,
+        1,
+        PhaseType.SKILL_HEAVY,
+        64
+      ),
+      createPhase(
+        'The Crimson Waltz',
+        'Mireth leads a dance no one survives twice. Mind your steps, or join the dead partners.',
+        2,
+        2,
+        3,
+        PhaseType.LIABILITY_HEAVY,
+        73
+      ),
+      createPhase(
+        'Last Call of the Banquet',
+        'The Countess drops all pretense and feeds in earnest. Hold until the table is cleared.',
+        4,
+        1,
+        2,
+        PhaseType.SKILL_HEAVY,
+        77
+      )
+    ],
+    createLootItem(
+      'mireths-thirsting-fang',
+      "Mireth's Thirsting Fang",
+      'A dagger that drinks shallow — just enough to keep its wielder sharp.',
+      Role.DPS,
+      3,
+      3,
+      'Countess Mireth, the Crimson Thirst'
+    )
+  ),
+
+  createBoss(
+    'The Sundered Titan',
+    'Last Bastion of the Old World',
+    [
+      createPhase(
+        'The Awakening Fault',
+        'The ground splits as something ancient stirs beneath it. Strike before it fully wakes.',
+        2,
+        3,
+        1,
+        PhaseType.SKILL_HEAVY,
+        62
+      ),
+      createPhase(
+        'Fissure and Fall',
+        'The earth opens in jagged lines. Mind your footing, or be swallowed by the fault.',
+        1,
+        3,
+        3,
+        PhaseType.LIABILITY_HEAVY,
+        71
+      ),
+      createPhase(
+        "The Titan's Final Stand",
+        'The Sundered Titan gathers the last of the old world into one final blow. Endure it.',
+        3,
+        3,
+        2,
+        PhaseType.SKILL_HEAVY,
+        79
+      )
+    ],
+    createLootItem(
+      'shard-of-the-sundered-core',
+      'Shard of the Sundered Core',
+      "A fragment of the Titan's core, still warm with the heartbeat of the old world.",
+      Role.TANK,
+      3,
+      3,
+      'The Sundered Titan'
     )
   )
 ]

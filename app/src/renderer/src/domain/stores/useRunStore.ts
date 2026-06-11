@@ -1,12 +1,14 @@
 import { create } from 'zustand'
 import { BossData } from '../data/bossData'
 import { BossPhaseData } from '../data/bossPhaseData'
-import { bosses } from '../data/gameData'
+import { bossPool, memberPool } from '../data/gameData'
+import { draftBosses } from '../logic/bossDraft'
 import { projectPhase } from '../logic/phaseProjection'
-import { memberPool } from '../data/gameData'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
 import { usePersonalityStore } from './usePersonalityStore'
+
+const RUN_BOSS_COUNT = 3
 
 export enum Outcome {
   FULL_VICTORY = 'FULL_VICTORY',
@@ -29,6 +31,7 @@ interface AttemptResult {
 interface RunState {
   bossIndex: number
   boss: BossData
+  runBosses: BossData[]
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
@@ -57,14 +60,17 @@ function attemptBoss(boss: BossData): AttemptResult {
   return { phaseResults, phasesSucceeded, outcome }
 }
 
+const initialRunBosses = draftBosses(bossPool, RUN_BOSS_COUNT)
+
 export const useRunStore = create<RunState>((set, get) => ({
   bossIndex: 0,
-  boss: bosses[0],
+  boss: initialRunBosses[0],
+  runBosses: initialRunBosses,
   phaseResults: [],
   phasesSucceeded: 0,
   outcome: Outcome.DEFEAT,
   isResolved: false,
-  isFinalBoss: bosses.length === 1,
+  isFinalBoss: initialRunBosses.length === 1,
   isRunOver: false,
 
   resolve: () => {
@@ -73,10 +79,11 @@ export const useRunStore = create<RunState>((set, get) => ({
       return
     }
 
+    const { runBosses } = get()
     const bossIndex = 0
-    const boss = bosses[bossIndex]
+    const boss = runBosses[bossIndex]
     const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
-    const isFinalBoss = bossIndex === bosses.length - 1
+    const isFinalBoss = bossIndex === runBosses.length - 1
     const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
 
     set({
@@ -92,16 +99,16 @@ export const useRunStore = create<RunState>((set, get) => ({
   },
 
   advance: () => {
-    const { bossIndex, outcome, isFinalBoss } = get()
+    const { bossIndex, runBosses, outcome, isFinalBoss } = get()
     if (outcome === Outcome.DEFEAT || isFinalBoss) {
       console.warn('RunState.advance() called when the run is already over')
       return
     }
 
     const nextIndex = bossIndex + 1
-    const boss = bosses[nextIndex]
+    const boss = runBosses[nextIndex]
     const { phaseResults, phasesSucceeded, outcome: nextOutcome } = attemptBoss(boss)
-    const nextIsFinalBoss = nextIndex === bosses.length - 1
+    const nextIsFinalBoss = nextIndex === runBosses.length - 1
     const isRunOver = nextOutcome === Outcome.DEFEAT || nextIsFinalBoss
 
     set({
@@ -117,14 +124,16 @@ export const useRunStore = create<RunState>((set, get) => ({
   },
 
   reset: () => {
+    const runBosses = draftBosses(bossPool, RUN_BOSS_COUNT)
     set({
       bossIndex: 0,
-      boss: bosses[0],
+      boss: runBosses[0],
+      runBosses,
       phaseResults: [],
       phasesSucceeded: 0,
       outcome: Outcome.DEFEAT,
       isResolved: false,
-      isFinalBoss: bosses.length === 1,
+      isFinalBoss: runBosses.length === 1,
       isRunOver: false
     })
     useDraftStore.getState().reset()
