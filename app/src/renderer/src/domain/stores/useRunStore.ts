@@ -2,13 +2,13 @@ import { create } from 'zustand'
 import { BossData } from '../data/bossData'
 import { BossPhaseData } from '../data/bossPhaseData'
 import { bossPool, memberPool } from '../data/gameData'
-import { draftBosses } from '../logic/bossDraft'
+import { drawCandidates, drawOpener, partitionPool } from '../logic/bossTiers'
 import { projectPhase } from '../logic/phaseProjection'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
-const RUN_BOSS_COUNT = 3
+const TOTAL_BOSSES = 3
 
 export enum Outcome {
   FULL_VICTORY = 'FULL_VICTORY',
@@ -32,6 +32,8 @@ interface RunState {
   bossIndex: number
   boss: BossData
   runBosses: BossData[]
+  bossOutcomes: Outcome[]
+  pendingChoice: BossData[] | null
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
@@ -40,7 +42,7 @@ interface RunState {
   isRunOver: boolean
 
   resolve: () => void
-  advance: () => void
+  chooseBoss: (boss: BossData) => void
   reset: () => void
 }
 
@@ -60,85 +62,109 @@ function attemptBoss(boss: BossData): AttemptResult {
   return { phaseResults, phasesSucceeded, outcome }
 }
 
-const initialRunBosses = draftBosses(bossPool, RUN_BOSS_COUNT)
+function drawBoss1(): BossData {
+  return drawOpener(partitionPool(bossPool).easy)
+}
 
-export const useRunStore = create<RunState>((set, get) => ({
-  bossIndex: 0,
-  boss: initialRunBosses[0],
-  runBosses: initialRunBosses,
-  phaseResults: [],
-  phasesSucceeded: 0,
-  outcome: Outcome.DEFEAT,
-  isResolved: false,
-  isFinalBoss: initialRunBosses.length === 1,
-  isRunOver: false,
+export const useRunStore = create<RunState>((set, get) => {
+  const initialBoss = drawBoss1()
 
-  resolve: () => {
-    if (!useDraftStore.getState().isDraftComplete()) {
-      console.warn('RunState.resolve() called before draft is complete')
-      return
+  return {
+    bossIndex: 0,
+    boss: initialBoss,
+    runBosses: [initialBoss],
+    bossOutcomes: [],
+    pendingChoice: null,
+    phaseResults: [],
+    phasesSucceeded: 0,
+    outcome: Outcome.DEFEAT,
+    isResolved: false,
+    isFinalBoss: false,
+    isRunOver: false,
+
+    resolve: () => {
+      if (!useDraftStore.getState().isDraftComplete()) {
+        console.warn('RunState.resolve() called before draft is complete')
+        return
+      }
+
+      const boss = get().runBosses[0]
+      const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
+      const isFinalBoss = 0 === TOTAL_BOSSES - 1
+      const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
+      const pendingChoice = isRunOver ? null : drawCandidates(partitionPool(bossPool).mid, [boss])
+
+      set({
+        bossIndex: 0,
+        boss,
+        bossOutcomes: [outcome],
+        pendingChoice,
+        phaseResults,
+        phasesSucceeded,
+        outcome,
+        isResolved: true,
+        isFinalBoss,
+        isRunOver
+      })
+    },
+
+    chooseBoss: (picked) => {
+      const { bossIndex, runBosses, bossOutcomes, pendingChoice } = get()
+      if (!pendingChoice) {
+        console.warn('RunState.chooseBoss() called without a pending choice')
+        return
+      }
+
+      const nextIndex = bossIndex + 1
+      const { phaseResults, phasesSucceeded, outcome } = attemptBoss(picked)
+      const nextRunBosses = [...runBosses, picked]
+      const nextBossOutcomes = [...bossOutcomes, outcome]
+      const isFinalBoss = nextIndex === TOTAL_BOSSES - 1
+      const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
+
+      let nextPendingChoice: BossData[] | null = null
+      if (!isRunOver) {
+        const unpicked = pendingChoice.filter((b) => b.bossName !== picked.bossName)
+        nextPendingChoice = drawCandidates(partitionPool(bossPool).hard, [
+          ...nextRunBosses,
+          ...unpicked
+        ])
+      }
+
+      set({
+        bossIndex: nextIndex,
+        boss: picked,
+        runBosses: nextRunBosses,
+        bossOutcomes: nextBossOutcomes,
+        pendingChoice: nextPendingChoice,
+        phaseResults,
+        phasesSucceeded,
+        outcome,
+        isResolved: true,
+        isFinalBoss,
+        isRunOver
+      })
+    },
+
+    reset: () => {
+      const boss1 = drawBoss1()
+      set({
+        bossIndex: 0,
+        boss: boss1,
+        runBosses: [boss1],
+        bossOutcomes: [],
+        pendingChoice: null,
+        phaseResults: [],
+        phasesSucceeded: 0,
+        outcome: Outcome.DEFEAT,
+        isResolved: false,
+        isFinalBoss: false,
+        isRunOver: false
+      })
+      useDraftStore.getState().reset()
+      useLootStore.getState().reset()
+      usePersonalityStore.getState().reset()
+      usePersonalityStore.getState().rollForRoster(memberPool)
     }
-
-    const { runBosses } = get()
-    const bossIndex = 0
-    const boss = runBosses[bossIndex]
-    const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
-    const isFinalBoss = bossIndex === runBosses.length - 1
-    const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
-
-    set({
-      bossIndex,
-      boss,
-      phaseResults,
-      phasesSucceeded,
-      outcome,
-      isResolved: true,
-      isFinalBoss,
-      isRunOver
-    })
-  },
-
-  advance: () => {
-    const { bossIndex, runBosses, outcome, isFinalBoss } = get()
-    if (outcome === Outcome.DEFEAT || isFinalBoss) {
-      console.warn('RunState.advance() called when the run is already over')
-      return
-    }
-
-    const nextIndex = bossIndex + 1
-    const boss = runBosses[nextIndex]
-    const { phaseResults, phasesSucceeded, outcome: nextOutcome } = attemptBoss(boss)
-    const nextIsFinalBoss = nextIndex === runBosses.length - 1
-    const isRunOver = nextOutcome === Outcome.DEFEAT || nextIsFinalBoss
-
-    set({
-      bossIndex: nextIndex,
-      boss,
-      phaseResults,
-      phasesSucceeded,
-      outcome: nextOutcome,
-      isResolved: true,
-      isFinalBoss: nextIsFinalBoss,
-      isRunOver
-    })
-  },
-
-  reset: () => {
-    const runBosses = draftBosses(bossPool, RUN_BOSS_COUNT)
-    set({
-      bossIndex: 0,
-      boss: runBosses[0],
-      runBosses,
-      phaseResults: [],
-      phasesSucceeded: 0,
-      outcome: Outcome.DEFEAT,
-      isResolved: false,
-      isFinalBoss: runBosses.length === 1,
-      isRunOver: false
-    })
-    useDraftStore.getState().reset()
-    useLootStore.getState().reset()
-    usePersonalityStore.getState().reset()
-    usePersonalityStore.getState().rollForRoster(memberPool)
   }
-}))
+})

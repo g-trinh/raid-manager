@@ -6,6 +6,7 @@ import { ROMAN, pct } from '../shared/formatting'
 
 interface OutcomeScreenProps {
   onPlayAgain: () => void
+  onChoosePath: () => void
   onInvalidState: () => void
 }
 
@@ -158,10 +159,7 @@ function AttemptReveal({
           {meta.head}
         </div>
         <div className="resolution-outcome__sub">{meta.sub}</div>
-        <button
-          className="rm-btn rm-btn--default"
-          onClick={handleOutcomeButtonClick}
-        >
+        <button className="rm-btn rm-btn--default" onClick={handleOutcomeButtonClick}>
           {continueLabel ?? 'Muster Again'}
         </button>
       </div>
@@ -171,17 +169,16 @@ function AttemptReveal({
 
 export function OutcomeScreen({
   onPlayAgain,
+  onChoosePath,
   onInvalidState
 }: OutcomeScreenProps): React.JSX.Element | null {
   const isResolved = useRunStore((s) => s.isResolved)
   const outcome = useRunStore((s) => s.outcome)
   const boss = useRunStore((s) => s.boss)
   const bossIndex = useRunStore((s) => s.bossIndex)
-  const runBosses = useRunStore((s) => s.runBosses)
   const isRunOver = useRunStore((s) => s.isRunOver)
   const phaseResults = useRunStore((s) => s.phaseResults)
   const phasesSucceeded = useRunStore((s) => s.phasesSucceeded)
-  const advance = useRunStore((s) => s.advance)
   const reset = useRunStore((s) => s.reset)
 
   useEffect(() => {
@@ -193,8 +190,7 @@ export function OutcomeScreen({
 
   if (!isResolved) return null
 
-  const nextBoss = runBosses[bossIndex + 1]
-  const continueLabel = isRunOver || !nextBoss ? null : `Onward to ${nextBoss.bossName}`
+  const continueLabel = isRunOver ? null : 'Choose Your Path'
 
   const handlePlayAgain = (): void => {
     reset()
@@ -208,7 +204,7 @@ export function OutcomeScreen({
       phaseResults={phaseResults}
       phasesSucceeded={phasesSucceeded}
       outcome={outcome}
-      onContinue={advance}
+      onContinue={onChoosePath}
       onPlayAgain={handlePlayAgain}
       continueLabel={continueLabel}
     />

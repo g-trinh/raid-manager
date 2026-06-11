@@ -1,4 +1,5 @@
 import { Role } from '../../domain/data/role'
+import { Outcome } from '../../domain/stores/useRunStore'
 
 export const ROLE_HEX: Record<Role, string> = {
   [Role.TANK]: '#84a0b4',
@@ -23,9 +24,19 @@ export function lastInitial(name: string): string {
   return last.charAt(0)
 }
 
+export function lastName(name: string): string {
+  return name.trim().split(' ').slice(-1)[0]
+}
+
 // chance → color ramp (blood → amber → sage)
 export function chanceRamp(chance: number): string {
   if (chance >= 0.72) return '#a6b67c' // sage — safe
   if (chance >= 0.45) return '#d99a3c' // amber — uncertain
   return '#b8472f' // blood — failing
+}
+
+export const OUTCOME_COLOR: Record<Outcome, string> = {
+  [Outcome.FULL_VICTORY]: '#a6b67c',
+  [Outcome.NARROW_VICTORY]: '#d99a3c',
+  [Outcome.DEFEAT]: '#b8472f'
 }
