@@ -8,6 +8,8 @@ export interface LootItemData {
   skillBonus: number
   liabilityBonus: number
   sourceBossName: string
+  sourcePhase: 1 | 2 | 3
+  roleLockWeights?: Partial<Record<Role, number>>
 }
 
 export function createLootItem(
@@ -17,7 +19,19 @@ export function createLootItem(
   roleLock: Role,
   skillBonus: number,
   liabilityBonus: number,
-  sourceBossName: string
+  sourceBossName: string,
+  sourcePhase: 1 | 2 | 3,
+  roleLockWeights?: Partial<Record<Role, number>>
 ): LootItemData {
-  return { id, name, flavor, roleLock, skillBonus, liabilityBonus, sourceBossName }
+  return {
+    id,
+    name,
+    flavor,
+    roleLock,
+    skillBonus,
+    liabilityBonus,
+    sourceBossName,
+    sourcePhase,
+    roleLockWeights
+  }
 }

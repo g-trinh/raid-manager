@@ -2,8 +2,10 @@ import { create } from 'zustand'
 import { BossData } from '../data/bossData'
 import { BossPhaseData } from '../data/bossPhaseData'
 import { bossPool, memberPool } from '../data/gameData'
+import { LootItemData } from '../data/lootData'
 import { drawCandidates, drawOpener, partitionPool } from '../logic/bossTiers'
 import { projectPhase } from '../logic/phaseProjection'
+import { selectDroppedItems } from '../logic/signatureLoot'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
 import { usePersonalityStore } from './usePersonalityStore'
@@ -37,6 +39,7 @@ interface RunState {
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
+  droppedItems: LootItemData[]
   isResolved: boolean
   isFinalBoss: boolean
   isRunOver: boolean
@@ -78,6 +81,7 @@ export const useRunStore = create<RunState>((set, get) => {
     phaseResults: [],
     phasesSucceeded: 0,
     outcome: Outcome.DEFEAT,
+    droppedItems: [],
     isResolved: false,
     isFinalBoss: false,
     isRunOver: false,
@@ -90,6 +94,7 @@ export const useRunStore = create<RunState>((set, get) => {
 
       const boss = get().runBosses[0]
       const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
+      const droppedItems = selectDroppedItems(boss, outcome, phaseResults)
       const isFinalBoss = 0 === TOTAL_BOSSES - 1
       const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
       const pendingChoice = isRunOver ? null : drawCandidates(partitionPool(bossPool).mid, [boss])
@@ -102,6 +107,7 @@ export const useRunStore = create<RunState>((set, get) => {
         phaseResults,
         phasesSucceeded,
         outcome,
+        droppedItems,
         isResolved: true,
         isFinalBoss,
         isRunOver
@@ -117,6 +123,7 @@ export const useRunStore = create<RunState>((set, get) => {
 
       const nextIndex = bossIndex + 1
       const { phaseResults, phasesSucceeded, outcome } = attemptBoss(picked)
+      const droppedItems = selectDroppedItems(picked, outcome, phaseResults)
       const nextRunBosses = [...runBosses, picked]
       const nextBossOutcomes = [...bossOutcomes, outcome]
       const isFinalBoss = nextIndex === TOTAL_BOSSES - 1
@@ -140,6 +147,7 @@ export const useRunStore = create<RunState>((set, get) => {
         phaseResults,
         phasesSucceeded,
         outcome,
+        droppedItems,
         isResolved: true,
         isFinalBoss,
         isRunOver
@@ -157,6 +165,7 @@ export const useRunStore = create<RunState>((set, get) => {
         phaseResults: [],
         phasesSucceeded: 0,
         outcome: Outcome.DEFEAT,
+        droppedItems: [],
         isResolved: false,
         isFinalBoss: false,
         isRunOver: false

@@ -56,15 +56,40 @@ export const bossPool: BossData[] = [
         60
       )
     ],
-    createLootItem(
-      'iron-inferno-brand',
-      'Iron Inferno Brand',
-      "A fragment of Moloch's forge-chains, etched with the heat that broke the careless.",
-      Role.DPS,
-      3,
-      3,
-      'Moloch the Unbound'
-    )
+    [
+      createLootItem(
+        'iron-inferno-brand',
+        'Iron Inferno Brand',
+        "A fragment of Moloch's forge-chains, etched with the heat that broke the careless.",
+        Role.DPS,
+        3,
+        3,
+        'Moloch the Unbound',
+        1
+      ),
+      createLootItem(
+        'brand-scarred-manacle',
+        'Brand-Scarred Manacle',
+        'A length of chain that once sought the careless; worn now, it seeks nothing but holds everything.',
+        Role.TANK,
+        3,
+        3,
+        'Moloch the Unbound',
+        2,
+        { [Role.TANK]: 60, [Role.HEAL]: 40 }
+      ),
+      createLootItem(
+        'embered-patience',
+        'Embered Patience',
+        'A coal that never cools, carried by those who learned the weary do not last alone.',
+        Role.HEAL,
+        3,
+        3,
+        'Moloch the Unbound',
+        3,
+        { [Role.HEAL]: 50, [Role.DPS]: 25, [Role.TANK]: 25 }
+      )
+    ]
   ),
 
   createBoss(
@@ -99,15 +124,38 @@ export const bossPool: BossData[] = [
         70
       )
     ],
-    createLootItem(
-      'vial-of-the-withering-bloom',
-      'Vial of the Withering Bloom',
-      "A sealed dose of Sythara's own rot, refined into something that steadies rather than spreads.",
-      Role.HEAL,
-      3,
-      3,
-      'Sythara the Plaguebound'
-    )
+    [
+      createLootItem(
+        'spore-touched-fang',
+        'Spore-Touched Fang',
+        "A tooth coated in Sythara's first breath of rot; it bites once, and the wound never quite heals clean.",
+        Role.DPS,
+        3,
+        3,
+        'Sythara the Plaguebound',
+        1
+      ),
+      createLootItem(
+        'vial-of-the-withering-bloom',
+        'Vial of the Withering Bloom',
+        "A sealed dose of Sythara's own rot, refined into something that steadies rather than spreads.",
+        Role.HEAL,
+        3,
+        3,
+        'Sythara the Plaguebound',
+        2
+      ),
+      createLootItem(
+        'rootbound-carapace',
+        'Rootbound Carapace',
+        'Bark-like plating grown from the last bloom, hard enough to hold the line until the rot withers on its own.',
+        Role.TANK,
+        3,
+        3,
+        'Sythara the Plaguebound',
+        3
+      )
+    ]
   ),
 
   createBoss(
@@ -142,15 +190,40 @@ export const bossPool: BossData[] = [
         75
       )
     ],
-    createLootItem(
-      'hollow-star-shard',
-      'Hollow Star Shard',
-      "A splinter of Nyxessa's collapsed light, sharp enough to cut even in total darkness.",
-      Role.DPS,
-      3,
-      3,
-      'Nyxessa, Empress of the Hollow Stars'
-    )
+    [
+      createLootItem(
+        'hollow-star-shard',
+        'Hollow Star Shard',
+        "A splinter of Nyxessa's collapsed light, sharp enough to cut even in total darkness.",
+        Role.DPS,
+        3,
+        3,
+        'Nyxessa, Empress of the Hollow Stars',
+        1
+      ),
+      createLootItem(
+        'silence-worn-aegis',
+        'Silence-Worn Aegis',
+        'A shield that has absorbed a sound it will never give back.',
+        Role.TANK,
+        3,
+        3,
+        'Nyxessa, Empress of the Hollow Stars',
+        2,
+        { [Role.TANK]: 60, [Role.HEAL]: 40 }
+      ),
+      createLootItem(
+        'last-light-caught',
+        'Last Light, Caught',
+        "A weapon that carries one final flare of Nyxessa's dying star, spent the instant it's needed most.",
+        Role.DPS,
+        3,
+        3,
+        'Nyxessa, Empress of the Hollow Stars',
+        3,
+        { [Role.DPS]: 45, [Role.TANK]: 30, [Role.HEAL]: 25 }
+      )
+    ]
   ),
 
   createBoss(
@@ -185,15 +258,39 @@ export const bossPool: BossData[] = [
         68
       )
     ],
-    createLootItem(
-      'frozen-oathguard',
-      'Frozen Oathguard',
-      "A shield of unmelting ice, etched with a vow Vrokhar's wardens kept past death.",
-      Role.TANK,
-      3,
-      3,
-      'Vrokhar, the Frostbound Warden'
-    )
+    [
+      createLootItem(
+        'shardbreaker-point',
+        'Shardbreaker Point',
+        'A weapon-tip that has already cracked through one wall of ice; the next is easier.',
+        Role.DPS,
+        3,
+        3,
+        'Vrokhar, the Frostbound Warden',
+        1
+      ),
+      createLootItem(
+        'frozen-oathguard',
+        'Frozen Oathguard',
+        "A shield of unmelting ice, etched with a vow Vrokhar's wardens kept past death.",
+        Role.TANK,
+        3,
+        3,
+        'Vrokhar, the Frostbound Warden',
+        2
+      ),
+      createLootItem(
+        'vigils-final-frost',
+        "Vigil's Final Frost",
+        'The last cold Vrokhar surrendered, held now by those who hold the line until it melts.',
+        Role.TANK,
+        3,
+        3,
+        'Vrokhar, the Frostbound Warden',
+        3,
+        { [Role.TANK]: 50, [Role.HEAL]: 30, [Role.DPS]: 20 }
+      )
+    ]
   ),
 
   createBoss(
@@ -228,15 +325,38 @@ export const bossPool: BossData[] = [
         76
       )
     ],
-    createLootItem(
-      'stormcallers-edge',
-      "Stormcaller's Edge",
-      'A blade that hums with caught lightning, restless until it strikes again.',
-      Role.DPS,
-      3,
-      3,
-      'Zaelith, Herald of the Tempest'
-    )
+    [
+      createLootItem(
+        'stormcallers-edge',
+        "Stormcaller's Edge",
+        'A blade that hums with caught lightning, restless until it strikes again.',
+        Role.DPS,
+        3,
+        3,
+        'Zaelith, Herald of the Tempest',
+        1
+      ),
+      createLootItem(
+        'chainlight-reliquary',
+        'Chainlight Reliquary',
+        "A censer that hums with leftover current from Zaelith's chain-lightning; its glow leaps between the wounded, mending each in turn.",
+        Role.HEAL,
+        3,
+        3,
+        'Zaelith, Herald of the Tempest',
+        2
+      ),
+      createLootItem(
+        'maelstroms-eye',
+        "Maelstrom's Eye",
+        "A shard of perfect stillness torn from the storm's heart; wielded, it strikes exactly where the chaos isn't.",
+        Role.DPS,
+        3,
+        3,
+        'Zaelith, Herald of the Tempest',
+        3
+      )
+    ]
   ),
 
   createBoss(
@@ -271,15 +391,38 @@ export const bossPool: BossData[] = [
         78
       )
     ],
-    createLootItem(
-      'sovereigns-marrow-draught',
-      "Sovereign's Marrow Draught",
-      "A bitter tonic distilled from Karthus's own marrow — it steadies the hand that drinks it.",
-      Role.HEAL,
-      3,
-      3,
-      'Karthus, the Bone Sovereign'
-    )
+    [
+      createLootItem(
+        'gravecallers-edge',
+        "Gravecaller's Edge",
+        'Forged from a blade the risen carried in their march; it remembers the rhythm of the advance and never breaks stride.',
+        Role.DPS,
+        3,
+        3,
+        'Karthus, the Bone Sovereign',
+        1
+      ),
+      createLootItem(
+        'sovereigns-marrow-draught',
+        "Sovereign's Marrow Draught",
+        "A bitter tonic distilled from Karthus's own marrow — it steadies the hand that drinks it.",
+        Role.HEAL,
+        3,
+        3,
+        'Karthus, the Bone Sovereign',
+        2
+      ),
+      createLootItem(
+        'crownbone-aegis',
+        'Crownbone Aegis',
+        "A plate torn from the Sovereign's own crown of bones; it shields its wearer the way a king shields his throne — absolutely, and without apology.",
+        Role.TANK,
+        3,
+        3,
+        'Karthus, the Bone Sovereign',
+        3
+      )
+    ]
   ),
 
   createBoss(
@@ -314,15 +457,38 @@ export const bossPool: BossData[] = [
         74
       )
     ],
-    createLootItem(
-      'alphas-bloodfang',
-      "Alpha's Bloodfang",
-      'A curved fang taken from Grizzelmaw, still warm with the hunt.',
-      Role.DPS,
-      3,
-      3,
-      'Grizzelmaw, the Feral Sovereign'
-    )
+    [
+      createLootItem(
+        'first-scent-dagger',
+        'First Scent Dagger',
+        "Carved from the claw that drew first blood; it strikes before the prey even knows it's been found.",
+        Role.DPS,
+        3,
+        3,
+        'Grizzelmaw, the Feral Sovereign',
+        1
+      ),
+      createLootItem(
+        'thrashbound-hide',
+        'Thrashbound Hide',
+        'Hide flayed from Grizzelmaw mid-thrash, cured into plating that absorbs a beating meant for someone else.',
+        Role.TANK,
+        3,
+        3,
+        'Grizzelmaw, the Feral Sovereign',
+        2
+      ),
+      createLootItem(
+        'alphas-bloodfang',
+        "Alpha's Bloodfang",
+        'A curved fang taken from Grizzelmaw, still warm with the hunt.',
+        Role.DPS,
+        3,
+        3,
+        'Grizzelmaw, the Feral Sovereign',
+        3
+      )
+    ]
   ),
 
   createBoss(
@@ -357,15 +523,39 @@ export const bossPool: BossData[] = [
         80
       )
     ],
-    createLootItem(
-      'ink-of-the-unwritten-verse',
-      'Ink of the Unwritten Verse',
-      'Ink that has never touched a page — it writes only what its bearer needs to hear.',
-      Role.HEAL,
-      3,
-      3,
-      'The Hollow Author'
-    )
+    [
+      createLootItem(
+        'erasures-edge',
+        "Erasure's Edge",
+        'A blade that cuts not flesh but existence; what it strikes is written out of the story entirely.',
+        Role.DPS,
+        3,
+        3,
+        'The Hollow Author',
+        1
+      ),
+      createLootItem(
+        'ink-of-the-unwritten-verse',
+        'Ink of the Unwritten Verse',
+        'Ink that has never touched a page — it writes only what its bearer needs to hear.',
+        Role.HEAL,
+        3,
+        3,
+        'The Hollow Author',
+        2
+      ),
+      createLootItem(
+        'last-punctuation',
+        'Last Punctuation',
+        "A single mark of ink that refuses to be the period on someone's story; it mends what the Author tried to end.",
+        Role.HEAL,
+        3,
+        3,
+        'The Hollow Author',
+        3,
+        { [Role.HEAL]: 45, [Role.TANK]: 30, [Role.DPS]: 25 }
+      )
+    ]
   ),
 
   createBoss(
@@ -400,15 +590,38 @@ export const bossPool: BossData[] = [
         77
       )
     ],
-    createLootItem(
-      'mireths-thirsting-fang',
-      "Mireth's Thirsting Fang",
-      'A dagger that drinks shallow — just enough to keep its wielder sharp.',
-      Role.DPS,
-      3,
-      3,
-      'Countess Mireth, the Crimson Thirst'
-    )
+    [
+      createLootItem(
+        'mireths-thirsting-fang',
+        "Mireth's Thirsting Fang",
+        'A dagger that drinks shallow — just enough to keep its wielder sharp.',
+        Role.DPS,
+        3,
+        3,
+        'Countess Mireth, the Crimson Thirst',
+        1
+      ),
+      createLootItem(
+        'waltz-worn-pendant',
+        'Waltz-Worn Pendant',
+        "Worn during the Countess's endless dance, it keeps time with a heartbeat — and lends a few extra beats to whoever needs them most.",
+        Role.HEAL,
+        3,
+        3,
+        'Countess Mireth, the Crimson Thirst',
+        2
+      ),
+      createLootItem(
+        'last-call-stiletto',
+        'Last Call Stiletto',
+        "Mireth's own blade, set down when the banquet ended; it still thirsts for one more course.",
+        Role.DPS,
+        3,
+        3,
+        'Countess Mireth, the Crimson Thirst',
+        3
+      )
+    ]
   ),
 
   createBoss(
@@ -443,15 +656,40 @@ export const bossPool: BossData[] = [
         79
       )
     ],
-    createLootItem(
-      'shard-of-the-sundered-core',
-      'Shard of the Sundered Core',
-      "A fragment of the Titan's core, still warm with the heartbeat of the old world.",
-      Role.TANK,
-      3,
-      3,
-      'The Sundered Titan'
-    )
+    [
+      createLootItem(
+        'shard-of-the-sundered-core',
+        'Shard of the Sundered Core',
+        "A fragment of the Titan's core, still warm with the heartbeat of the old world.",
+        Role.TANK,
+        3,
+        3,
+        'The Sundered Titan',
+        1
+      ),
+      createLootItem(
+        'fissure-sealing-balm',
+        'Fissure-Sealing Balm',
+        "An unguent drawn from the Titan's own crackling veins; it closes wounds the way the earth tries, and fails, to close itself.",
+        Role.HEAL,
+        3,
+        3,
+        'The Sundered Titan',
+        2,
+        { [Role.HEAL]: 60, [Role.TANK]: 40 }
+      ),
+      createLootItem(
+        'last-bastion-plating',
+        'Last Bastion Plating',
+        'A plate broken from the Titan in its final moments of standing; wear it, and for a while, you become the bastion.',
+        Role.TANK,
+        3,
+        3,
+        'The Sundered Titan',
+        3,
+        { [Role.TANK]: 55, [Role.DPS]: 45 }
+      )
+    ]
   )
 ]
 
