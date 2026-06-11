@@ -160,7 +160,7 @@ function AttemptReveal({
         </div>
         <div className="resolution-outcome__sub">{meta.sub}</div>
         <button className="rm-btn rm-btn--default" onClick={handleOutcomeButtonClick}>
-          {continueLabel ?? 'Muster Again'}
+          {outcome === Outcome.DEFEAT ? (continueLabel ?? 'Muster Again') : 'Claim Your Spoils'}
         </button>
       </div>
     </div>
