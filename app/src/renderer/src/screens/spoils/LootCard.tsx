@@ -3,7 +3,9 @@ import { LootItemData } from '../../domain/data/lootData'
 import { MemberData } from '../../domain/data/memberData'
 import { ROLE_LABELS } from '../../domain/data/role'
 import { useLootStore } from '../../domain/stores/useLootStore'
+import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
 import { ROLE_HEX } from '../shared/formatting'
+import { PersonalityMark } from '../shared/PersonalityMark'
 import { RoleGlyph } from '../shared/RoleGlyph'
 
 export type LootResolution = { type: 'equipped'; member: MemberData } | { type: 'discarded' }
@@ -16,6 +18,7 @@ interface MemberOptionProps {
 }
 
 function MemberOption({ member, item, onPick, onHover }: MemberOptionProps): React.JSX.Element {
+  const personality = usePersonalityStore((s) => s.personalityOf(member.memberName))
   const currentSkill = useLootStore((s) => s.effectiveStat(member, 'skill'))
   const currentDiscipline = useLootStore((s) => s.effectiveStat(member, 'discipline'))
   const projectedSkill = useLootStore((s) => s.projectedStat(member, item, 'skill'))
@@ -30,7 +33,10 @@ function MemberOption({ member, item, onPick, onHover }: MemberOptionProps): Rea
     >
       <RoleGlyph role={member.role} size={32} />
       <div className="loot-option__body">
-        <div className="loot-option__name">{member.memberName}</div>
+        <div className="loot-option__name">
+          {member.memberName}
+          <PersonalityMark personality={personality} size={8} />
+        </div>
         <div className="loot-option__projection">
           Skill {currentSkill} <span className="loot-option__arrow">→</span>{' '}
           <span className="loot-option__gain">{projectedSkill}</span>

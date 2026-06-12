@@ -1379,6 +1379,9 @@
   font-weight: 700;
   font-size: 13px;
   color: var(--parch);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .loot-option__projection {
