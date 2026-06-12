@@ -1,4 +1,11 @@
 /* ── Muster theme: dark-fantasy ink/parchment palette ────────────── */
+
+/* One knob for overall UI size. Chromium zoom scales fonts, pips and
+   spacing together, so proportions (and the px-based layout) hold. */
+html {
+  zoom: 1.15;
+}
+
 :root {
   /* ── Grounds ── */
   --rm-void:    #050403;
@@ -1887,6 +1894,11 @@
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+/* breathing room between the role glyph and the member name */
+.muster-chip__head .role-glyph {
+  margin-right: 4px;
 }
 
 .muster-chip__name {
