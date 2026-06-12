@@ -33,9 +33,7 @@ function RosterSlot({ member, role, justAdded, personality }: RosterSlotProps): 
     )
   }
   const personalityLabel =
-    personality && personality !== Personality.LONER
-      ? ` · ${PERSONALITY_LABELS[personality]}`
-      : ''
+    personality && personality !== Personality.LONER ? ` · ${PERSONALITY_LABELS[personality]}` : ''
   return (
     <div
       className={`roster-slot${justAdded ? ' roster-slot--pop' : ''}`}

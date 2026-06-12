@@ -1,6 +1,6 @@
 import { MemberData } from '../../domain/data/memberData'
 import { Role } from '../../domain/data/role'
-import { BestowResult } from '../../domain/stores/useLootStore'
+import { BestowResult, RingType } from '../../domain/stores/useLootStore'
 import { PersonalityLegend } from '../shared/PersonalityLegend'
 import { MemberLedgerChip } from './MemberLedgerChip'
 
@@ -10,11 +10,17 @@ type Pulse = BestowResult & { token: number }
 
 interface MusterReactsProps {
   roster: MemberData[]
-  effectiveStat: (member: MemberData, key: 'skill' | 'liability') => number
+  effectiveStat: (member: MemberData, key: 'skill' | 'discipline') => number
   pulse: Pulse | null
+  preview: Record<string, RingType> | null
 }
 
-export function MusterReacts({ roster, effectiveStat, pulse }: MusterReactsProps): React.JSX.Element {
+export function MusterReacts({
+  roster,
+  effectiveStat,
+  pulse,
+  preview
+}: MusterReactsProps): React.JSX.Element {
   const ordered = ROLE_ORDER.flatMap((r) => roster.filter((m) => m.role === r))
   return (
     <div className="muster-reacts">
@@ -28,8 +34,9 @@ export function MusterReacts({ roster, effectiveStat, pulse }: MusterReactsProps
             key={m.memberName}
             member={m}
             skill={effectiveStat(m, 'skill')}
-            liability={effectiveStat(m, 'liability')}
+            discipline={effectiveStat(m, 'discipline')}
             pulse={pulse}
+            ring={preview ? (preview[m.memberName] ?? null) : null}
           />
         ))}
       </div>

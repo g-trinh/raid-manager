@@ -4,7 +4,7 @@ import { MemberData } from '../data/memberData'
 import { Personality } from '../data/personality'
 import { usePersonalityStore } from './usePersonalityStore'
 
-type StatKey = 'skill' | 'liability'
+type StatKey = 'skill' | 'discipline'
 type StatBonus = Record<StatKey, number>
 
 export interface BestowResult {
@@ -12,8 +12,10 @@ export interface BestowResult {
   recipient: string
 }
 
+export type RingType = 'white' | 'trait' | 'gradient'
+
 function clampStat(value: number): number {
-  return Math.max(0, Math.min(100, value))
+  return Math.max(0, Math.min(5, value))
 }
 
 interface LootState {
@@ -25,6 +27,7 @@ interface LootState {
   effectiveStat: (member: MemberData, key: StatKey) => number
   effectiveRoster: (members: MemberData[]) => MemberData[]
   projectedStat: (member: MemberData, item: LootItemData, key: StatKey) => number
+  previewRings: (member: MemberData, roster: MemberData[]) => Record<string, RingType>
   bestow: (item: LootItemData, member: MemberData, roster: MemberData[]) => BestowResult
   bench: (item: LootItemData) => void
   discard: (item: LootItemData) => void
@@ -47,13 +50,37 @@ export const useLootStore = create<LootState>((set, get) => ({
     return members.map((member) => ({
       ...member,
       skill: effectiveStat(member, 'skill'),
-      liability: effectiveStat(member, 'liability')
+      discipline: effectiveStat(member, 'discipline')
     }))
   },
 
   projectedStat: (member, item, key) => {
-    const bonus = key === 'skill' ? item.skillBonus : item.liabilityBonus
+    const bonus = key === 'skill' ? item.skillBonus : item.disciplineBonus
     return clampStat(get().effectiveStat(member, key) + bonus)
+  },
+
+  // Which members a grant to `member` would touch, and how to ring each one.
+  // Mirrors bestow()'s trait rules exactly (no stats are mutated):
+  //   - recipient            -> 'white'  (they receive the item)
+  //   - recipient is GH      -> 'gradient' (white + their own crimson trait,
+  //                              a Glory Hound also basking in own loot)
+  //   - other Altruist/GH    -> 'trait'  (a personality reaction fires on them)
+  //   - Loners / unaffected  -> no ring
+  previewRings: (member, roster) => {
+    const { personalityOf } = usePersonalityStore.getState()
+    const recipientPersonality = personalityOf(member.memberName)
+    const rings: Record<string, RingType> = {}
+    rings[member.memberName] =
+      recipientPersonality === Personality.GLORY_HOUND ? 'gradient' : 'white'
+
+    for (const bystander of roster) {
+      if (bystander.memberName === member.memberName) continue
+      const bp = personalityOf(bystander.memberName)
+      if (bp === Personality.ALTRUIST || bp === Personality.GLORY_HOUND) {
+        rings[bystander.memberName] = 'trait'
+      }
+    }
+    return rings
   },
 
   bestow: (item, member, roster) => {
@@ -63,17 +90,17 @@ export const useLootStore = create<LootState>((set, get) => ({
     const recipientPersonality = personalityOf(member.memberName)
     const updated: Record<string, StatBonus> = { ...bonuses }
 
-    const addDelta = (name: string, skill: number, liability: number): void => {
-      const cur = updated[name] ?? { skill: 0, liability: 0 }
-      updated[name] = { skill: cur.skill + skill, liability: cur.liability + liability }
+    const addDelta = (name: string, skill: number, discipline: number): void => {
+      const cur = updated[name] ?? { skill: 0, discipline: 0 }
+      updated[name] = { skill: cur.skill + skill, discipline: cur.discipline + discipline }
     }
 
     // Item bonus to recipient
-    addDelta(member.memberName, item.skillBonus, item.liabilityBonus)
+    addDelta(member.memberName, item.skillBonus, item.disciplineBonus)
 
     // Recipient personality — Glory Hound basks
     if (recipientPersonality === Personality.GLORY_HOUND) {
-      addDelta(member.memberName, 10, 0)
+      addDelta(member.memberName, 1, 0)
     }
 
     // Bystander reactions
@@ -81,9 +108,9 @@ export const useLootStore = create<LootState>((set, get) => ({
       if (bystander.memberName === member.memberName) continue
       const bp = personalityOf(bystander.memberName)
       if (bp === Personality.ALTRUIST) {
-        addDelta(bystander.memberName, recipientPersonality === Personality.GLORY_HOUND ? -10 : 0, 10)
+        addDelta(bystander.memberName, recipientPersonality === Personality.GLORY_HOUND ? -1 : 0, 1)
       } else if (bp === Personality.GLORY_HOUND) {
-        addDelta(bystander.memberName, 0, -10)
+        addDelta(bystander.memberName, 0, -1)
       }
     }
 
@@ -93,16 +120,16 @@ export const useLootStore = create<LootState>((set, get) => ({
     for (const name of Object.keys(updated)) {
       const base = memberByName[name]
       if (!base) continue
-      const prevBonus = bonuses[name] ?? { skill: 0, liability: 0 }
+      const prevBonus = bonuses[name] ?? { skill: 0, discipline: 0 }
       const newBonus = updated[name]
       const prevS = clampStat(base.skill + prevBonus.skill)
-      const prevL = clampStat(base.liability + prevBonus.liability)
+      const prevD = clampStat(base.discipline + prevBonus.discipline)
       const newS = clampStat(base.skill + newBonus.skill)
-      const newL = clampStat(base.liability + newBonus.liability)
+      const newD = clampStat(base.discipline + newBonus.discipline)
       const ds = newS - prevS
-      const dl = newL - prevL
-      if (ds !== 0 || dl !== 0) {
-        applied[name] = { skill: ds, liability: dl }
+      const dd = newD - prevD
+      if (ds !== 0 || dd !== 0) {
+        applied[name] = { skill: ds, discipline: dd }
       }
     }
 

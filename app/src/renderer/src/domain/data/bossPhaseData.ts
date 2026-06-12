@@ -1,6 +1,6 @@
 export enum PhaseType {
   SKILL_HEAVY = 'SKILL_HEAVY',
-  LIABILITY_HEAVY = 'LIABILITY_HEAVY'
+  DISCIPLINE_HEAVY = 'DISCIPLINE_HEAVY'
 }
 
 export interface BossPhaseData {

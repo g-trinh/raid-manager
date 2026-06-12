@@ -12,19 +12,21 @@ interface MemberOptionProps {
   member: MemberData
   item: LootItemData
   onPick: (member: MemberData) => void
+  onHover?: (member: MemberData) => void
 }
 
-function MemberOption({ member, item, onPick }: MemberOptionProps): React.JSX.Element {
+function MemberOption({ member, item, onPick, onHover }: MemberOptionProps): React.JSX.Element {
   const currentSkill = useLootStore((s) => s.effectiveStat(member, 'skill'))
-  const currentLiability = useLootStore((s) => s.effectiveStat(member, 'liability'))
+  const currentDiscipline = useLootStore((s) => s.effectiveStat(member, 'discipline'))
   const projectedSkill = useLootStore((s) => s.projectedStat(member, item, 'skill'))
-  const projectedLiability = useLootStore((s) => s.projectedStat(member, item, 'liability'))
+  const projectedDiscipline = useLootStore((s) => s.projectedStat(member, item, 'discipline'))
 
   return (
     <button
       className="loot-option"
       style={{ borderLeftColor: ROLE_HEX[member.role] }}
       onClick={() => onPick(member)}
+      onMouseEnter={() => onHover?.(member)}
     >
       <RoleGlyph role={member.role} size={32} />
       <div className="loot-option__body">
@@ -33,8 +35,8 @@ function MemberOption({ member, item, onPick }: MemberOptionProps): React.JSX.El
           Skill {currentSkill} <span className="loot-option__arrow">→</span>{' '}
           <span className="loot-option__gain">{projectedSkill}</span>
           <span className="loot-option__sep"> · </span>
-          Liability {currentLiability} <span className="loot-option__arrow">→</span>{' '}
-          <span className="loot-option__gain">{projectedLiability}</span>
+          Discipline {currentDiscipline} <span className="loot-option__arrow">→</span>{' '}
+          <span className="loot-option__gain">{projectedDiscipline}</span>
         </div>
       </div>
     </button>
@@ -49,6 +51,8 @@ interface LootCardProps {
   onEquip: (member: MemberData) => void
   onBench: () => void
   onDiscard: () => void
+  onHoverMember?: (member: MemberData) => void
+  onLeaveMember?: () => void
 }
 
 export function LootCard({
@@ -58,7 +62,9 @@ export function LootCard({
   showBench = false,
   onEquip,
   onBench,
-  onDiscard
+  onDiscard,
+  onHoverMember,
+  onLeaveMember
 }: LootCardProps): React.JSX.Element {
   const [pickerOpen, setPickerOpen] = useState(false)
   const hex = ROLE_HEX[item.roleLock]
@@ -88,19 +94,28 @@ export function LootCard({
           <div className="loot-card__role">{ROLE_LABELS[item.roleLock]}-bound</div>
           <div className="loot-card__flavor">{item.flavor}</div>
           <div className="loot-card__bonus">
-            +{item.skillBonus} Skill · +{item.liabilityBonus} Liability
+            +{item.skillBonus} Skill · +{item.disciplineBonus} Discipline
           </div>
         </div>
       </div>
 
       {pickerOpen ? (
-        <div className="loot-card__picker">
+        <div className="loot-card__picker" onMouseLeave={() => onLeaveMember?.()}>
           {eligibleMembers.map((member) => (
-            <MemberOption key={member.memberName} member={member} item={item} onPick={onEquip} />
+            <MemberOption
+              key={member.memberName}
+              member={member}
+              item={item}
+              onPick={onEquip}
+              onHover={onHoverMember}
+            />
           ))}
           <button
             className="loot-card__action loot-card__action--cancel"
-            onClick={() => setPickerOpen(false)}
+            onClick={() => {
+              setPickerOpen(false)
+              onLeaveMember?.()
+            }}
           >
             Back
           </button>

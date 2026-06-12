@@ -38,7 +38,12 @@ export function PersonalityLegend(): React.JSX.Element {
                         borderColor: `color-mix(in oklab, ${meta.hue} 40%, transparent)`
                       }}
                     >
-                      <PersonalityGlyph glyph={meta.glyph} hue={meta.hue} size={12} glow={!meta.quiet} />
+                      <PersonalityGlyph
+                        glyph={meta.glyph}
+                        hue={meta.hue}
+                        size={12}
+                        glow={!meta.quiet}
+                      />
                     </span>
                     <div className="personality-legend__entry-body">
                       <div className="personality-legend__entry-name" style={{ color: meta.hue }}>

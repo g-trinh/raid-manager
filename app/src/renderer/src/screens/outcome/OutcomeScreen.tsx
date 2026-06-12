@@ -46,7 +46,7 @@ interface PhaseResolveRowProps {
 
 function PhaseResolveRow({ result, index, visible }: PhaseResolveRowProps): React.JSX.Element {
   const { phase, chance, success } = result
-  const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Liability'
+  const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'
   return (
     <div
       className={`phase-resolve-row${visible ? ' phase-resolve-row--visible' : ''}`}

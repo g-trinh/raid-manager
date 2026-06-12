@@ -30,7 +30,7 @@ export function CandidateCard({ member, onPick }: CandidateCardProps): React.JSX
         </div>
         <div className="candidate-card__stats">
           <StatBar label="Skill" value={member.skill} accent="var(--rm-skill)" />
-          <StatBar label="Liability" value={member.liability} accent="var(--rm-liability)" />
+          <StatBar label="Discipline" value={member.discipline} accent="var(--rm-discipline)" />
         </div>
       </div>
     </button>

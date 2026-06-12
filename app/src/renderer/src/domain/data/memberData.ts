@@ -4,14 +4,14 @@ export interface MemberData {
   memberName: string
   role: Role
   skill: number
-  liability: number
+  discipline: number
 }
 
 export function createMember(
   name: string,
   role: Role,
   skill: number,
-  liability: number
+  discipline: number
 ): MemberData {
-  return { memberName: name, role, skill, liability }
+  return { memberName: name, role, skill, discipline }
 }

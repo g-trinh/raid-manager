@@ -6,21 +6,21 @@ import { Role } from './role'
 
 export const memberPool: MemberData[] = [
   // Tanks — pool has 3, draft caps at 2
-  createMember('Gorvak', Role.TANK, 38, 62),
-  createMember('Shieldara', Role.TANK, 81, 19),
-  createMember('Bruthan', Role.TANK, 55, 45),
+  createMember('Gorvak', Role.TANK, 2, 3),
+  createMember('Shieldara', Role.TANK, 4, 1),
+  createMember('Bruthan', Role.TANK, 3, 2),
 
   // Healers — pool has 3, draft caps at 2
-  createMember('Lumina', Role.HEAL, 12, 88),
-  createMember('Patchwick', Role.HEAL, 48, 52),
-  createMember('Serenova', Role.HEAL, 91, 9),
+  createMember('Lumina', Role.HEAL, 1, 4),
+  createMember('Patchwick', Role.HEAL, 2, 3),
+  createMember('Serenova', Role.HEAL, 5, 1),
 
   // DPS — pool has 5, draft caps at 4
-  createMember('Razorfang', Role.DPS, 80, 20),
-  createMember('Blitzclaw', Role.DPS, 60, 40),
-  createMember('Vexara', Role.DPS, 95, 5),
-  createMember('Skarn', Role.DPS, 28, 72),
-  createMember('Duskblade', Role.DPS, 15, 85)
+  createMember('Razorfang', Role.DPS, 4, 1),
+  createMember('Blitzclaw', Role.DPS, 3, 2),
+  createMember('Vexara', Role.DPS, 5, 1),
+  createMember('Skarn', Role.DPS, 1, 4),
+  createMember('Duskblade', Role.DPS, 1, 4)
 ]
 
 export const bossPool: BossData[] = [
@@ -35,7 +35,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        65
+        3.3
       ),
       createPhase(
         'The Branding Rite',
@@ -43,8 +43,8 @@ export const bossPool: BossData[] = [
         1,
         3,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        70
+        PhaseType.DISCIPLINE_HEAVY,
+        3.5
       ),
       createPhase(
         'The Last Smelting',
@@ -53,7 +53,7 @@ export const bossPool: BossData[] = [
         2,
         2,
         PhaseType.SKILL_HEAVY,
-        60
+        3.0
       )
     ],
     [
@@ -62,8 +62,8 @@ export const bossPool: BossData[] = [
         'Iron Inferno Brand',
         "A fragment of Moloch's forge-chains, etched with the heat that broke the careless.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Moloch the Unbound',
         1
       ),
@@ -72,8 +72,8 @@ export const bossPool: BossData[] = [
         'Brand-Scarred Manacle',
         'A length of chain that once sought the careless; worn now, it seeks nothing but holds everything.',
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Moloch the Unbound',
         2,
         { [Role.TANK]: 60, [Role.HEAL]: 40 }
@@ -83,8 +83,8 @@ export const bossPool: BossData[] = [
         'Embered Patience',
         'A coal that never cools, carried by those who learned the weary do not last alone.',
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'Moloch the Unbound',
         3,
         { [Role.HEAL]: 50, [Role.DPS]: 25, [Role.TANK]: 25 }
@@ -103,7 +103,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        65
+        3.3
       ),
       createPhase(
         'Communion of Decay',
@@ -111,8 +111,8 @@ export const bossPool: BossData[] = [
         1,
         2,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        72
+        PhaseType.DISCIPLINE_HEAVY,
+        3.6
       ),
       createPhase(
         'The Last Bloom',
@@ -121,7 +121,7 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.SKILL_HEAVY,
-        70
+        3.5
       )
     ],
     [
@@ -130,8 +130,8 @@ export const bossPool: BossData[] = [
         'Spore-Touched Fang',
         "A tooth coated in Sythara's first breath of rot; it bites once, and the wound never quite heals clean.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Sythara the Plaguebound',
         1
       ),
@@ -140,8 +140,8 @@ export const bossPool: BossData[] = [
         'Vial of the Withering Bloom',
         "A sealed dose of Sythara's own rot, refined into something that steadies rather than spreads.",
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'Sythara the Plaguebound',
         2
       ),
@@ -150,8 +150,8 @@ export const bossPool: BossData[] = [
         'Rootbound Carapace',
         'Bark-like plating grown from the last bloom, hard enough to hold the line until the rot withers on its own.',
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Sythara the Plaguebound',
         3
       )
@@ -169,7 +169,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        72
+        3.6
       ),
       createPhase(
         'The Devouring Hush',
@@ -177,8 +177,8 @@ export const bossPool: BossData[] = [
         2,
         3,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        78
+        PhaseType.DISCIPLINE_HEAVY,
+        3.9
       ),
       createPhase(
         'Collapse of the Final Star',
@@ -187,7 +187,7 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.SKILL_HEAVY,
-        75
+        3.8
       )
     ],
     [
@@ -196,8 +196,8 @@ export const bossPool: BossData[] = [
         'Hollow Star Shard',
         "A splinter of Nyxessa's collapsed light, sharp enough to cut even in total darkness.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Nyxessa, Empress of the Hollow Stars',
         1
       ),
@@ -206,8 +206,8 @@ export const bossPool: BossData[] = [
         'Silence-Worn Aegis',
         'A shield that has absorbed a sound it will never give back.',
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Nyxessa, Empress of the Hollow Stars',
         2,
         { [Role.TANK]: 60, [Role.HEAL]: 40 }
@@ -217,8 +217,8 @@ export const bossPool: BossData[] = [
         'Last Light, Caught',
         "A weapon that carries one final flare of Nyxessa's dying star, spent the instant it's needed most.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Nyxessa, Empress of the Hollow Stars',
         3,
         { [Role.DPS]: 45, [Role.TANK]: 30, [Role.HEAL]: 25 }
@@ -237,7 +237,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        65
+        3.3
       ),
       createPhase(
         'Wardens of the Frozen Oath',
@@ -245,8 +245,8 @@ export const bossPool: BossData[] = [
         1,
         3,
         2,
-        PhaseType.LIABILITY_HEAVY,
-        70
+        PhaseType.DISCIPLINE_HEAVY,
+        3.5
       ),
       createPhase(
         'The Last Thaw',
@@ -255,7 +255,7 @@ export const bossPool: BossData[] = [
         2,
         2,
         PhaseType.SKILL_HEAVY,
-        68
+        3.4
       )
     ],
     [
@@ -264,8 +264,8 @@ export const bossPool: BossData[] = [
         'Shardbreaker Point',
         'A weapon-tip that has already cracked through one wall of ice; the next is easier.',
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Vrokhar, the Frostbound Warden',
         1
       ),
@@ -274,8 +274,8 @@ export const bossPool: BossData[] = [
         'Frozen Oathguard',
         "A shield of unmelting ice, etched with a vow Vrokhar's wardens kept past death.",
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Vrokhar, the Frostbound Warden',
         2
       ),
@@ -284,8 +284,8 @@ export const bossPool: BossData[] = [
         "Vigil's Final Frost",
         'The last cold Vrokhar surrendered, held now by those who hold the line until it melts.',
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Vrokhar, the Frostbound Warden',
         3,
         { [Role.TANK]: 50, [Role.HEAL]: 30, [Role.DPS]: 20 }
@@ -304,7 +304,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        68
+        3.4
       ),
       createPhase(
         'Chainlightning Cascade',
@@ -312,8 +312,8 @@ export const bossPool: BossData[] = [
         2,
         1,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        74
+        PhaseType.DISCIPLINE_HEAVY,
+        3.7
       ),
       createPhase(
         'Eye of the Maelstrom',
@@ -322,7 +322,7 @@ export const bossPool: BossData[] = [
         2,
         2,
         PhaseType.SKILL_HEAVY,
-        76
+        3.8
       )
     ],
     [
@@ -331,8 +331,8 @@ export const bossPool: BossData[] = [
         "Stormcaller's Edge",
         'A blade that hums with caught lightning, restless until it strikes again.',
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Zaelith, Herald of the Tempest',
         1
       ),
@@ -341,8 +341,8 @@ export const bossPool: BossData[] = [
         'Chainlight Reliquary',
         "A censer that hums with leftover current from Zaelith's chain-lightning; its glow leaps between the wounded, mending each in turn.",
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'Zaelith, Herald of the Tempest',
         2
       ),
@@ -351,8 +351,8 @@ export const bossPool: BossData[] = [
         "Maelstrom's Eye",
         "A shard of perfect stillness torn from the storm's heart; wielded, it strikes exactly where the chaos isn't.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Zaelith, Herald of the Tempest',
         3
       )
@@ -370,7 +370,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        70
+        3.5
       ),
       createPhase(
         "The Sovereign's Decree",
@@ -378,8 +378,8 @@ export const bossPool: BossData[] = [
         1,
         2,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        72
+        PhaseType.DISCIPLINE_HEAVY,
+        3.6
       ),
       createPhase(
         'Crown of Bones',
@@ -388,7 +388,7 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.SKILL_HEAVY,
-        78
+        3.9
       )
     ],
     [
@@ -397,8 +397,8 @@ export const bossPool: BossData[] = [
         "Gravecaller's Edge",
         'Forged from a blade the risen carried in their march; it remembers the rhythm of the advance and never breaks stride.',
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Karthus, the Bone Sovereign',
         1
       ),
@@ -407,8 +407,8 @@ export const bossPool: BossData[] = [
         "Sovereign's Marrow Draught",
         "A bitter tonic distilled from Karthus's own marrow — it steadies the hand that drinks it.",
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'Karthus, the Bone Sovereign',
         2
       ),
@@ -417,8 +417,8 @@ export const bossPool: BossData[] = [
         'Crownbone Aegis',
         "A plate torn from the Sovereign's own crown of bones; it shields its wearer the way a king shields his throne — absolutely, and without apology.",
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Karthus, the Bone Sovereign',
         3
       )
@@ -436,7 +436,7 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        66
+        3.3
       ),
       createPhase(
         'Thrash and Bleed',
@@ -444,8 +444,8 @@ export const bossPool: BossData[] = [
         2,
         3,
         2,
-        PhaseType.LIABILITY_HEAVY,
-        71
+        PhaseType.DISCIPLINE_HEAVY,
+        3.6
       ),
       createPhase(
         "The Alpha's Last Roar",
@@ -454,7 +454,7 @@ export const bossPool: BossData[] = [
         2,
         1,
         PhaseType.SKILL_HEAVY,
-        74
+        3.7
       )
     ],
     [
@@ -463,8 +463,8 @@ export const bossPool: BossData[] = [
         'First Scent Dagger',
         "Carved from the claw that drew first blood; it strikes before the prey even knows it's been found.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Grizzelmaw, the Feral Sovereign',
         1
       ),
@@ -473,8 +473,8 @@ export const bossPool: BossData[] = [
         'Thrashbound Hide',
         'Hide flayed from Grizzelmaw mid-thrash, cured into plating that absorbs a beating meant for someone else.',
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'Grizzelmaw, the Feral Sovereign',
         2
       ),
@@ -483,8 +483,8 @@ export const bossPool: BossData[] = [
         "Alpha's Bloodfang",
         'A curved fang taken from Grizzelmaw, still warm with the hunt.',
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Grizzelmaw, the Feral Sovereign',
         3
       )
@@ -502,7 +502,7 @@ export const bossPool: BossData[] = [
         1,
         2,
         PhaseType.SKILL_HEAVY,
-        69
+        3.5
       ),
       createPhase(
         'Pages of the Unwritten',
@@ -510,8 +510,8 @@ export const bossPool: BossData[] = [
         1,
         2,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        75
+        PhaseType.DISCIPLINE_HEAVY,
+        3.8
       ),
       createPhase(
         'The Final Sentence',
@@ -520,7 +520,7 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.SKILL_HEAVY,
-        80
+        4.0
       )
     ],
     [
@@ -529,8 +529,8 @@ export const bossPool: BossData[] = [
         "Erasure's Edge",
         'A blade that cuts not flesh but existence; what it strikes is written out of the story entirely.',
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'The Hollow Author',
         1
       ),
@@ -539,8 +539,8 @@ export const bossPool: BossData[] = [
         'Ink of the Unwritten Verse',
         'Ink that has never touched a page — it writes only what its bearer needs to hear.',
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'The Hollow Author',
         2
       ),
@@ -549,8 +549,8 @@ export const bossPool: BossData[] = [
         'Last Punctuation',
         "A single mark of ink that refuses to be the period on someone's story; it mends what the Author tried to end.",
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'The Hollow Author',
         3,
         { [Role.HEAL]: 45, [Role.TANK]: 30, [Role.DPS]: 25 }
@@ -569,7 +569,7 @@ export const bossPool: BossData[] = [
         2,
         1,
         PhaseType.SKILL_HEAVY,
-        64
+        3.2
       ),
       createPhase(
         'The Crimson Waltz',
@@ -577,8 +577,8 @@ export const bossPool: BossData[] = [
         2,
         2,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        73
+        PhaseType.DISCIPLINE_HEAVY,
+        3.7
       ),
       createPhase(
         'Last Call of the Banquet',
@@ -587,7 +587,7 @@ export const bossPool: BossData[] = [
         1,
         2,
         PhaseType.SKILL_HEAVY,
-        77
+        3.9
       )
     ],
     [
@@ -596,8 +596,8 @@ export const bossPool: BossData[] = [
         "Mireth's Thirsting Fang",
         'A dagger that drinks shallow — just enough to keep its wielder sharp.',
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Countess Mireth, the Crimson Thirst',
         1
       ),
@@ -606,8 +606,8 @@ export const bossPool: BossData[] = [
         'Waltz-Worn Pendant',
         "Worn during the Countess's endless dance, it keeps time with a heartbeat — and lends a few extra beats to whoever needs them most.",
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'Countess Mireth, the Crimson Thirst',
         2
       ),
@@ -616,8 +616,8 @@ export const bossPool: BossData[] = [
         'Last Call Stiletto',
         "Mireth's own blade, set down when the banquet ended; it still thirsts for one more course.",
         Role.DPS,
-        3,
-        3,
+        1,
+        1,
         'Countess Mireth, the Crimson Thirst',
         3
       )
@@ -635,7 +635,7 @@ export const bossPool: BossData[] = [
         3,
         1,
         PhaseType.SKILL_HEAVY,
-        62
+        3.1
       ),
       createPhase(
         'Fissure and Fall',
@@ -643,8 +643,8 @@ export const bossPool: BossData[] = [
         1,
         3,
         3,
-        PhaseType.LIABILITY_HEAVY,
-        71
+        PhaseType.DISCIPLINE_HEAVY,
+        3.6
       ),
       createPhase(
         "The Titan's Final Stand",
@@ -653,7 +653,7 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.SKILL_HEAVY,
-        79
+        4.0
       )
     ],
     [
@@ -662,8 +662,8 @@ export const bossPool: BossData[] = [
         'Shard of the Sundered Core',
         "A fragment of the Titan's core, still warm with the heartbeat of the old world.",
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'The Sundered Titan',
         1
       ),
@@ -672,8 +672,8 @@ export const bossPool: BossData[] = [
         'Fissure-Sealing Balm',
         "An unguent drawn from the Titan's own crackling veins; it closes wounds the way the earth tries, and fails, to close itself.",
         Role.HEAL,
-        3,
-        3,
+        1,
+        1,
         'The Sundered Titan',
         2,
         { [Role.HEAL]: 60, [Role.TANK]: 40 }
@@ -683,8 +683,8 @@ export const bossPool: BossData[] = [
         'Last Bastion Plating',
         'A plate broken from the Titan in its final moments of standing; wear it, and for a while, you become the bastion.',
         Role.TANK,
-        3,
-        3,
+        1,
+        1,
         'The Sundered Titan',
         3,
         { [Role.TANK]: 55, [Role.DPS]: 45 }

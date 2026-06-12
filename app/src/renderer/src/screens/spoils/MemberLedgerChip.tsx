@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BestowResult } from '../../domain/stores/useLootStore'
+import { BestowResult, RingType } from '../../domain/stores/useLootStore'
 import { MemberData } from '../../domain/data/memberData'
 import { PERSONALITY_META } from '../../domain/data/personality'
 import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
@@ -18,52 +18,66 @@ interface FloatEntry {
 interface MemberLedgerChipProps {
   member: MemberData
   skill: number
-  liability: number
+  discipline: number
   pulse: (BestowResult & { token: number }) | null
+  ring: RingType | null
 }
 
 export function MemberLedgerChip({
   member,
   skill,
-  liability,
-  pulse
+  discipline,
+  pulse,
+  ring
 }: MemberLedgerChipProps): React.JSX.Element {
   const personality = usePersonalityStore((s) => s.personalityOf(member.memberName))
   const meta = PERSONALITY_META[personality]
   const hex = ROLE_HEX[member.role]
 
   const dispS = useCountUp(skill)
-  const dispL = useCountUp(liability)
+  const dispD = useCountUp(discipline)
 
   const [flash, setFlash] = useState<'gold' | 'hue' | null>(null)
   const [floats, setFloats] = useState<FloatEntry[]>([])
+  const [seenToken, setSeenToken] = useState<number | null>(null)
+
+  // Adjust state when a new pulse arrives (render-time, per React docs),
+  // then let the effect below only manage the clear timers.
+  if (pulse && pulse.token !== seenToken) {
+    setSeenToken(pulse.token)
+    const delta = pulse.applied[member.memberName]
+    if (delta && (delta.skill !== 0 || delta.discipline !== 0)) {
+      setFlash(pulse.recipient === member.memberName ? 'gold' : 'hue')
+      const fl: FloatEntry[] = []
+      if (delta.skill !== 0)
+        fl.push({
+          key: 's',
+          text: `${delta.skill > 0 ? '+' : ''}${delta.skill} Skill`,
+          positive: delta.skill > 0
+        })
+      if (delta.discipline !== 0)
+        fl.push({
+          key: 'd',
+          text: `${delta.discipline > 0 ? '+' : ''}${delta.discipline} Disc`,
+          positive: delta.discipline > 0
+        })
+      setFloats(fl)
+    }
+  }
 
   useEffect(() => {
-    if (!pulse) return
-    const delta = pulse.applied[member.memberName]
-    if (!delta || (delta.skill === 0 && delta.liability === 0)) return
-
-    const isRecipient = pulse.recipient === member.memberName
-    setFlash(isRecipient ? 'gold' : 'hue')
-
-    const fl: FloatEntry[] = []
-    if (delta.skill !== 0)
-      fl.push({ key: 's', text: `${delta.skill > 0 ? '+' : ''}${delta.skill} Skill`, positive: delta.skill > 0 })
-    if (delta.liability !== 0)
-      fl.push({ key: 'l', text: `${delta.liability > 0 ? '+' : ''}${delta.liability} Liab`, positive: delta.liability > 0 })
-    setFloats(fl)
-
+    if (seenToken === null) return
     const t1 = setTimeout(() => setFlash(null), 950)
     const t2 = setTimeout(() => setFloats([]), 1200)
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
     }
-  }, [pulse?.token])
+  }, [seenToken])
 
   const flashColor = flash === 'gold' ? LOOT_GOLD : meta.hue
   const hasSkillFloat = floats.some((f) => f.key === 's')
-  const hasLiabFloat = floats.some((f) => f.key === 'l')
+  const hasDiscFloat = floats.some((f) => f.key === 'd')
 
   return (
     <div
@@ -95,14 +109,14 @@ export function MemberLedgerChip({
           </b>
         </span>
         <span className="ledger-chip__stat">
-          L
+          D
           <b
             style={{
-              color: flash && hasLiabFloat ? flashColor : 'var(--parch)',
+              color: flash && hasDiscFloat ? flashColor : 'var(--parch)',
               transition: 'color 0.3s'
             }}
           >
-            {dispL}
+            {dispD}
           </b>
         </span>
       </span>
@@ -123,6 +137,25 @@ export function MemberLedgerChip({
             </span>
           ))}
         </div>
+      )}
+
+      {ring && (
+        <span
+          aria-hidden="true"
+          className="ledger-chip__ring"
+          style={{
+            background:
+              ring === 'white'
+                ? '#f4eede'
+                : ring === 'trait'
+                  ? meta.hue
+                  : `linear-gradient(135deg, #ffffff 0%, #f4eede 42%, ${meta.hue} 100%)`,
+            filter:
+              ring === 'white'
+                ? 'drop-shadow(0 0 4px rgba(244,238,222,0.92))'
+                : `drop-shadow(0 0 4px color-mix(in oklab, ${meta.hue} 85%, white))`
+          }}
+        />
       )}
     </div>
   )

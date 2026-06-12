@@ -7,7 +7,12 @@ interface PersonalityGlyphProps {
   glow: boolean
 }
 
-export function PersonalityGlyph({ glyph, hue, size, glow }: PersonalityGlyphProps): React.JSX.Element {
+export function PersonalityGlyph({
+  glyph,
+  hue,
+  size,
+  glow
+}: PersonalityGlyphProps): React.JSX.Element {
   if (glyph === 'ring') {
     return (
       <span
@@ -60,7 +65,10 @@ interface PersonalityMarkProps {
   size?: number
 }
 
-export function PersonalityMark({ personality, size = 9 }: PersonalityMarkProps): React.JSX.Element | null {
+export function PersonalityMark({
+  personality,
+  size = 9
+}: PersonalityMarkProps): React.JSX.Element | null {
   const meta = PERSONALITY_META[personality]
   if (!meta) return null
   const { hue, glyph, quiet, label, effect } = meta

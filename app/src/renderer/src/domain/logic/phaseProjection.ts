@@ -12,13 +12,13 @@ function average(vals: number[]): number {
   return vals.reduce((sum, v) => sum + v, 0) / vals.length
 }
 
-function roleAverage(members: MemberData[], role: Role, statKey: 'skill' | 'liability'): number {
+function roleAverage(members: MemberData[], role: Role, statKey: 'skill' | 'discipline'): number {
   const vals = members.filter((m) => m.role === role).map((m) => m[statKey])
   return average(vals)
 }
 
 export function projectPhase(phase: BossPhaseData, members: MemberData[]): PhaseProjection {
-  const statKey = phase.phaseType === PhaseType.SKILL_HEAVY ? 'skill' : 'liability'
+  const statKey = phase.phaseType === PhaseType.SKILL_HEAVY ? 'skill' : 'discipline'
 
   const dpsAvg = roleAverage(members, Role.DPS, statKey)
   const tankAvg = roleAverage(members, Role.TANK, statKey)

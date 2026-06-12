@@ -30,7 +30,7 @@ export function PhaseCard({
   const { score, chance } = projection
   const fill = Math.min(1, score / phase.phaseTarget)
   const ramp = chanceRamp(chance)
-  const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Liability'
+  const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'
 
   return (
     <div className="phase-card" style={{ borderTopColor: ramp }}>
@@ -76,7 +76,6 @@ export function PhaseCard({
           />
         </div>
         <div className="phase-card__projection-row">
-          <span className="phase-card__target">tgt {phase.phaseTarget}</span>
           <span className="phase-card__chance" style={{ color: ramp }}>
             {drafted ? pct(chance) : '—'}
             <span className="phase-card__chance-unit">{drafted ? '%' : ''}</span>
