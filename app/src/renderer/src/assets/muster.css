@@ -1898,7 +1898,7 @@ html {
 
 /* breathing room between the role glyph and the member name */
 .muster-chip__head .role-glyph {
-  margin-right: 4px;
+  margin-right: 8px;
 }
 
 .muster-chip__name {
