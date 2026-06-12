@@ -96,11 +96,21 @@ export function LootCard({
       <div className="loot-card__header">
         <RoleGlyph role={item.roleLock} size={38} />
         <div className="loot-card__body">
-          <div className="loot-card__name">{item.name}</div>
+          <div className="loot-card__name">
+            {item.name}
+            <span className={`loot-card__rarity loot-card__rarity--${item.rarity}`}>
+              {item.rarity === 'rare' ? 'Signature' : 'Common'}
+            </span>
+          </div>
           <div className="loot-card__role">{ROLE_LABELS[item.roleLock]}-bound</div>
           <div className="loot-card__flavor">{item.flavor}</div>
           <div className="loot-card__bonus">
-            +{item.skillBonus} Skill · +{item.disciplineBonus} Discipline
+            {[
+              item.skillBonus > 0 && `+${item.skillBonus} Skill`,
+              item.disciplineBonus > 0 && `+${item.disciplineBonus} Discipline`
+            ]
+              .filter(Boolean)
+              .join(' · ')}
           </div>
         </div>
       </div>

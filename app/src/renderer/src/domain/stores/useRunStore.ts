@@ -6,6 +6,7 @@ import { LootItemData } from '../data/lootData'
 import { drawCandidates, drawOpener, partitionPool } from '../logic/bossTiers'
 import { projectPhase } from '../logic/phaseProjection'
 import { selectDroppedItems } from '../logic/signatureLoot'
+import { useCampStore } from './useCampStore'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
 import { usePersonalityStore } from './usePersonalityStore'
@@ -172,6 +173,7 @@ export const useRunStore = create<RunState>((set, get) => {
       })
       useDraftStore.getState().reset()
       useLootStore.getState().reset()
+      useCampStore.getState().reset()
       usePersonalityStore.getState().reset()
       usePersonalityStore.getState().rollForRoster(memberPool)
     }

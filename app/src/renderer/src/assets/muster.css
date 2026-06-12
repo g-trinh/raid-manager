@@ -1797,3 +1797,209 @@
 .rm-btn--ghost:active {
   transform: translateY(1px);
 }
+
+/* ── Loot rarity badge ────────────────────────────────────────────── */
+.loot-card__rarity {
+  display: inline-block;
+  margin-left: 8px;
+  vertical-align: middle;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+.loot-card__rarity--rare {
+  color: var(--gold);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+}
+
+.loot-card__rarity--common {
+  color: var(--ash);
+  border: 1px solid color-mix(in srgb, var(--ash) 40%, transparent);
+  background: color-mix(in srgb, var(--ash) 8%, transparent);
+}
+
+/* ── Camp screen ──────────────────────────────────────────────────── */
+.camp-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(217, 154, 60, 0.07), transparent),
+    var(--rm-void);
+  animation: fadein 0.5s ease;
+}
+
+.camp-header {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 44px 18px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.camp-header__kicker {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3.2px;
+  text-transform: uppercase;
+  color: var(--rm-amber);
+}
+
+.camp-header__title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 34px;
+  color: var(--parch);
+  margin-top: 8px;
+}
+
+.camp-header__sub {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  color: var(--ash);
+  margin-top: 6px;
+}
+
+.camp-body {
+  flex: 1;
+  width: min(880px, 92vw);
+  margin: 0 auto;
+  padding: 26px 0 30px;
+}
+
+.camp-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.camp-option {
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 20px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--rm-r-lg);
+  background: linear-gradient(160deg, var(--ink2), var(--ink));
+  transition:
+    border-color 0.18s,
+    transform 0.18s,
+    box-shadow 0.18s;
+}
+
+.camp-option:hover {
+  border-color: color-mix(in srgb, var(--rm-amber) 55%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+.camp-option__action {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--rm-amber);
+}
+
+.camp-option__title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--parch);
+}
+
+.camp-option__flavor {
+  font-family: 'Barlow', sans-serif;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--ash);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.camp-option__effect {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--parch);
+  border-top: 1px solid var(--line-2, var(--line));
+  padding-top: 9px;
+}
+
+.camp-rest-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(560px, 100%);
+  margin: 0 auto;
+}
+
+.camp-result {
+  text-align: center;
+  padding-top: 10px;
+  animation: fadein 0.4s ease;
+}
+
+.camp-result__head {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--parch);
+  margin-bottom: 10px;
+}
+
+.camp-result__line {
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  color: var(--ash);
+  margin: 4px 0;
+}
+
+.camp-result__line b {
+  color: var(--parch);
+}
+
+.camp-result__line--bruise {
+  color: var(--rm-fail);
+}
+
+.camp-result__line--bruise b {
+  color: var(--rm-fail);
+}
+
+.camp-result__line--reaction {
+  font-size: 12.5px;
+}
+
+.camp-result__loot {
+  width: min(560px, 100%);
+  margin: 16px auto 8px;
+  text-align: left;
+}
+
+.camp-result__reactions {
+  margin-top: 10px;
+}
+
+.camp-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding: 18px 0 34px;
+  min-height: 96px;
+}
+
+.boss-candidate-card__weakest-value--unscouted {
+  color: var(--ash);
+  font-style: italic;
+}

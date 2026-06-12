@@ -28,8 +28,9 @@ export function PhaseCard({
   drafted
 }: PhaseCardProps): React.JSX.Element {
   const { score, chance } = projection
-  const fill = Math.min(1, score / phase.phaseTarget)
-  const ramp = chanceRamp(chance)
+  // No fill or color ramp until projections are meant to be visible
+  const fill = drafted ? Math.min(1, score / phase.phaseTarget) : 0
+  const ramp = drafted ? chanceRamp(chance) : 'var(--line)'
   const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'
 
   return (

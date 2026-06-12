@@ -190,7 +190,7 @@ export function OutcomeScreen({
 
   if (!isResolved) return null
 
-  const continueLabel = isRunOver ? null : 'Choose Your Path'
+  const continueLabel = isRunOver ? null : 'Make Camp'
 
   const handlePlayAgain = (): void => {
     reset()

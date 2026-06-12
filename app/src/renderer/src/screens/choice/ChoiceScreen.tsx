@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { BossData } from '../../domain/data/bossData'
+import { useCampStore } from '../../domain/stores/useCampStore'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
 import { useLootStore } from '../../domain/stores/useLootStore'
 import { useRunStore } from '../../domain/stores/useRunStore'
@@ -37,6 +38,8 @@ export function ChoiceScreen({ onPicked }: ChoiceScreenProps): React.JSX.Element
   const chooseBoss = useRunStore((s) => s.chooseBoss)
   const selectedMembers = useDraftStore((s) => s.selectedMembers)
   const effectiveRoster = useLootStore((s) => s.effectiveRoster)
+  const scouted = useCampStore((s) => s.scouted)
+  const consumeScout = useCampStore((s) => s.consumeScout)
 
   const roster = useMemo(() => effectiveRoster(selectedMembers), [effectiveRoster, selectedMembers])
 
@@ -48,6 +51,7 @@ export function ChoiceScreen({ onPicked }: ChoiceScreenProps): React.JSX.Element
 
   const handlePick = (boss: BossData): void => {
     chooseBoss(boss)
+    consumeScout()
     onPicked()
   }
 
@@ -67,13 +71,15 @@ export function ChoiceScreen({ onPicked }: ChoiceScreenProps): React.JSX.Element
               key={boss.bossName}
               boss={boss}
               roster={roster}
+              scouted={scouted}
               onPick={handlePick}
             />
           ))}
         </div>
         <div className="choice-footnote">
-          Forecasts read the locked muster against the phases of each foe. The road not taken is
-          lost — that foe will not return this run.
+          {scouted
+            ? 'The outriders have read each foe against the locked muster. The road not taken is lost — that foe will not return this run.'
+            : 'The phases are known, but not how the muster would fare — send outriders at camp to reveal full forecasts. The road not taken is lost.'}
         </div>
       </main>
     </div>

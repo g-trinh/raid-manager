@@ -4,7 +4,7 @@ The top-level structure of a single game session.
 
 ## Flow
 
-Draft -> [Boss Attempt](attempt.md) -> [Outcome](outcome.md)
+Draft -> [Boss Attempt](attempt.md) -> [Outcome](outcome.md) -> Spoils -> [Camp](camp.md) -> Boss Choice -> next attempt
 
 1. Player drafts 8 [members](member.md) from the hardcoded roster
 2. Player reviews the 3 visible phases of the active [boss](boss.md)

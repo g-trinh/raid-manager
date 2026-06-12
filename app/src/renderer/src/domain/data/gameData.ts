@@ -1,8 +1,53 @@
 import { BossData, createBoss } from './bossData'
 import { createPhase, PhaseType } from './bossPhaseData'
-import { createLootItem } from './lootData'
+import { createCommonItem, createLootItem, LootItemData } from './lootData'
 import { createMember, MemberData } from './memberData'
 import { Role } from './role'
+
+// Common road-loot: dropped by camp skirmishes, +1 to a single stat.
+export const commonLootPool: LootItemData[] = [
+  createCommonItem(
+    'road-whetstone',
+    'Road-Worn Whetstone',
+    'Half spent, still sharp enough to matter.',
+    Role.DPS,
+    1,
+    0
+  ),
+  createCommonItem(
+    'drillmasters-whistle',
+    "Drillmaster's Whistle",
+    'One shrill note and even the boldest blade remembers the line.',
+    Role.DPS,
+    0,
+    1
+  ),
+  createCommonItem(
+    'dented-tower-plate',
+    'Dented Tower Plate',
+    'The dent says it worked once already.',
+    Role.TANK,
+    1,
+    0
+  ),
+  createCommonItem(
+    'oathkeepers-cord',
+    "Oathkeeper's Cord",
+    'A knotted reminder of where to stand and why.',
+    Role.TANK,
+    0,
+    1
+  ),
+  createCommonItem('field-salve', 'Field Salve', 'Smells terrible. Works anyway.', Role.HEAL, 1, 0),
+  createCommonItem(
+    'worn-prayer-beads',
+    'Worn Prayer Beads',
+    "Each bead a calm breath taken in someone else's worst moment.",
+    Role.HEAL,
+    0,
+    1
+  )
+]
 
 export const memberPool: MemberData[] = [
   // Tanks — pool has 3, draft caps at 2

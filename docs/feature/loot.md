@@ -89,6 +89,19 @@ This means a Narrow Victory's spoils are a strict subset of a Full Victory's —
 
 ---
 
+## Rarity
+
+| Rarity | Source | Bonus | Effect |
+|---|---|---|---|
+| **Common** | Camp [skirmishes](camp.md) (roadside warbands) | +1 to a **single** stat | none |
+| **Rare** | Boss signature drops (this document) | +1 Skill **and** +1 Discipline | phase two: one-line effect (not yet implemented) |
+
+- `Item.rarity` is `common` or `rare`; every signature item is rare
+- Commons are generic road-loot (a whetstone, a drill whistle…) — role-locked like all
+  loot, but not tied to any boss or phase
+- Commons go through the same equip / bench / discard flow and trigger personality
+  reactions exactly like rares
+
 ## Item Magnitude & Curve
 
 **Goal:** small, frequent deltas that drip steadily across up to 15 bosses, building a noticeable but not trivializing edge by the gauntlet's later, harder phases.

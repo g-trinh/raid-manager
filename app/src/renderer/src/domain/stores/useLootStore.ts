@@ -27,6 +27,7 @@ interface LootState {
   effectiveStat: (member: MemberData, key: StatKey) => number
   effectiveRoster: (members: MemberData[]) => MemberData[]
   projectedStat: (member: MemberData, item: LootItemData, key: StatKey) => number
+  applyDelta: (memberName: string, skill: number, discipline: number) => void
   previewRings: (member: MemberData, roster: MemberData[]) => Record<string, RingType>
   bestow: (item: LootItemData, member: MemberData, roster: MemberData[]) => BestowResult
   bench: (item: LootItemData) => void
@@ -57,6 +58,19 @@ export const useLootStore = create<LootState>((set, get) => ({
   projectedStat: (member, item, key) => {
     const bonus = key === 'skill' ? item.skillBonus : item.disciplineBonus
     return clampStat(get().effectiveStat(member, key) + bonus)
+  },
+
+  // Permanent stat delta outside the loot flow (camp rest, skirmish bruises).
+  applyDelta: (memberName, skill, discipline) => {
+    set((state) => {
+      const cur = state.bonuses[memberName] ?? { skill: 0, discipline: 0 }
+      return {
+        bonuses: {
+          ...state.bonuses,
+          [memberName]: { skill: cur.skill + skill, discipline: cur.discipline + discipline }
+        }
+      }
+    })
   },
 
   // Which members a grant to `member` would touch, and how to ring each one.
