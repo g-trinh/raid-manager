@@ -50,6 +50,21 @@ test('camp and boss choice fit 1080p without horizontal overflow', async ({ page
   await expectNoHorizontalOverflow(page)
 })
 
+// AC: the wipe outcome (head, sub and both actions) fits short windows
+test('wipe outcome actions stay on screen at 800px window height', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await seedRandom(page, 0.99) // learning wipe in Phase I
+  await page.goto('/')
+  await draftFullRoster(page)
+  await beginAttempt(page)
+
+  const retreat = page.getByRole('button', { name: 'Retreat to Camp' })
+  await expect(retreat).toBeVisible()
+  const box = await retreat.boundingBox()
+  expect(box, 'retreat button bounding box').not.toBeNull()
+  expect(box!.y + box!.height, 'retreat button bottom edge').toBeLessThanOrEqual(800)
+})
+
 // AC: the base font scale is readable — no rendered text below 10px effective
 test('no text renders below 10px effective on the draft screen', async ({ page }) => {
   await seedRandom(page, 0.3)
