@@ -4,6 +4,7 @@ import { useCampStore } from '../../domain/stores/useCampStore'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
 import { useLootStore } from '../../domain/stores/useLootStore'
 import { useRunStore } from '../../domain/stores/useRunStore'
+import { MusterPanel } from '../shared/MusterPanel'
 import { BossCandidateCard } from './BossCandidateCard'
 import { RunTrail } from './RunTrail'
 
@@ -65,16 +66,21 @@ export function ChoiceScreen({ onPicked }: ChoiceScreenProps): React.JSX.Element
       </header>
 
       <main className="choice-body">
-        <div className="choice-candidates">
-          {pendingChoice.map((boss) => (
-            <BossCandidateCard
-              key={boss.bossName}
-              boss={boss}
-              roster={roster}
-              scouted={scouted}
-              onPick={handlePick}
-            />
-          ))}
+        <div className="choice-layout">
+          <div className="choice-candidates">
+            {pendingChoice.map((boss) => (
+              <BossCandidateCard
+                key={boss.bossName}
+                boss={boss}
+                roster={roster}
+                scouted={scouted}
+                onPick={handlePick}
+              />
+            ))}
+          </div>
+          <aside className="choice-muster">
+            <MusterPanel roster={selectedMembers} />
+          </aside>
         </div>
         <div className="choice-footnote">
           {scouted

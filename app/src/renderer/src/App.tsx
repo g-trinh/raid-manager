@@ -4,6 +4,7 @@ import { CampScreen } from './screens/camp/CampScreen'
 import { ChoiceScreen } from './screens/choice/ChoiceScreen'
 import { DraftScreen } from './screens/draft/DraftScreen'
 import { OutcomeScreen } from './screens/outcome/OutcomeScreen'
+import { MusterDrawer } from './screens/shared/MusterDrawer'
 
 type Screen = 'draft' | 'outcome' | 'camp' | 'choice'
 
@@ -15,22 +16,32 @@ function App(): React.JSX.Element {
     setScreen('camp')
   }
 
+  let current: React.JSX.Element
   if (screen === 'camp') {
-    return <CampScreen onContinue={() => setScreen('choice')} />
-  }
-  if (screen === 'choice') {
-    return <ChoiceScreen onPicked={() => setScreen('outcome')} />
-  }
-  if (screen === 'outcome') {
-    return (
+    current = <CampScreen onContinue={() => setScreen('choice')} />
+  } else if (screen === 'choice') {
+    current = <ChoiceScreen onPicked={() => setScreen('outcome')} />
+  } else if (screen === 'outcome') {
+    current = (
       <OutcomeScreen
         onPlayAgain={() => setScreen('draft')}
         onChoosePath={goToCamp}
         onInvalidState={() => setScreen('draft')}
       />
     )
+  } else {
+    current = <DraftScreen onProceed={() => setScreen('outcome')} />
   }
-  return <DraftScreen onProceed={() => setScreen('outcome')} />
+
+  // Draft and choice keep a persistent roster panel — the drawer covers the rest.
+  const showDrawer = screen !== 'draft' && screen !== 'choice'
+
+  return (
+    <>
+      {current}
+      {showDrawer && <MusterDrawer />}
+    </>
+  )
 }
 
 export default App

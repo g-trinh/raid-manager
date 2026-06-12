@@ -3,11 +3,11 @@ import { MemberData } from '../../domain/data/memberData'
 import { projectPhase } from '../../domain/logic/phaseProjection'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
 import { useRunStore } from '../../domain/stores/useRunStore'
+import { MusterPanel } from '../shared/MusterPanel'
 import { SectionLabel } from '../shared/SectionLabel'
 import { CandidateCard } from './CandidateCard'
 import { MusterComplete } from './MusterComplete'
 import { PhaseCard } from './PhaseCard'
-import { RosterTray } from './RosterTray'
 
 interface DraftScreenProps {
   onProceed: () => void
@@ -23,8 +23,6 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
 
   const full = isDraftComplete()
   const round = Math.min(selectedMembers.length + 1, 8)
-  const lastAdded =
-    selectedMembers.length > 0 ? selectedMembers[selectedMembers.length - 1].memberName : null
 
   const projections = useMemo(
     () => boss.phases.map((phase) => projectPhase(phase, selectedMembers)),
@@ -77,7 +75,9 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
         )}
       </main>
 
-      <RosterTray roster={selectedMembers} lastAdded={lastAdded} />
+      <div className="muster-tray">
+        <MusterPanel roster={selectedMembers} showEmpty={!full} />
+      </div>
     </div>
   )
 }

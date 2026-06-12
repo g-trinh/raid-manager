@@ -26,7 +26,9 @@ export function BossCandidateCard({
           <div className="boss-candidate-card__name">{boss.bossName}</div>
           <div className="boss-candidate-card__epithet">{boss.epithet}</div>
         </div>
-        <div className="boss-candidate-card__verdict">{scouted ? verdict.label : verdict.coarse}</div>
+        <div className="boss-candidate-card__verdict">
+          {scouted ? verdict.label : verdict.coarse}
+        </div>
       </div>
 
       <div className="boss-candidate-card__phases">
