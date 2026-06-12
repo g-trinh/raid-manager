@@ -62,7 +62,7 @@ export function BossCandidateCard({
             <>
               <div className="boss-candidate-card__weakest-label">Forecast</div>
               <div className="boss-candidate-card__weakest-value boss-candidate-card__weakest-value--unscouted">
-                Send outriders at camp for the full read
+                Send outriders for the full read
               </div>
             </>
           )}

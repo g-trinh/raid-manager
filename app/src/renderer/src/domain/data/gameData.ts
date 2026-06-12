@@ -4,7 +4,7 @@ import { createCommonItem, createLootItem, LootItemData } from './lootData'
 import { createMember, MemberData } from './memberData'
 import { Role } from './role'
 
-// Common road-loot: dropped by camp skirmishes, +1 to a single stat.
+// Common road-loot: dropped by road clears (trash packs), +1 to a single stat.
 export const commonLootPool: LootItemData[] = [
   createCommonItem(
     'road-whetstone',

@@ -95,6 +95,14 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
     setPreview(null)
   }
 
+  // Loot never blocks: anything left unclaimed walks out in the satchel
+  const handleContinue = (): void => {
+    for (const item of pendingItems) {
+      if (!satchel.some((i) => i.id === item.id)) bench(item)
+    }
+    onContinue()
+  }
+
   const meta =
     outcome === Outcome.FULL_VICTORY || outcome === Outcome.NARROW_VICTORY
       ? OUTCOME_META[outcome]
@@ -158,7 +166,12 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
       </div>
 
       <div className="spoils-screen__footer">
-        <button className="rm-btn rm-btn--default" onClick={onContinue}>
+        {pendingItems.some((item) => !satchel.some((i) => i.id === item.id)) && (
+          <div className="spoils-screen__stow-note">
+            Unclaimed spoils are stowed in the satchel — settle them at the war table any time.
+          </div>
+        )}
+        <button className="rm-btn rm-btn--default" onClick={handleContinue}>
           {continueLabel}
         </button>
       </div>

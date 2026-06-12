@@ -64,6 +64,6 @@ In order, per phase:
 ## Rules
 
 - No player input during resolution
-- Wipes can be retried (Pull Again / Retreat to Camp) — the disband clock in [morale](morale/todo.md) bounds the retries
+- Wipes can be retried (Pull Again, or back to the [war table](camp.md)) — the disband clock in [morale](morale/todo.md) bounds the retries
 - A boss is won only when all 3 phases pass in a single pull
 - One-shot kill = Full Victory; a kill after wipes = Narrow Victory

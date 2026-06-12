@@ -16,10 +16,28 @@ export async function draftFullRoster(page: Page): Promise<void> {
   }
 }
 
-export async function beginAttempt(page: Page): Promise<void> {
+// Draft → war table (the hub; combat starts only here)
+export async function musterToTable(page: Page): Promise<void> {
   await page.getByRole('button', { name: /Begin/ }).click()
+  await expect(page.locator('.war-table')).toBeVisible()
+}
+
+// War table → one pull, revealed
+export async function pullBoss(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /^Pull — Attempt/ }).click()
   // Phase reveal animation: 700ms + 3×1050ms + outcome delay
   await expect(page.locator('.resolution-outcome--visible')).toBeVisible({ timeout: 10_000 })
+}
+
+export async function beginAttempt(page: Page): Promise<void> {
+  await musterToTable(page)
+  await pullBoss(page)
+}
+
+// Victory outcome → war table in road mode
+export async function spoilsToRoadMode(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'To the War Table' }).click()
+  await expect(page.locator('.war-table--road')).toBeVisible()
 }
 
 export async function openSpoils(page: Page): Promise<void> {
@@ -34,7 +52,8 @@ export async function discardAllSpoils(page: Page): Promise<void> {
   }
 }
 
-export async function goToCamp(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Make Camp' }).click()
-  await expect(page.locator('.camp-option').first()).toBeVisible()
+// Road mode → pick the first candidate → the road encounter
+export async function takeFirstRoad(page: Page): Promise<void> {
+  await page.locator('.boss-candidate-card__pick').first().click()
+  await expect(page.locator('.road-screen')).toBeVisible()
 }

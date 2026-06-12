@@ -3,9 +3,10 @@ import {
   beginAttempt,
   discardAllSpoils,
   draftFullRoster,
-  goToCamp,
   openSpoils,
-  seedRandom
+  seedRandom,
+  spoilsToRoadMode,
+  takeFirstRoad
 } from './helpers'
 
 // AC: draft candidates that lift the weakest projected phase carry a pick hint
@@ -80,27 +81,28 @@ test('failed phases explain which role average let the muster down', async ({ pa
   await expect(page.locator('.phase-resolve-row--unreached')).toHaveCount(2)
 })
 
-// AC: camp loot distribution gets the same reacts strip and chronicle coverage
-test('camp skirmish loot shows the muster strip and logs to the chronicle', async ({ page }) => {
+// AC: road loot distribution gets the same reacts strip and chronicle coverage
+test('road clear loot shows the muster strip and logs to the chronicle', async ({ page }) => {
   await seedRandom(page, 0.3)
   await page.goto('/')
   await draftFullRoster(page)
   await beginAttempt(page)
   await openSpoils(page)
   await discardAllSpoils(page)
-  await goToCamp(page)
+  await spoilsToRoadMode(page)
+  await takeFirstRoad(page)
 
-  await page.getByRole('button', { name: /Hunt the Road/ }).click()
+  await page.getByRole('button', { name: /Clear Wide/ }).click()
   await expect(page.locator('.camp-result')).toBeVisible()
   await expect(page.locator('.camp-result .muster-chip')).toHaveCount(8)
 
   await page.locator('.chronicle-drawer__toggle').click()
   await expect(
-    page.locator('.chronicle-drawer__text').filter({ hasText: 'Skirmish won' })
+    page.locator('.chronicle-drawer__text').filter({ hasText: 'cleared wide' })
   ).toHaveCount(1)
 })
 
-// AC: boss choice shows a coarse verdict unscouted; scouting reveals full forecasts
+// AC: road mode shows a coarse verdict unscouted; scouting reveals full forecasts
 test('scouting upgrades the boss choice from coarse verdict to full forecast', async ({ page }) => {
   await seedRandom(page, 0.3)
   await page.goto('/')
@@ -108,13 +110,14 @@ test('scouting upgrades the boss choice from coarse verdict to full forecast', a
   await beginAttempt(page)
   await openSpoils(page)
   await discardAllSpoils(page)
-  await goToCamp(page)
+  await spoilsToRoadMode(page)
 
-  await page.getByRole('button', { name: /Send Outriders/ }).click()
-  await page.getByRole('button', { name: 'Break Camp' }).click()
-
+  // Unscouted: coarse one-word verdict
   const verdicts = page.locator('.boss-candidate-card__verdict')
   await expect(verdicts.first()).toBeVisible()
+  await expect(verdicts.first()).toHaveText(/^(Favorable|Even|Grim)$/)
+
+  await page.getByRole('button', { name: /Send Outriders/ }).click()
   // Scouted: precise verdict labels and percent chances
   await expect(verdicts.first()).toHaveText(/likely/)
   await expect(page.locator('.phase-card__chance').first()).toHaveText(/%/)

@@ -59,6 +59,23 @@ beforeEach(() => {
   useChronicleStore.getState().reset()
 })
 
+// AC: a stowed item that gets equipped or discarded leaves the satchel — no dupes
+describe('satchel — settlement', () => {
+  it('bestow pulls the item out of the satchel', () => {
+    useLootStore.getState().bench(dpsItem)
+    expect(useLootStore.getState().satchel).toHaveLength(1)
+    useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    expect(useLootStore.getState().satchel).toHaveLength(0)
+  })
+
+  it('discard pulls the item out of the satchel', () => {
+    useLootStore.getState().bench(dpsItem)
+    useLootStore.getState().discard(dpsItem)
+    expect(useLootStore.getState().satchel).toHaveLength(0)
+    expect(useLootStore.getState().discarded).toHaveLength(1)
+  })
+})
+
 // AC: being geared keeps people in the guild — rare loot more than commons
 describe('bestow — morale', () => {
   it('a rare grant restores +2 morale, a common +1', () => {

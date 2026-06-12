@@ -31,8 +31,7 @@ function failureCause(phase: BossPhaseData, roster: MemberData[]): string {
 
 interface OutcomeScreenProps {
   onPlayAgain: () => void
-  onChoosePath: () => void
-  onRetreat: () => void
+  onToTable: () => void
   onInvalidState: () => void
 }
 
@@ -254,7 +253,7 @@ function AttemptReveal({
               Pull Again
             </button>
             <button className="rm-btn rm-btn--ghost" onClick={onRetreat}>
-              Retreat to Camp
+              To the War Table
             </button>
           </div>
         ) : (
@@ -272,8 +271,7 @@ function AttemptReveal({
 
 export function OutcomeScreen({
   onPlayAgain,
-  onChoosePath,
-  onRetreat,
+  onToTable,
   onInvalidState
 }: OutcomeScreenProps): React.JSX.Element | null {
   const isResolved = useRunStore((s) => s.isResolved)
@@ -286,7 +284,7 @@ export function OutcomeScreen({
   const pullsThisBoss = useRunStore((s) => s.pullsThisBoss)
   const wipePhaseIndex = useRunStore((s) => s.wipePhaseIndex)
   const quitter = useRunStore((s) => s.quitter)
-  const retry = useRunStore((s) => s.retry)
+  const pull = useRunStore((s) => s.pull)
   const reset = useRunStore((s) => s.reset)
 
   useEffect(() => {
@@ -298,7 +296,7 @@ export function OutcomeScreen({
 
   if (!isResolved) return null
 
-  const continueLabel = isRunOver ? null : 'Make Camp'
+  const continueLabel = isRunOver ? null : 'To the War Table'
 
   const handlePlayAgain = (): void => {
     reset()
@@ -315,9 +313,9 @@ export function OutcomeScreen({
       pullsThisBoss={pullsThisBoss}
       wipePhaseIndex={wipePhaseIndex}
       quitter={quitter}
-      onContinue={onChoosePath}
-      onRetry={retry}
-      onRetreat={onRetreat}
+      onContinue={onToTable}
+      onRetry={pull}
+      onRetreat={onToTable}
       onPlayAgain={handlePlayAgain}
       continueLabel={continueLabel}
     />

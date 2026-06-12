@@ -19,7 +19,6 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
   const selectedMembers = useDraftStore((s) => s.selectedMembers)
   const addMember = useDraftStore((s) => s.addMember)
   const isDraftComplete = useDraftStore((s) => s.isDraftComplete)
-  const resolve = useRunStore((s) => s.resolve)
   const boss = useRunStore((s) => s.boss)
 
   const full = isDraftComplete()
@@ -54,8 +53,8 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
     addMember(member)
   }
 
+  // The draft only musters — the first pull is called from the war table
   const handleBegin = (): void => {
-    resolve()
     onProceed()
   }
 

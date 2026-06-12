@@ -6,7 +6,8 @@ import { useChronicleStore } from './useChronicleStore'
 import { useLootStore } from './useLootStore'
 import { useMoraleStore } from './useMoraleStore'
 
-export type CampAction = 'rest' | 'scout' | 'skirmish'
+// War-table and road actions: Rest between pulls, Scout in road mode, and the
+// road encounter (Clear wide / March past) on the way to a new boss.
 
 export interface RestResult {
   memberName: string
@@ -18,27 +19,28 @@ export interface Bruise {
   stat: 'skill' | 'discipline'
 }
 
-export interface SkirmishResult {
+export interface RoadClearResult {
   item: LootItemData
   bruise: Bruise | null
 }
 
 const BRUISE_CHANCE = 0.3
+const MARCH_MORALE = 1
 
 const STAT_LABEL = { skill: 'Skill', discipline: 'Discipline' } as const
 
 interface CampState {
-  // Action chosen at the current camp, null while undecided
-  chosenAction: CampAction | null
-  restResult: RestResult | null
-  skirmishResult: SkirmishResult | null
-  // True until the next boss is picked — gates the choice-screen forecasts
+  // Rest is available once per pull interval; pull() opens the next interval
+  restSpent: boolean
+  // True until the next boss is picked — gates the road-mode forecasts
   scouted: boolean
+  roadClearResult: RoadClearResult | null
 
   rest: (member: MemberData) => RestResult
   scout: () => void
-  skirmish: (roster: MemberData[]) => SkirmishResult
-  beginCamp: () => void
+  clearWide: (roster: MemberData[]) => RoadClearResult
+  marchPast: (roster: MemberData[]) => void
+  newInterval: () => void
   consumeScout: () => void
   reset: () => void
 }
@@ -47,15 +49,14 @@ function pick<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)]
 }
 
-// The same common item can drop at several camps — each drop is its own instance
-// so satchel/resolution bookkeeping (keyed by id) never collides.
+// The same common item can drop on several roads — each drop is its own
+// instance so satchel/resolution bookkeeping (keyed by id) never collides.
 let dropCounter = 0
 
 export const useCampStore = create<CampState>((set) => ({
-  chosenAction: null,
-  restResult: null,
-  skirmishResult: null,
+  restSpent: false,
   scouted: false,
+  roadClearResult: null,
 
   rest: (member) => {
     const { effectiveStat, applyDelta } = useLootStore.getState()
@@ -71,7 +72,7 @@ export const useCampStore = create<CampState>((set) => ({
     useChronicleStore
       .getState()
       .log('camp', `Rest — ${member.memberName} recovers: +1 ${STAT_LABEL[stat]}, +3 morale`)
-    set({ chosenAction: 'rest', restResult: result })
+    set({ restSpent: true })
     return result
   },
 
@@ -79,10 +80,10 @@ export const useCampStore = create<CampState>((set) => ({
     useChronicleStore
       .getState()
       .log('camp', 'Outriders sent — the next foes will be fully forecast')
-    set({ chosenAction: 'scout', scouted: true })
+    set({ scouted: true })
   },
 
-  skirmish: (roster) => {
+  clearWide: (roster) => {
     const base = pick(commonLootPool)
     const item = { ...base, id: `${base.id}-${++dropCounter}` }
 
@@ -97,18 +98,29 @@ export const useCampStore = create<CampState>((set) => ({
     }
 
     const { log } = useChronicleStore.getState()
-    log('camp', `Skirmish won — 「${item.name}」 claimed from the warband`)
+    log('camp', `The road cleared wide — 「${item.name}」 claimed from the packs`)
     if (bruise) {
-      log('camp', `${bruise.memberName} bruised in the skirmish — −1 ${STAT_LABEL[bruise.stat]}`)
+      log('camp', `${bruise.memberName} bruised on the road — −1 ${STAT_LABEL[bruise.stat]}`)
     }
 
-    const result: SkirmishResult = { item, bruise }
-    set({ chosenAction: 'skirmish', skirmishResult: result })
+    const result: RoadClearResult = { item, bruise }
+    set({ roadClearResult: result })
     return result
   },
 
-  beginCamp: () => {
-    set({ chosenAction: null, restResult: null, skirmishResult: null })
+  marchPast: (roster) => {
+    const morale = useMoraleStore.getState()
+    for (const member of roster) {
+      morale.restore(member.memberName, MARCH_MORALE)
+    }
+    useChronicleStore
+      .getState()
+      .log('camp', `The muster marches past the packs — fresh legs (+${MARCH_MORALE} morale)`)
+    set({ roadClearResult: null })
+  },
+
+  newInterval: () => {
+    set({ restSpent: false, roadClearResult: null })
   },
 
   consumeScout: () => {
@@ -116,6 +128,6 @@ export const useCampStore = create<CampState>((set) => ({
   },
 
   reset: () => {
-    set({ chosenAction: null, restResult: null, skirmishResult: null, scouted: false })
+    set({ restSpent: false, scouted: false, roadClearResult: null })
   }
 }))

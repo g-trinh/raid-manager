@@ -133,7 +133,7 @@ export const useLootStore = create<LootState>((set, get) => ({
     return clampStat(get().effectiveStat(member, key) + bonus)
   },
 
-  // Permanent stat delta outside the loot flow (camp rest, skirmish bruises).
+  // Permanent stat delta outside the loot flow (rest, road bruises).
   applyDelta: (memberName, skill, discipline) => {
     set((state) => {
       const cur = state.bonuses[memberName] ?? { skill: 0, discipline: 0 }
@@ -233,13 +233,15 @@ export const useLootStore = create<LootState>((set, get) => ({
       }
     }
 
-    set({
+    set((state) => ({
       bonuses: updated,
       equippedBy: {
         ...equippedBy,
         [member.memberName]: [...(equippedBy[member.memberName] ?? []), item]
-      }
-    })
+      },
+      // A stowed item that gets equipped leaves the satchel for good
+      satchel: state.satchel.filter((i) => i.id !== item.id)
+    }))
 
     // Being geared keeps people in the guild — rare loot more than commons
     const moraleGain = item.rarity === 'rare' ? 2 : 1
@@ -273,7 +275,10 @@ export const useLootStore = create<LootState>((set, get) => ({
 
   discard: (item) => {
     useChronicleStore.getState().log('loot', `「${item.name}」 cast aside, lost to the dark`)
-    set((state) => ({ discarded: [...state.discarded, item] }))
+    set((state) => ({
+      discarded: [...state.discarded, item],
+      satchel: state.satchel.filter((i) => i.id !== item.id)
+    }))
   },
 
   reset: () => {

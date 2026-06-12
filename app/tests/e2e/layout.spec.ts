@@ -3,9 +3,10 @@ import {
   beginAttempt,
   discardAllSpoils,
   draftFullRoster,
-  goToCamp,
   openSpoils,
-  seedRandom
+  seedRandom,
+  spoilsToRoadMode,
+  takeFirstRoad
 } from './helpers'
 
 // AC: the zoomed-up UI never overflows horizontally on the main target resolution
@@ -34,21 +35,29 @@ test('spoils screen fits 1080p without horizontal overflow', async ({ page }) =>
   await expectNoHorizontalOverflow(page)
 })
 
-test('camp and boss choice fit 1080p without horizontal overflow', async ({ page }) => {
+test('war table and road fit 1080p without horizontal overflow', async ({ page }) => {
   await seedRandom(page, 0.3)
   await page.goto('/')
   await draftFullRoster(page)
-  await beginAttempt(page)
-  await openSpoils(page)
-  await discardAllSpoils(page)
-  await goToCamp(page)
+  await page.getByRole('button', { name: /Begin/ }).click()
+  await expect(page.locator('.war-table')).toBeVisible()
   await expectNoHorizontalOverflow(page)
 
-  await page.getByRole('button', { name: /Send Outriders/ }).click()
-  await page.getByRole('button', { name: 'Break Camp' }).click()
+  await beginAttemptFromTable(page)
+  await openSpoils(page)
+  await discardAllSpoils(page)
+  await spoilsToRoadMode(page)
   await expect(page.locator('.boss-candidate-card__verdict').first()).toBeVisible()
   await expectNoHorizontalOverflow(page)
+
+  await takeFirstRoad(page)
+  await expectNoHorizontalOverflow(page)
 })
+
+async function beginAttemptFromTable(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /^Pull — Attempt/ }).click()
+  await expect(page.locator('.resolution-outcome--visible')).toBeVisible({ timeout: 10_000 })
+}
 
 // AC: the wipe outcome (head, sub and both actions) fits short windows
 test('wipe outcome actions stay on screen at 800px window height', async ({ page }) => {
@@ -58,11 +67,11 @@ test('wipe outcome actions stay on screen at 800px window height', async ({ page
   await draftFullRoster(page)
   await beginAttempt(page)
 
-  const retreat = page.getByRole('button', { name: 'Retreat to Camp' })
-  await expect(retreat).toBeVisible()
-  const box = await retreat.boundingBox()
-  expect(box, 'retreat button bounding box').not.toBeNull()
-  expect(box!.y + box!.height, 'retreat button bottom edge').toBeLessThanOrEqual(800)
+  const toTable = page.getByRole('button', { name: 'To the War Table' })
+  await expect(toTable).toBeVisible()
+  const box = await toTable.boundingBox()
+  expect(box, 'war table button bounding box').not.toBeNull()
+  expect(box!.y + box!.height, 'war table button bottom edge').toBeLessThanOrEqual(800)
 })
 
 // AC: the base font scale is readable — no rendered text below 10px effective

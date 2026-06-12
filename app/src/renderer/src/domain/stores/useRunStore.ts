@@ -73,8 +73,7 @@ interface RunState {
   isFinalBoss: boolean
   isRunOver: boolean
 
-  resolve: () => void
-  retry: () => void
+  pull: () => void
   chooseBoss: (boss: BossData) => void
   reset: () => void
 }
@@ -305,23 +304,24 @@ export const useRunStore = create<RunState>((set, get) => {
     isFinalBoss: false,
     isRunOver: false,
 
-    resolve: () => {
+    // The one way into combat: an explicit pull from the war table (or the
+    // wipe screen's Pull Again shortcut). Never a side effect of navigation.
+    pull: () => {
+      const { boss, pullsThisBoss, bossDown, isRunOver } = get()
       if (!useDraftStore.getState().isDraftComplete()) {
-        console.warn('RunState.resolve() called before draft is complete')
+        console.warn('RunState.pull() called before draft is complete')
         return
       }
-      performPull(get().runBosses[0], 1)
-    },
-
-    retry: () => {
-      const { outcome, boss, pullsThisBoss } = get()
-      if (outcome !== Outcome.WIPE) {
-        console.warn('RunState.retry() called without a wipe to retry')
+      if (bossDown || isRunOver) {
+        console.warn('RunState.pull() called with no boss standing')
         return
       }
+      // A fresh interval: Rest becomes available again after this pull
+      useCampStore.getState().newInterval()
       performPull(boss, pullsThisBoss + 1)
     },
 
+    // Select only — the player pulls from the war table when ready
     chooseBoss: (picked) => {
       const { bossIndex, runBosses, pendingChoice } = get()
       if (!pendingChoice) {
@@ -340,10 +340,13 @@ export const useRunStore = create<RunState>((set, get) => {
         boss: picked,
         runBosses: [...runBosses, picked],
         seenBosses: [...state.seenBosses, picked, ...unpicked],
-        pendingChoice: null
+        pendingChoice: null,
+        bossDown: false,
+        isResolved: false,
+        pullsThisBoss: 0,
+        wipePhaseIndex: null,
+        outcome: Outcome.WIPE
       }))
-
-      performPull(picked, 1)
     },
 
     reset: () => {

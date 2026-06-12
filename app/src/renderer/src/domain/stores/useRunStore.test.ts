@@ -60,7 +60,7 @@ afterEach(() => {
 describe('run — sequential phases', () => {
   it('a kill requires all three phases and one-shots count as full victories', () => {
     scriptRandom(KILL)
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const state = useRunStore.getState()
     expect(state.outcome).toBe(Outcome.FULL_VICTORY)
     expect(state.phasesSucceeded).toBe(3)
@@ -70,7 +70,7 @@ describe('run — sequential phases', () => {
 
   it('a failed phase wipes the pull — later phases are never reached', () => {
     scriptRandom([...PHASE_PASSES, ...PHASE_FAILS_LEARNING])
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const state = useRunStore.getState()
     expect(state.outcome).toBe(Outcome.WIPE)
     expect(state.wipePhaseIndex).toBe(1)
@@ -83,7 +83,7 @@ describe('run — sequential phases', () => {
   it('a lethal fumble wipes the raid on the spot, attributed by name', () => {
     // First member (Gorvak, skill 2 / disc 3) fumbles, and the fumble is lethal
     scriptRandom([0.0, ...Array(ROSTER_SIZE - 1).fill(0.9), 0.0])
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const state = useRunStore.getState()
     expect(state.outcome).toBe(Outcome.WIPE)
     expect(state.wipePhaseIndex).toBe(0)
@@ -98,10 +98,10 @@ describe('run — sequential phases', () => {
 describe('run — retry loop', () => {
   it('retry pulls the same boss again and a later kill is a narrow victory', () => {
     scriptRandom([...PHASE_FAILS_LEARNING, ...KILL])
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     expect(useRunStore.getState().pullsThisBoss).toBe(1)
 
-    useRunStore.getState().retry()
+    useRunStore.getState().pull()
     const state = useRunStore.getState()
     expect(state.pullsThisBoss).toBe(2)
     expect(state.outcome).toBe(Outcome.NARROW_VICTORY)
@@ -110,18 +110,32 @@ describe('run — retry loop', () => {
 
   it('the wiped phase still teaches — the next pull rolls with mastery', () => {
     scriptRandom([...PHASE_FAILS_LEARNING, ...PHASE_FAILS_LEARNING])
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     expect(useRunStore.getState().phaseResults[0].masteryPct).toBe(0)
-    useRunStore.getState().retry()
+    useRunStore.getState().pull()
     expect(useRunStore.getState().phaseResults[0].masteryPct).toBeGreaterThan(0)
   })
 
-  it('retry without a wipe is refused', () => {
+  it('pulling with no boss standing is refused', () => {
     scriptRandom(KILL)
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const before = useRunStore.getState().pullsThisBoss
-    useRunStore.getState().retry()
+    useRunStore.getState().pull() // boss is down — nothing to pull
     expect(useRunStore.getState().pullsThisBoss).toBe(before)
+  })
+
+  it('choosing the next boss arms the table without pulling', () => {
+    scriptRandom(KILL)
+    useRunStore.getState().pull()
+    const choice = useRunStore.getState().pendingChoice
+    expect(choice).not.toBeNull()
+
+    useRunStore.getState().chooseBoss(choice![0])
+    const state = useRunStore.getState()
+    expect(state.boss.bossName).toBe(choice![0].bossName)
+    expect(state.pullsThisBoss).toBe(0)
+    expect(state.bossDown).toBe(false)
+    expect(state.isResolved).toBe(false)
   })
 })
 
@@ -130,7 +144,7 @@ describe('run — disband', () => {
   it('a wipe that breaks a member disbands the guild', () => {
     useMoraleStore.setState({ morale: { Gorvak: 2 }, fumbles: {} })
     scriptRandom(PHASE_FAILS_LEARNING) // phase I wipe: −2 base
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const state = useRunStore.getState()
     expect(state.outcome).toBe(Outcome.DISBAND)
     expect(state.quitter).toBe('Gorvak')
@@ -143,7 +157,7 @@ describe('run — disband', () => {
 describe('run — chronicle entries', () => {
   it('a one-shot kill logs three held phases, the victory and the drops', () => {
     scriptRandom(KILL)
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const texts = chronicleTexts()
     expect(texts.filter((t) => t.includes('Held')).length).toBe(3)
     expect(texts.some((t) => t.includes('Full Victory'))).toBe(true)
@@ -152,7 +166,7 @@ describe('run — chronicle entries', () => {
 
   it('a learning wipe logs only the reached phases and no drops', () => {
     scriptRandom(PHASE_FAILS_LEARNING)
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     const texts = chronicleTexts()
     expect(texts.filter((t) => t.includes('Broke')).length).toBe(1)
     expect(texts.some((t) => t.includes('still learning'))).toBe(true)
@@ -170,7 +184,7 @@ describe('run — chronicle entries', () => {
 describe('run — phase result detail', () => {
   it('each reached phase exposes the projected score', () => {
     scriptRandom(KILL)
-    useRunStore.getState().resolve()
+    useRunStore.getState().pull()
     for (const result of useRunStore.getState().phaseResults) {
       expect(result.reached).toBe(true)
       expect(result.score).toBeGreaterThan(0)

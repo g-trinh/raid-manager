@@ -57,21 +57,25 @@ test('repeated wipes strain the muster and finally disband the guild', async ({ 
   await expect(page.locator('.candidate-card').first()).toBeVisible()
 })
 
-// AC: retreating to camp mid-boss hides scouting and returns to the same pull
-test('retreat to camp offers rest but no outriders, then returns to the boss', async ({ page }) => {
+// AC: between pulls the table offers Rest once per interval, then the next pull
+test('the war table allows one rest between pulls, then pulls again', async ({ page }) => {
   await seedRandom(page, 0.99)
   await page.goto('/')
   await draftFullRoster(page)
   await beginAttempt(page)
 
-  await page.getByRole('button', { name: 'Retreat to Camp' }).click()
-  await expect(page.locator('.camp-header__kicker')).toHaveText('The Retreat')
+  await page.getByRole('button', { name: 'To the War Table' }).click()
+  await expect(page.locator('.war-table')).toBeVisible()
+  // Mid-progression: no road mode, no outriders
   await expect(page.getByRole('button', { name: /Send Outriders/ })).toHaveCount(0)
 
-  // Rest someone, then go back in
-  await page.getByRole('button', { name: /Bind Wounds/ }).click()
+  // Rest someone — once per interval
+  await page.getByRole('button', { name: 'Rest a member' }).click()
   await page.locator('.loot-option').first().click()
-  await expect(page.locator('.camp-result__line')).toContainText('+3 morale')
-  await page.getByRole('button', { name: 'Return to the Boss' }).click()
+  await expect(page.locator('.war-table__rest-line')).toContainText('+3 morale')
+  await expect(page.getByRole('button', { name: /Rested — back after/ })).toBeDisabled()
+
+  // Back into the boss
+  await page.getByRole('button', { name: /^Pull — Attempt 2/ }).click()
   await expect(page.locator('.resolution-screen__kicker')).toHaveText('The Attempt · Pull 2')
 })
