@@ -62,7 +62,7 @@ test('chronicle records the attempt, the grant and the muster silence', async ({
   await page.locator('.chronicle-drawer__toggle').click()
   const texts = page.locator('.chronicle-drawer__text')
   await expect(texts.filter({ hasText: 'Held' })).toHaveCount(3)
-  await expect(texts.filter({ hasText: 'Full Victory' })).toHaveCount(1)
+  await expect(texts.filter({ hasText: 'falls in one pull' })).toHaveCount(1)
   await expect(texts.filter({ hasText: 'bestowed upon' })).toHaveCount(1)
   await expect(texts.filter({ hasText: "doesn't react" })).toHaveCount(1)
 })

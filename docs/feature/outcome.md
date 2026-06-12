@@ -4,12 +4,11 @@ The end state of one pull.
 
 ## States
 
-| State          | Condition                              | Description |
-|----------------|----------------------------------------|-------------|
-| Full Victory   | all 3 phases pass on pull 1            | One-shot — all 3 signature items drop |
-| Narrow Victory | all 3 phases pass on a later pull      | Ground out — 2 of 3 signature items drop |
-| Wipe           | a phase fails                          | Pull lost; Pull Again or back To the War Table |
-| Disband        | a member's morale hits 0 after a wipe  | They gquit, the guild disbands, run over |
+| State    | Condition                              | Description |
+|----------|----------------------------------------|-------------|
+| Victory  | all 3 phases pass in one pull          | A kill is a kill — all 3 signature items drop, however many pulls it took |
+| Wipe     | a phase fails                          | Pull lost; Pull Again or back To the War Table |
+| Disband  | a member's morale hits 0 after a wipe  | They gquit, the guild disbands, run over |
 
 ## Rules
 

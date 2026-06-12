@@ -66,4 +66,5 @@ In order, per phase:
 - No player input during resolution
 - Wipes can be retried (Pull Again, or back to the [war table](camp.md)) — the disband clock in [morale](morale/todo.md) bounds the retries
 - A boss is won only when all 3 phases pass in a single pull
-- One-shot kill = Full Victory; a kill after wipes = Narrow Victory
+- A kill is a kill: the full signature set drops regardless of pull count
+  (the real cost of extra pulls is morale and fumble grievance)

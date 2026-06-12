@@ -19,17 +19,10 @@ interface OutcomeMeta {
   head: string
 }
 
-const OUTCOME_META: Record<Outcome.FULL_VICTORY | Outcome.NARROW_VICTORY, OutcomeMeta> = {
-  [Outcome.FULL_VICTORY]: {
-    color: '#a6b67c',
-    kicker: 'The Spoils',
-    head: 'Signature items, freely given'
-  },
-  [Outcome.NARROW_VICTORY]: {
-    color: '#d99a3c',
-    kicker: 'The Spoils',
-    head: 'Signature items, hard-won'
-  }
+const VICTORY_META: OutcomeMeta = {
+  color: '#a6b67c',
+  kicker: 'The Spoils',
+  head: 'Signature items, hard-won'
 }
 
 type Pulse = BestowResult & { token: number }
@@ -103,10 +96,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
     onContinue()
   }
 
-  const meta =
-    outcome === Outcome.FULL_VICTORY || outcome === Outcome.NARROW_VICTORY
-      ? OUTCOME_META[outcome]
-      : null
+  const meta = outcome === Outcome.VICTORY ? VICTORY_META : null
 
   return (
     <div className="spoils-screen">

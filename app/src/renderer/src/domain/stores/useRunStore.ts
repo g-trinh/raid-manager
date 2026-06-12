@@ -23,8 +23,7 @@ const FUMBLE_CHANCE_PER_PIP = 0.06
 const FUMBLE_LETHALITY = 0.05
 
 export enum Outcome {
-  FULL_VICTORY = 'FULL_VICTORY', // one-shot kill
-  NARROW_VICTORY = 'NARROW_VICTORY', // kill after wipes
+  VICTORY = 'VICTORY', // the boss is down — a kill is a kill, however many pulls
   WIPE = 'WIPE', // pull lost — retry available
   DISBAND = 'DISBAND' // someone gquit — run over
 }
@@ -146,7 +145,7 @@ function pullPhase(phase: BossPhaseData, phaseIndex: number, roster: MemberData[
   }
 }
 
-function attemptBoss(boss: BossData, pullNumber: number): AttemptResult {
+function attemptBoss(boss: BossData): AttemptResult {
   const roster = useLootStore.getState().effectiveRoster(useDraftStore.getState().selectedMembers)
   const morale = useMoraleStore.getState()
 
@@ -186,7 +185,7 @@ function attemptBoss(boss: BossData, pullNumber: number): AttemptResult {
   let outcome: Outcome
   let quitter: string | null = null
   if (wipePhaseIndex === null) {
-    outcome = pullNumber === 1 ? Outcome.FULL_VICTORY : Outcome.NARROW_VICTORY
+    outcome = Outcome.VICTORY
     morale.applyKill(roster)
   } else {
     morale.applyWipe(wipePhaseIndex, blunderer, roster)
@@ -211,10 +210,11 @@ function chronicleAttempt(boss: BossData, attempt: AttemptResult, pullNumber: nu
     )
   })
 
-  if (outcome === Outcome.FULL_VICTORY) {
-    log('battle', `Full Victory — ${boss.bossName} falls in one pull`)
-  } else if (outcome === Outcome.NARROW_VICTORY) {
-    log('battle', `Victory — ${boss.bossName} falls on pull ${pullNumber}`)
+  if (outcome === Outcome.VICTORY) {
+    log(
+      'battle',
+      `Victory — ${boss.bossName} falls ${pullNumber === 1 ? 'in one pull' : `on pull ${pullNumber}`}`
+    )
   } else if (wipePhaseIndex !== null) {
     const failed = phaseResults[wipePhaseIndex]
     if (failed.cause === 'blunder' && failed.blunderer) {
@@ -241,7 +241,7 @@ function chronicleDrops(droppedCount: number): void {
 }
 
 function isVictory(outcome: Outcome): boolean {
-  return outcome === Outcome.FULL_VICTORY || outcome === Outcome.NARROW_VICTORY
+  return outcome === Outcome.VICTORY
 }
 
 function drawBoss1(): BossData {
@@ -254,7 +254,7 @@ export const useRunStore = create<RunState>((set, get) => {
   // Resolve one pull against the current boss and project the next screen
   function performPull(boss: BossData, pullNumber: number): void {
     const { bossIndex, seenBosses, bossOutcomes } = get()
-    const attempt = attemptBoss(boss, pullNumber)
+    const attempt = attemptBoss(boss)
     const { phaseResults, phasesSucceeded, outcome, wipePhaseIndex, quitter } = attempt
     const droppedItems = selectDroppedItems(boss, outcome)
     chronicleAttempt(boss, attempt, pullNumber)

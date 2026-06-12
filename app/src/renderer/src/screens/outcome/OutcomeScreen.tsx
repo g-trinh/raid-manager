@@ -42,15 +42,10 @@ interface OutcomeMeta {
 }
 
 const OUTCOME_META: Record<Outcome, OutcomeMeta> = {
-  [Outcome.FULL_VICTORY]: {
+  [Outcome.VICTORY]: {
     color: '#a6b67c',
-    head: 'Flawless Hold',
-    sub: 'One pull, three phases, no doubt. The raid stands whole and unbroken.'
-  },
-  [Outcome.NARROW_VICTORY]: {
-    color: '#d99a3c',
     head: 'The Boss Falls',
-    sub: 'Ground out pull by pull — but down is down, and the muster breathes again.'
+    sub: 'Three phases held, the foe is down, and the muster breathes again.'
   },
   [Outcome.WIPE]: {
     color: '#b8472f',
@@ -190,7 +185,7 @@ function AttemptReveal({
   }, [phaseResults])
 
   const meta = OUTCOME_META[outcome]
-  const isVictory = outcome === Outcome.FULL_VICTORY || outcome === Outcome.NARROW_VICTORY
+  const isVictory = outcome === Outcome.VICTORY
 
   const performContinue = (): void => {
     if (continueLabel) onContinue()

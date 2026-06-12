@@ -3,23 +3,11 @@ import { LootItemData } from '../data/lootData'
 import { Role } from '../data/role'
 import { Outcome } from '../stores/useRunStore'
 
-// A one-shot kill drops the boss's full signature set; a kill ground out over
-// several pulls loses one item to the chaos. Wipes drop nothing.
+// A kill is a kill: the boss's full signature set drops however many pulls it
+// took. Wipes drop nothing.
 export function selectDroppedItems(boss: BossData, outcome: Outcome): LootItemData[] {
-  if (outcome === Outcome.WIPE || outcome === Outcome.DISBAND) return []
-
-  // Rolled once: a Narrow Victory loses exactly one item, never more
-  const lost = lostItemIndex(boss.signatureItems.length)
-  const dropped =
-    outcome === Outcome.FULL_VICTORY
-      ? boss.signatureItems
-      : boss.signatureItems.filter((_, index) => index !== lost)
-
-  return dropped.map(resolveRoleLock)
-}
-
-function lostItemIndex(count: number): number {
-  return Math.floor(Math.random() * count)
+  if (outcome !== Outcome.VICTORY) return []
+  return boss.signatureItems.map(resolveRoleLock)
 }
 
 function resolveRoleLock(item: LootItemData): LootItemData {

@@ -25,10 +25,9 @@ export interface BossForecast {
 
 function forecastVerdict(expectedHeld: number): BossForecastVerdict {
   if (expectedHeld >= 2.4)
-    return { label: 'Full Victory likely', coarse: 'Favorable', color: '#a6b67c' }
-  if (expectedHeld >= 1.5)
-    return { label: 'Narrow Victory likely', coarse: 'Even', color: '#d99a3c' }
-  return { label: 'Defeat likely', coarse: 'Grim', color: '#b8472f' }
+    return { label: 'A quick kill likely', coarse: 'Favorable', color: '#a6b67c' }
+  if (expectedHeld >= 1.5) return { label: 'A long grind likely', coarse: 'Even', color: '#d99a3c' }
+  return { label: 'A bloodbath likely', coarse: 'Grim', color: '#b8472f' }
 }
 
 export function bossForecast(boss: BossData, roster: MemberData[]): BossForecast {

@@ -2,23 +2,22 @@
 
 ## Summary
 
-After each boss attempt that ends in **Full Victory** or **Narrow Victory**, the boss drops **signature items** — pieces of loot thematically tied to that boss's identity and phases. Each boss has exactly **3 signature items, one per phase**, and the number that actually drop depends on the outcome: a Full Victory yields all 3, a Narrow Victory yields only the 2 tied to the phases that succeeded, and a Defeat yields nothing. The player may **equip each item on a roster member, bench it for later, or discard it**. Equipped items grant small, permanent, strictly-positive boosts to both **Skill and Discipline**, stacking gradually across the gauntlet's up to 15 bosses. Loot is **role-locked**: each item can only be equipped by members of a specific role (Tank, Heal, or DPS), reflecting the phase it's derived from.
+After each boss kill, the boss drops **signature items** — pieces of loot thematically tied to that boss's identity and phases. Each boss has exactly **3 signature items, one per phase**, and a kill drops all 3 however many pulls it took; wipes drop nothing. The player may **equip each item on a roster member, bench it for later, or discard it**. Equipped items grant small, permanent, strictly-positive boosts to both **Skill and Discipline**, stacking gradually across the gauntlet's up to 15 bosses. Loot is **role-locked**: each item can only be equipped by members of a specific role (Tank, Heal, or DPS), reflecting the phase it's derived from.
 
-This system turns "what do we do with the spoils" into a recurring, low-friction decision point that compounds roster strength over a run without ever introducing a downside or a forced choice — and ties the *quality* of a victory (full vs. narrow) directly to the *quantity* of spoils it leaves behind.
+This system turns "what do we do with the spoils" into a recurring, low-friction decision point that compounds roster strength over a run without ever introducing a downside or a forced choice.
 
 ---
 
 ## Why We Are Building This
 
-Right now, defeating a boss in the gauntlet only opens the door to the next fight — there is no lasting reward, no sense of the roster growing stronger, and no reason to care about *how* a boss was beaten beyond "did we survive." Signature loot gives victories a tangible, persistent payoff: each win leaves a mark on the roster, nudging members' Skill and Discipline upward in small steps that echo the boss's identity. Because loot is tied to each boss's phases and theme (Direction C, now applied per-phase), the rewards also reinforce the gauntlet's narrative — beating "The Rot Unending" should *feel* different from beating "The Endless Dusk," and the loot each leaves behind should say so. Deriving one item per phase, and gating drops on which phases actually succeeded, also makes the **Narrow Victory** outcome feel meaningfully different from a Full Victory beyond just "you didn't fail" — it's "you fought through two of three trials, and the spoils show it."
+Right now, defeating a boss in the gauntlet only opens the door to the next fight — there is no lasting reward, no sense of the roster growing stronger, and no reason to care about *how* a boss was beaten beyond "did we survive." Signature loot gives victories a tangible, persistent payoff: each win leaves a mark on the roster, nudging members' Skill and Discipline upward in small steps that echo the boss's identity. Because loot is tied to each boss's phases and theme (Direction C, now applied per-phase), the rewards also reinforce the gauntlet's narrative — beating "The Rot Unending" should *feel* different from beating "The Endless Dusk," and the loot each leaves behind should say so. Deriving one item per phase keeps each drop legible: every item points back at the phase it came from.
 
 ---
 
 ## Goals
 
-- Give every Full Victory and Narrow Victory a persistent, positive payoff for the roster
+- Give every kill a persistent, positive payoff for the roster
 - Tie each boss's loot thematically to its phases and identity, with **one item per phase** (signature loot, Direction C, applied per-phase)
-- Make the difference between Full Victory and Narrow Victory tangible in the spoils: more succeeded phases → more loot
 - Keep stat growth small and steady so it "drips" across up to 15 bosses without trivializing late-game phase targets
 - Let the player freely accept, bench, or discard loot — never force an assignment
 - Use role-locking to make loot decisions meaningful relative to the fixed 8-member roster (2 Tank / 2 Heal / 4 DPS)
@@ -58,11 +57,11 @@ The number of items that actually drop from `signatureItems` depends on the atte
 
 | Outcome | Condition | Items dropped |
 |---------|-----------|----------------|
-| Full Victory | one-shot kill (all 3 phases, pull 1) | All 3 items (`signatureItems[0..2]`) |
-| Narrow Victory | kill after one or more wipes | 2 of the 3 items — one random item is lost to the grind |
+| Victory | the boss is down (all 3 phases passed in a single pull) | All 3 items (`signatureItems[0..2]`), however many pulls the kill took |
 | Wipe / Disband | a phase failed / a member gquit | None |
 
-Since the wipe-loop rework (see [morale](morale/todo.md)), a kill always means all 3 phases passed — the Full/Narrow split rewards the *one-shot*, and a ground-out kill loses one random item.
+A kill is a kill: since the wipe-loop rework (see [morale](morale/todo.md)) the
+pull count costs morale and grievance, not loot.
 
 ### Roster Loot State
 
@@ -79,11 +78,10 @@ Since the wipe-loop rework (see [morale](morale/todo.md)), a kill always means a
 - An item can only be equipped by a member whose Role matches the item's Role Lock
 - Stat bonuses from equipped items are additive and permanent for the remainder of the run (they do not expire, degrade, or get removed once equipped)
 - A member may equip multiple items over the course of a run; bonuses stack
-- There is no equip-slot cap — the limiting factor is simply how much loot the gauntlet produces (at most 45 items total across a 15-boss run, 3 per boss, fewer on Narrow Victories and none on Defeats)
+- There is no equip-slot cap — the limiting factor is simply how much loot the gauntlet produces (3 per boss kill, none on wipes)
 - Benched items remain available for assignment after any subsequent boss's loot moment, for the rest of the run
 - Discarded items are gone permanently — they cannot be recovered or re-offered
-- Loot only drops on a kill (Full or Narrow Victory); wipes and disbands yield nothing
-- On Narrow Victory, one random item of the 3 is lost — it does not drop, is not shown, and cannot be obtained later
+- Loot only drops on a kill; wipes and disbands yield nothing
 - A loot grant also restores the recipient's morale: +2 for a rare (signature) item, +1 for a common — see [morale](morale/todo.md)
 - All stat bonuses respect the 0-5 scale: a bonus that would push a stat above 5 is clamped at 5
 - Items are never generated at runtime — each boss's 3 signature items are hardcoded, consistent with the rest of the game's data model, with the single exception of the tied-phase role-lock roll described below
@@ -94,7 +92,7 @@ Since the wipe-loop rework (see [morale](morale/todo.md)), a kill always means a
 
 | Rarity | Source | Bonus | Effect |
 |---|---|---|---|
-| **Common** | Camp [skirmishes](camp.md) (roadside warbands) | +1 to a **single** stat | none |
+| **Common** | [Road clears](camp.md) (trash packs on the way to a boss) | +1 to a **single** stat | none |
 | **Rare** | Boss signature drops (this document) | +1 Skill **and** +1 Discipline | phase two: one-line effect (not yet implemented) |
 
 - `Item.rarity` is `common` or `rare`; every signature item is rare
@@ -117,7 +115,7 @@ Since the wipe-loop rework (see [morale](morale/todo.md)), a kill always means a
 
 **Why this works:**
 
-- A Full Victory against a single boss grants up to 3 items (+1/+1 each) — but spread across up to 3 different roles, so no single member benefits 3x. A Narrow Victory grants 2.
+- A kill grants 3 items (+1/+1 each) — but spread across up to 3 different roles, so no single member benefits 3x.
 - A member who equips a handful of items over a run nets a meaningful but not run-defining boost — one pip visibly shifts their contribution to a role average without single-handedly guaranteeing late-phase success
 - The clamp at 5 acts as a hard ceiling: a member at 5 in a stat simply stops gaining further benefit, rather than breaking the phase-success math
 - **Tuning flag**: if playtesting shows roster stats inflate too quickly (especially with multiple Full Victories in a row), the first lever to pull is making items single-stat instead of dual-stat, not the per-phase structure itself.
@@ -135,7 +133,7 @@ Loot is **role-locked**, not freely assignable across the whole roster. Each ite
 
 This mirrors the fixed 8-member roster shape (2 Tank / 2 Heal / 4 DPS) and ensures loot decisions stay grounded in "which of my Tanks (or Heals, or DPS) benefits most" rather than an open free-for-all. Because DPS has twice the slots of the other two roles, DPS-locked loot naturally has more potential recipients — this is intentional and mirrors the roster's own DPS-heavy shape.
 
-With 3 items per boss instead of 1, a single Full Victory can now plausibly touch **all three roles at once** — e.g., a DPS item from Phase 1, a Tank item from Phase 2, and a Heal item from Phase 3. This is a deliberate improvement over the single-item model, where most bosses' drops favored whichever role happened to dominate the *whole* fight (skewing heavily DPS, since opening phases are almost always DPS-dominant). Per-phase derivation naturally diversifies which roles get rewarded, boss to boss and phase to phase.
+With 3 items per boss instead of 1, a single kill can now plausibly touch **all three roles at once** — e.g., a DPS item from Phase 1, a Tank item from Phase 2, and a Heal item from Phase 3. This is a deliberate improvement over the single-item model, where most bosses' drops favored whichever role happened to dominate the *whole* fight (skewing heavily DPS, since opening phases are almost always DPS-dominant). Per-phase derivation naturally diversifies which roles get rewarded, boss to boss and phase to phase.
 
 ---
 
@@ -229,11 +227,11 @@ sequenceDiagram
     participant SS as Spoils Screen
     participant RS as Run State
 
-    OS->>P: Reveal outcome (Full Victory / Narrow Victory)
+    OS->>P: Reveal outcome (Victory)
     Note over OS: Defeat skips the Spoils Screen entirely
     OS->>SS: Transition to Spoils Screen
     SS->>P: Present the boss's signature items (1, 2, or 3 depending on outcome)
-    Note over SS: Full Victory = 3 items, Narrow Victory = 2 items (tied to succeeded phases)
+    Note over SS: Victory = all 3 items, every kill
     SS->>P: Show the Satchel (any previously benched items)
     P->>SS: Choose: Equip / Bench / Discard (per item, one at a time)
     alt Equip
@@ -251,12 +249,12 @@ sequenceDiagram
 **Moment-by-moment:**
 
 1. The outcome reveal plays out exactly as today (phase-by-phase reveal, then the outcome banner)
-2. If the outcome is Full Victory or Narrow Victory, the flow continues into the **Spoils Screen** — a single, calm beat themed around "what was left behind"
-3. The newly-dropped signature items are presented first — **up to 3 of them** for a Full Victory, or **2** for a Narrow Victory — each showing its name, its flavor text (tying it back to the boss and the specific phase it came from), its role lock, and its stat bonuses. On a Narrow Victory, the items are visibly tied to the 2 succeeded phases, making the connection between "how the fight went" and "what you got" legible at a glance
+2. If the boss is down, the flow continues into the **Spoils Screen** — a single, calm beat themed around "what was left behind"
+3. The newly-dropped signature items are presented first — **all 3 of them** — each showing its name, its flavor text (tying it back to the boss and the specific phase it came from), its role lock, and its stat bonuses
 4. Below or alongside them, the **Satchel** shows any items benched from earlier bosses, available for the same three choices
 5. For each item the player wants to act on: choosing **Equip** opens a small role-filtered member picker (showing only the 2-4 eligible members and their current Skill/Discipline, so the player can see exactly who benefits and by how much); choosing **Bench** or **Discard** resolves immediately with a brief confirmation
 6. Items are presented and resolved **one at a time**, in phase order (Phase 1's item first, then Phase 2's, then Phase 3's, skipping any that didn't drop) — keeping the moment-by-moment pacing consistent with a single-item flow even when more loot is on offer
 7. Once the player is satisfied (they are not required to act on every item — the Satchel persists), they press **"Onward"** to continue to the next boss, exactly as the existing flow already supports
-8. On a Defeat outcome, the Spoils Screen is skipped entirely — no loot, no consolation prize — and the existing "Muster Again" path is unchanged
+8. On a wipe or disband, the Spoils Screen is skipped entirely — no loot, no consolation prize
 
-This keeps the new system additive: it slots into the existing reveal → continue rhythm established by the outcome screen, without altering how attempts resolve or how the gauntlet chains bosses together. The only change to the rhythm is that the Spoils Screen may now present up to 3 sequential items instead of 1 — a slightly longer beat on a Full Victory, reflecting the larger payoff.
+This keeps the new system additive: it slots into the existing reveal → continue rhythm established by the outcome screen, without altering how attempts resolve or how the gauntlet chains bosses together. The only change to the rhythm is that the Spoils Screen presents 3 items instead of 1 — a slightly longer beat, reflecting the larger payoff.

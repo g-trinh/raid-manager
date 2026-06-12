@@ -36,8 +36,7 @@ export function chanceRamp(chance: number): string {
 }
 
 export const OUTCOME_COLOR: Record<Outcome, string> = {
-  [Outcome.FULL_VICTORY]: '#a6b67c',
-  [Outcome.NARROW_VICTORY]: '#d99a3c',
+  [Outcome.VICTORY]: '#a6b67c',
   [Outcome.WIPE]: '#b8472f',
   [Outcome.DISBAND]: '#6b6357'
 }
