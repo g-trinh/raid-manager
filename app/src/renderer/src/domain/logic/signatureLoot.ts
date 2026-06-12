@@ -8,12 +8,12 @@ import { Outcome } from '../stores/useRunStore'
 export function selectDroppedItems(boss: BossData, outcome: Outcome): LootItemData[] {
   if (outcome === Outcome.WIPE || outcome === Outcome.DISBAND) return []
 
+  // Rolled once: a Narrow Victory loses exactly one item, never more
+  const lost = lostItemIndex(boss.signatureItems.length)
   const dropped =
     outcome === Outcome.FULL_VICTORY
       ? boss.signatureItems
-      : boss.signatureItems.filter(
-          (_, index) => index !== lostItemIndex(boss.signatureItems.length)
-        )
+      : boss.signatureItems.filter((_, index) => index !== lost)
 
   return dropped.map(resolveRoleLock)
 }

@@ -97,7 +97,9 @@ describe('run — sequential phases', () => {
 // AC: wipes can be retried — pulls accumulate mastery until the boss dies
 describe('run — retry loop', () => {
   it('retry pulls the same boss again and a later kill is a narrow victory', () => {
-    scriptRandom([...PHASE_FAILS_LEARNING, ...KILL])
+    // Varying post-kill rolls: the lost-item index must be rolled exactly once —
+    // a constant mock would mask a per-item re-roll (the 1-or-3-drops bug)
+    scriptRandom([...PHASE_FAILS_LEARNING, ...KILL, 0.9, 0.1, 0.4])
     useRunStore.getState().pull()
     expect(useRunStore.getState().pullsThisBoss).toBe(1)
 
@@ -105,7 +107,7 @@ describe('run — retry loop', () => {
     const state = useRunStore.getState()
     expect(state.pullsThisBoss).toBe(2)
     expect(state.outcome).toBe(Outcome.NARROW_VICTORY)
-    expect(state.droppedItems.length).toBe(2) // one item lost to the grind
+    expect(state.droppedItems.length).toBe(2) // exactly one item lost to the grind
   })
 
   it('the wiped phase still teaches — the next pull rolls with mastery', () => {
