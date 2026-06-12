@@ -10,20 +10,20 @@ function rollAt(value: number): Personality {
   return rollPersonality()
 }
 
-// AC: personalities roll at 80% Loner / 10% Altruist / 10% Glory Hound (personalities.md)
-describe('rollPersonality — 80/10/10 weights', () => {
-  it('rolls altruist on the bottom 10% of the range', () => {
+// AC: personalities roll at 75% Loner / 12.5% Altruist / 12.5% Glory Hound (personalities.md)
+describe('rollPersonality — 75/12.5/12.5 weights', () => {
+  it('rolls altruist on the bottom 12.5% of the range', () => {
     expect(rollAt(0)).toBe(Personality.ALTRUIST)
-    expect(rollAt(0.099)).toBe(Personality.ALTRUIST)
+    expect(rollAt(0.124)).toBe(Personality.ALTRUIST)
   })
 
-  it('rolls glory hound on the next 10% of the range', () => {
-    expect(rollAt(0.1)).toBe(Personality.GLORY_HOUND)
-    expect(rollAt(0.199)).toBe(Personality.GLORY_HOUND)
+  it('rolls glory hound on the next 12.5% of the range', () => {
+    expect(rollAt(0.125)).toBe(Personality.GLORY_HOUND)
+    expect(rollAt(0.249)).toBe(Personality.GLORY_HOUND)
   })
 
-  it('rolls loner on the remaining 80% of the range', () => {
-    expect(rollAt(0.2)).toBe(Personality.LONER)
+  it('rolls loner on the remaining 75% of the range', () => {
+    expect(rollAt(0.25)).toBe(Personality.LONER)
     expect(rollAt(0.5)).toBe(Personality.LONER)
     expect(rollAt(0.999)).toBe(Personality.LONER)
   })

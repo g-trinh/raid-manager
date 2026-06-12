@@ -2,13 +2,13 @@
 
 ## Summary
 
-Each roster member carries a **personality** — `Loner`, `Altruist`, or `Glory Hound` — rolled independently at draft time with weights **80% / 10% / 10%**. The trait is **visible to the player at draft** (FM-style scouting: you knowingly draft a Glory Hound for their Skill, aware of the friction risk). Personalities react to **Signature Loot grants** during the run, applying small permanent Skill/Discipline deltas that color how that member performs for the rest of the run.
+Each roster member carries a **personality** — `Loner`, `Altruist`, or `Glory Hound` — rolled independently at draft time with weights **75% / 12.5% / 12.5%**. The trait is **visible to the player at draft** (FM-style scouting: you knowingly draft a Glory Hound for their Skill, aware of the friction risk). Personalities react to **Signature Loot grants** during the run, applying small permanent Skill/Discipline deltas that color how that member performs for the rest of the run.
 
 This adds a layer of roster-management tension on top of the existing loot-distribution decision — "do I gear up my star Glory Hound (and risk souring my Altruists), or spread loot to the group (and risk the Glory Hound sulking)?" — without introducing any new screens or systems beyond what Signature Loot already provides.
 
 ## Why We Are Building This
 
-Right now every roster member is a pure stat block: Skill, Discipline, Role, Name, with loot only ever improving stats. Personalities make the **loot-grant moment** — already a meaningful player decision — carry social weight: who you gear up changes how *other* members feel and perform. A Loner (80% of the roster) is unaffected — the baseline. A Glory Hound basks when gifted loot and sulks when a member of their own role is geared instead. An Altruist is heartened when others get gear, but resents seeing a Glory Hound rewarded. This turns loot decisions into roster-management trade-offs, not just stat optimization.
+Right now every roster member is a pure stat block: Skill, Discipline, Role, Name, with loot only ever improving stats. Personalities make the **loot-grant moment** — already a meaningful player decision — carry social weight: who you gear up changes how *other* members feel and perform. A Loner (75% of the roster) is unaffected — the baseline. A Glory Hound basks when gifted loot and sulks when a member of their own role is geared instead. An Altruist is heartened when others get gear, but resents seeing a Glory Hound rewarded. This turns loot decisions into roster-management trade-offs, not just stat optimization.
 
 ## Goals
 
@@ -51,9 +51,9 @@ Right now every roster member is a pure stat block: Skill, Discipline, Role, Nam
 ### Roll
 
 - At the moment a member is added to the roster (drafted), roll their personality **independently**:
-  - **80% chance** — Loner
-  - **10% chance** — Altruist
-  - **10% chance** — Glory Hound
+  - **75% chance** — Loner
+  - **12.5% chance** — Altruist
+  - **12.5% chance** — Glory Hound
 - Pure random roll, performed once per member, with no forced balancing — a run may end up with zero Altruists and/or zero Glory Hounds, and that's accepted as natural replayability variance, not a bug to fix
 
 ---
@@ -105,7 +105,7 @@ sequenceDiagram
     participant L as Loot Grant
     participant RS as Run State
 
-    Note over P: Each member rolled independently at draft (80% Loner / 10% Altruist / 10% Glory Hound), shown to player
+    Note over P: Each member rolled independently at draft (75% Loner / 12.5% Altruist / 12.5% Glory Hound), shown to player
     P->>L: Assigns Signature Loot item to member X
     alt X is the recipient
         alt X is an Altruist
@@ -145,5 +145,5 @@ This spec finalizes the open points raised during design review:
 
 - **Sign convention**: Glory Hound's "loses reliability" when a same-role rival is geared maps to **Discipline −1** (a decrease) — high Discipline is good in this system, so "losing reliability" must lower it
 - **Caps**: handled entirely by the existing `clampStat()` ([0, 5]) and per-member bonus accumulator — no new clamping logic needed
-- **Roll model**: pure independent random roll per member at draft (80% Loner / 10% Altruist / 10% Glory Hound), visible to the player at draft time. No forced "at least one of each" — occasional runs with zero Altruists and/or zero Glory Hounds are accepted as natural replayability variance
+- **Roll model**: pure independent random roll per member at draft (75% Loner / 12.5% Altruist / 12.5% Glory Hound), visible to the player at draft time. No forced "at least one of each" — occasional runs with zero Altruists and/or zero Glory Hounds are accepted as natural replayability variance
 - **Fixed personality**: no redemption arcs — a member's personality never changes once rolled
