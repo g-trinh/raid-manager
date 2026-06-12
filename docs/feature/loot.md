@@ -56,13 +56,13 @@ Each boss in the gauntlet defines exactly **3 signature items** — `signatureIt
 
 The number of items that actually drop from `signatureItems` depends on the attempt's outcome:
 
-| Outcome | Phases succeeded | Items dropped |
-|---------|-------------------|----------------|
-| Full Victory | 3 / 3 | All 3 items (`signatureItems[0..2]`) |
-| Narrow Victory | 2 / 3 | Only the 2 items whose `Source Phase` matches a succeeded phase |
-| Defeat | 0-1 / 3 | None |
+| Outcome | Condition | Items dropped |
+|---------|-----------|----------------|
+| Full Victory | one-shot kill (all 3 phases, pull 1) | All 3 items (`signatureItems[0..2]`) |
+| Narrow Victory | kill after one or more wipes | 2 of the 3 items — one random item is lost to the grind |
+| Wipe / Disband | a phase failed / a member gquit | None |
 
-This means a Narrow Victory's spoils are a strict subset of a Full Victory's — the player can tell, just by looking at which items dropped, exactly which phase the attempt fell short on.
+Since the wipe-loop rework (see [morale](morale/todo.md)), a kill always means all 3 phases passed — the Full/Narrow split rewards the *one-shot*, and a ground-out kill loses one random item.
 
 ### Roster Loot State
 
@@ -82,8 +82,9 @@ This means a Narrow Victory's spoils are a strict subset of a Full Victory's —
 - There is no equip-slot cap — the limiting factor is simply how much loot the gauntlet produces (at most 45 items total across a 15-boss run, 3 per boss, fewer on Narrow Victories and none on Defeats)
 - Benched items remain available for assignment after any subsequent boss's loot moment, for the rest of the run
 - Discarded items are gone permanently — they cannot be recovered or re-offered
-- Loot only drops on Full Victory or Narrow Victory; Defeat yields nothing
-- On Narrow Victory, only the items tied to the 2 succeeded phases drop — the item tied to the failed phase does not drop, is not shown, and cannot be obtained later
+- Loot only drops on a kill (Full or Narrow Victory); wipes and disbands yield nothing
+- On Narrow Victory, one random item of the 3 is lost — it does not drop, is not shown, and cannot be obtained later
+- A loot grant also restores the recipient's morale: +2 for a rare (signature) item, +1 for a common — see [morale](morale/todo.md)
 - All stat bonuses respect the 0-5 scale: a bonus that would push a stat above 5 is clamped at 5
 - Items are never generated at runtime — each boss's 3 signature items are hardcoded, consistent with the rest of the game's data model, with the single exception of the tied-phase role-lock roll described below
 

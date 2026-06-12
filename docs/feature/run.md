@@ -1,19 +1,17 @@
 # Component: Run
 
-The top-level structure of a single game session.
+The top-level structure of a single game session: a gauntlet of 3 bosses.
 
 ## Flow
 
-Draft -> [Boss Attempt](attempt.md) -> [Outcome](outcome.md) -> Spoils -> [Camp](camp.md) -> Boss Choice -> next attempt
+Draft -> [Boss Attempt](attempt.md) -> [Outcome](outcome.md) -> ...
 
-1. Player drafts 8 [members](member.md) from the hardcoded roster
-2. Player reviews the 3 visible phases of the active [boss](boss.md)
-3. The [attempt](attempt.md) resolves automatically across 3 phases
-4. The [outcome](outcome.md) is determined from the number of successful phases
-5. Run ends immediately (no retries)
+- **Kill** → Spoils -> [Camp](camp.md) -> Boss Choice -> next boss (mastery resets — new mechanics)
+- **Wipe** → Pull Again (immediate retry) or Retreat to Camp (one action, Scout excluded, then back to the same boss). The boss is locked once engaged.
+- **Disband** (a member gquits at morale 0) → run over
 
 ## Rules
 
-- There is exactly 1 attempt per run
+- 3 bosses per run; killing the third wins the run
+- Retries are unbounded by count but bounded by [morale](morale/todo.md) — every wipe pushes someone closer to gquitting, and one gquit ends the run
 - No state persists between runs
-- The single boss attempt is fully visible before resolution, but fully automatic during resolution

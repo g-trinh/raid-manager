@@ -1,10 +1,10 @@
 # Component: Attempt
 
-The resolution of the guild vs the boss. Fully automatic — the player has no input during resolution.
+The resolution of one pull of the guild vs the boss. Fully automatic — the player has no input during resolution.
 
 ## Structure
 
-A boss attempt always resolves across exactly 3 independent phases.
+A boss has exactly 3 phases, resolved **sequentially**. The first failed phase ends the pull (a wipe at that phase); phases past the wipe are never reached. A kill requires all 3 phases passed in one pull.
 
 Each phase defines:
 
@@ -15,6 +15,7 @@ Each phase defines:
   - Skill-heavy
   - Discipline-heavy
 - a phase target
+- a mechanic count (2–5, derived from the target unless set) — see [morale/todo.md](morale/todo.md)
 
 ## Role Averages
 
@@ -43,29 +44,26 @@ phase_score =
 
 ## Phase Success Chance
 
-Each phase converts its phase score into a bounded success chance:
+The score curve gives the base chance; roster mastery of the phase erases the rest of the unfamiliarity:
 
 ```text
-success_chance =
-  0.05 + 0.90 * min(1, (phase_score / phase_target)^2)
+base_chance  = 0.05 + 0.90 * min(1, (phase_score / phase_target)^2)
+pass_chance  = 1 − (1 − roster_mastery_fraction) × (1 − base_chance)
 ```
 
-This means:
-
-- minimum success chance is 5%
-- maximum success chance is 95%
-- meeting the phase target gives a 95% success chance
+At zero mastery this is the base curve; at full mastery the phase can only be lost to a blunder.
 
 ## Phase Resolution
 
-Each phase rolls independently:
+In order, per phase:
 
-- if the roll is below or equal to success_chance, the phase succeeds
-- otherwise, the phase fails
+1. **Fumble rolls** — each member rolls `(5 − tested_stat) × 6%`. Fumbles are stat-driven and never reduced by mastery.
+2. **Lethality** — each fumble has a 5% chance to wipe the raid on the spot, attributed to the fumbler by name (a *blunder wipe*).
+3. **Unfamiliarity roll** — otherwise the phase passes if the roll ≤ pass_chance; a failure is a *learning wipe*, nobody blamed.
 
 ## Rules
 
 - No player input during resolution
-- There is exactly 1 attempt per run (no retries)
-- Each phase resolves automatically from role averages and boss data
-- A boss is won if at least 2 of its 3 phases succeed
+- Wipes can be retried (Pull Again / Retreat to Camp) — the disband clock in [morale](morale/todo.md) bounds the retries
+- A boss is won only when all 3 phases pass in a single pull
+- One-shot kill = Full Victory; a kill after wipes = Narrow Victory

@@ -86,6 +86,18 @@ All triggers fire on **Signature Loot grant events** — the moment the player a
 
 ---
 
+## Morale Interplay (wipe loop)
+
+Personalities also modulate the per-member morale system (see [morale/todo.md](morale/todo.md)) — same three traits, second axis:
+
+| Personality | Wipe behavior |
+|---|---|
+| Loner | Immune to grievance from a teammate's blunder (base wipe loss still applies) |
+| Altruist | Takes **half** grievance (floored) — tolerant of carrying |
+| Glory Hound | Loses **1 extra morale on every wipe** — a lootless pull stings |
+
+---
+
 ## Mechanical Integration
 
 Personalities reuse the **existing stat-bonus plumbing** introduced for Signature Loot — no parallel system required:

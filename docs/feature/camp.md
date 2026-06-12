@@ -1,27 +1,34 @@
 # Component: Camp
 
-The rest stop between bosses. After every victorious boss attempt that does not end the
-run, the muster makes camp before choosing the next foe. The player picks exactly one of
-three camp actions, then breaks camp and proceeds to the boss choice.
+The rest stop on the road. After every victorious boss attempt that does not end the
+run, the muster makes camp before choosing the next foe. After a **wipe**, the muster
+can also *retreat* to camp before pulling again. The player picks exactly one camp
+action, then breaks camp.
 
 ## Flow
 
-[Outcome](outcome.md) (victory, run continues) -> Spoils -> **Camp** -> Boss Choice
+- Kill: [Outcome](outcome.md) (victory, run continues) -> Spoils -> **Camp** -> Boss Choice
+- Wipe: [Outcome](outcome.md) (wipe) -> Retreat to Camp -> **Camp** -> back to the same boss (next pull)
 
-- Camp never appears after the final boss or after a Defeat (the run is over)
-- One action per camp — choosing resolves immediately, then the only exit is "Break Camp"
+- Camp never appears after the final boss kill or after a Disband (the run is over)
+- One action per camp — choosing resolves immediately, then the only exit is
+  "Break Camp" (after a kill) / "Return to the Boss" (mid-progression)
+- **Mid-progression camps offer Rest and Skirmish only** — the boss is locked, so there
+  is no boss choice to scout
 
 ## Actions
 
 | Action | Label | Effect |
 |---|---|---|
-| Rest | Bind Wounds | Pick a member: +1 to their lower stat (tie → Discipline). Clamped at 5. |
+| Rest | Bind Wounds | Pick a member: +1 to their lower stat (tie → Discipline), clamped at 5, **+3 morale**. |
 | Scout | Send Outriders | The next boss choice shows full forecasts (projections, verdict, weakest phase). |
 | Skirmish | Hunt the Road | Always yields 1 random **common** item (see [loot](loot.md)). 30% chance one random roster member is **bruised**: −1 to a random stat, permanent for the run. |
 
 ### Rest
 
 - Targets the member's *lower* stat so it always patches a weakness
+- Also restores **+3 morale** — the camp lever against the disband clock
+  (see [morale](morale/todo.md))
 - Uses the same permanent-delta pipeline as loot and personalities (clamped [0, 5])
 - Future: when injuries are introduced (failed-phase wounds), Rest becomes the healing
   action; the +1 baseline is its placeholder shape

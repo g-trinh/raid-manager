@@ -1,18 +1,18 @@
 # Component: Outcome
 
-The end state of a run.
+The end state of one pull.
 
 ## States
 
-| State          | Condition             | Description |
-|----------------|-----------------------|-------------|
-| Full Victory   | 3 phase successes     | Boss defeated with full success |
-| Narrow Victory | 2 phase successes     | Boss defeated with partial success |
-| Defeat         | 0 or 1 phase success  | Guild wiped, run over |
+| State          | Condition                              | Description |
+|----------------|----------------------------------------|-------------|
+| Full Victory   | all 3 phases pass on pull 1            | One-shot — all 3 signature items drop |
+| Narrow Victory | all 3 phases pass on a later pull      | Ground out — 2 of 3 signature items drop |
+| Wipe           | a phase fails                          | Pull lost; retry (Pull Again) or Retreat to Camp |
+| Disband        | a member's morale hits 0 after a wipe  | They gquit, the guild disbands, run over |
 
 ## Rules
 
-- The run ends immediately on outcome — no continuation
-- The result screen displays the outcome and the number of successful phases
-- Narrow Victory should later grant reduced rewards compared to Full Victory
-- The exact reward tradeoff is intentionally left undefined until reward and progression systems are designed
+- The outcome screen reveals reached phases in order; unreached phases show "Not reached"
+- A failed phase explains itself: a blunder wipe names the fumbler, a learning wipe names the role/stat it leaned on plus the mastery band
+- The run ends only on Disband or on killing the final boss
