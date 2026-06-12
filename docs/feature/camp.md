@@ -29,8 +29,10 @@ three camp actions, then breaks camp and proceeds to the boss choice.
 ### Scout
 
 - **Default boss choice is unscouted**: candidate cards show each boss's phases (names,
-  role weights, tested stat) but no success projections, no verdict, no weakest-phase
-  callout — the muster knows *what* the foe does, not *how they'd fare*
+  role weights, tested stat) and a **coarse one-word verdict** — `Favorable` / `Even` /
+  `Grim`, derived from the same roster forecast — but no per-phase success projections
+  and no weakest-phase callout. The player can always weigh the odds at a glance;
+  scouting buys precision, not sight
 - Scouting the camp before a choice reveals the full forecast for all candidates of that
   choice only — the flag is consumed when a boss is picked
 - This makes information a spendable resource and keeps the default choice screen light

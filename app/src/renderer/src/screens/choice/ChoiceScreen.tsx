@@ -79,7 +79,7 @@ export function ChoiceScreen({ onPicked }: ChoiceScreenProps): React.JSX.Element
         <div className="choice-footnote">
           {scouted
             ? 'The outriders have read each foe against the locked muster. The road not taken is lost — that foe will not return this run.'
-            : 'The phases are known, but not how the muster would fare — send outriders at camp to reveal full forecasts. The road not taken is lost.'}
+            : 'The muster can weigh its odds at a glance — send outriders at camp for phase-by-phase forecasts. The road not taken is lost.'}
         </div>
       </main>
     </div>

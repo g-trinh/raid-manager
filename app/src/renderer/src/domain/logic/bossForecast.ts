@@ -5,6 +5,8 @@ import { PhaseProjection, projectPhase } from './phaseProjection'
 
 export interface BossForecastVerdict {
   label: string
+  // One-word read of the same forecast, shown even without scouting
+  coarse: string
   color: string
 }
 
@@ -22,9 +24,9 @@ export interface BossForecast {
 }
 
 function forecastVerdict(expectedHeld: number): BossForecastVerdict {
-  if (expectedHeld >= 2.4) return { label: 'Full Victory likely', color: '#a6b67c' }
-  if (expectedHeld >= 1.5) return { label: 'Narrow Victory likely', color: '#d99a3c' }
-  return { label: 'Defeat likely', color: '#b8472f' }
+  if (expectedHeld >= 2.4) return { label: 'Full Victory likely', coarse: 'Favorable', color: '#a6b67c' }
+  if (expectedHeld >= 1.5) return { label: 'Narrow Victory likely', coarse: 'Even', color: '#d99a3c' }
+  return { label: 'Defeat likely', coarse: 'Grim', color: '#b8472f' }
 }
 
 export function bossForecast(boss: BossData, roster: MemberData[]): BossForecast {
