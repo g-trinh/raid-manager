@@ -2,55 +2,10 @@ import { Fragment } from 'react'
 import { MemberData } from '../../domain/data/memberData'
 import { Role, ROLE_LABELS } from '../../domain/data/role'
 import { ROLE_CAPS } from '../../domain/stores/useDraftStore'
-import { useLootStore } from '../../domain/stores/useLootStore'
-import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
-import { PERSONALITY_META } from '../../domain/data/personality'
-import { ROLE_HEX, lastName } from './formatting'
-import { PersonalityGlyph } from './PersonalityMark'
-import { RoleGlyph } from './RoleGlyph'
-import { StatBar } from './StatBar'
+import { ROLE_HEX } from './formatting'
+import { MusterChip } from './MusterChip'
 
 const ROLE_ORDER = [Role.TANK, Role.HEAL, Role.DPS]
-
-function MusterChip({ member }: { member: MemberData }): React.JSX.Element {
-  const skill = useLootStore((s) => s.effectiveStat(member, 'skill'))
-  const discipline = useLootStore((s) => s.effectiveStat(member, 'discipline'))
-  const personality = usePersonalityStore((s) => s.personalityOf(member.memberName))
-  const meta = PERSONALITY_META[personality]
-
-  // Provenance: how far the run (loot, morale, camp) has moved this member off base
-  const net = skill - member.skill + (discipline - member.discipline)
-  const provenance = [
-    `Skill: base ${member.skill}${skill !== member.skill ? ` → ${skill}` : ''}`,
-    `Discipline: base ${member.discipline}${discipline !== member.discipline ? ` → ${discipline}` : ''}`
-  ].join(' · ')
-
-  return (
-    <div
-      className="muster-chip"
-      style={{ borderLeftColor: ROLE_HEX[member.role] }}
-      title={`${member.memberName} — ${ROLE_LABELS[member.role]} · ${meta.label}\n${provenance}`}
-    >
-      <div className="muster-chip__head">
-        <RoleGlyph role={member.role} size={22} />
-        <span className="muster-chip__name">{lastName(member.memberName)}</span>
-        {net !== 0 && (
-          <span
-            className="muster-chip__delta"
-            style={{ color: net > 0 ? 'var(--rm-safe)' : 'var(--rm-fail)' }}
-          >
-            {net > 0 ? `▲${net}` : `▼${Math.abs(net)}`}
-          </span>
-        )}
-        <PersonalityGlyph glyph={meta.glyph} hue={meta.hue} size={8} glow={!meta.quiet} />
-      </div>
-      <div className="muster-chip__stats">
-        <StatBar label="Skill" value={skill} accent="var(--rm-skill)" />
-        <StatBar label="Disc" value={discipline} accent="var(--rm-discipline)" />
-      </div>
-    </div>
-  )
-}
 
 function EmptyChip({ role }: { role: Role }): React.JSX.Element {
   return (

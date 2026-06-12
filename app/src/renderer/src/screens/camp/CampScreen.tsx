@@ -30,7 +30,6 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
   const bestow = useLootStore((s) => s.bestow)
   const bench = useLootStore((s) => s.bench)
   const discard = useLootStore((s) => s.discard)
-  const effectiveStat = useLootStore((s) => s.effectiveStat)
   const previewRings = useLootStore((s) => s.previewRings)
 
   const [stage, setStage] = useState<Stage>(chosenAction ? 'resolved' : 'idle')
@@ -164,12 +163,7 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
               </div>
             )}
             <div className="camp-result__muster">
-              <MusterReacts
-                roster={roster}
-                effectiveStat={effectiveStat}
-                pulse={pulse}
-                preview={preview}
-              />
+              <MusterReacts roster={roster} pulse={pulse} preview={preview} />
             </div>
             <div className="camp-result__loot">
               {benched ? (

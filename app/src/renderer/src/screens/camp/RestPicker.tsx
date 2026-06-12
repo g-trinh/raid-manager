@@ -1,8 +1,7 @@
 import { MemberData } from '../../domain/data/memberData'
 import { Role } from '../../domain/data/role'
 import { useLootStore } from '../../domain/stores/useLootStore'
-import { ROLE_HEX } from '../shared/formatting'
-import { RoleGlyph } from '../shared/RoleGlyph'
+import { MemberPickRow } from '../shared/MemberPickRow'
 
 const ROLE_ORDER = [Role.TANK, Role.HEAL, Role.DPS]
 
@@ -21,23 +20,16 @@ function RestOption({
 }): React.JSX.Element {
   const skill = useLootStore((s) => s.effectiveStat(member, 'skill'))
   const discipline = useLootStore((s) => s.effectiveStat(member, 'discipline'))
-  const mended = skill < discipline ? 'Skill' : 'Discipline'
+  // Rest mends the weaker stat (tie → Discipline) — mirror useCampStore.rest()
+  const mendsSkill = skill < discipline
 
   return (
-    <button
-      className="loot-option"
-      style={{ borderLeftColor: ROLE_HEX[member.role] }}
-      onClick={() => onPick(member)}
-    >
-      <RoleGlyph role={member.role} size={32} />
-      <div className="loot-option__body">
-        <div className="loot-option__name">{member.memberName}</div>
-        <div className="loot-option__projection">
-          Skill {skill} · Discipline {discipline} <span className="loot-option__sep">→</span>{' '}
-          <span className="loot-option__gain">+1 {mended}</span>
-        </div>
-      </div>
-    </button>
+    <MemberPickRow
+      member={member}
+      projectedSkill={mendsSkill ? skill + 1 : undefined}
+      projectedDiscipline={mendsSkill ? undefined : discipline + 1}
+      onPick={onPick}
+    />
   )
 }
 

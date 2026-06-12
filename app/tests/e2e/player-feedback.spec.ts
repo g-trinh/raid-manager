@@ -90,7 +90,7 @@ test('camp skirmish loot shows the muster strip and logs to the chronicle', asyn
 
   await page.getByRole('button', { name: /Hunt the Road/ }).click()
   await expect(page.locator('.camp-result')).toBeVisible()
-  await expect(page.locator('.camp-result .ledger-chip')).toHaveCount(8)
+  await expect(page.locator('.camp-result .muster-chip')).toHaveCount(8)
 
   await page.locator('.chronicle-drawer__toggle').click()
   await expect(

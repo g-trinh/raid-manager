@@ -43,7 +43,6 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
   const bestow = useLootStore((s) => s.bestow)
   const bench = useLootStore((s) => s.bench)
   const discard = useLootStore((s) => s.discard)
-  const effectiveStat = useLootStore((s) => s.effectiveStat)
   const previewRings = useLootStore((s) => s.previewRings)
 
   interface Resolved {
@@ -112,12 +111,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
       </div>
 
       <div className="spoils-screen__body">
-        <MusterReacts
-          roster={selectedMembers}
-          effectiveStat={effectiveStat}
-          pulse={pulse}
-          preview={preview}
-        />
+        <MusterReacts roster={selectedMembers} pulse={pulse} preview={preview} />
 
         {pendingItems.length > 0 && (
           <div className="spoils-screen__section">

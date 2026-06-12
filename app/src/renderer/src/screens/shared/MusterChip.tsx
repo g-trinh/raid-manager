@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
-import { BestowResult, RingType } from '../../domain/stores/useLootStore'
 import { MemberData } from '../../domain/data/memberData'
 import { PERSONALITY_META } from '../../domain/data/personality'
+import { ROLE_LABELS } from '../../domain/data/role'
+import { BestowResult, RingType, useLootStore } from '../../domain/stores/useLootStore'
 import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
-import { useCountUp } from '../../domain/hooks/useCountUp'
-import { ROLE_HEX } from '../shared/formatting'
-import { PersonalityGlyph } from '../shared/PersonalityMark'
+import { ROLE_HEX, lastName } from './formatting'
+import { PersonalityGlyph } from './PersonalityMark'
+import { RoleGlyph } from './RoleGlyph'
+import { StatBar } from './StatBar'
 
 const LOOT_GOLD = '#d9c089'
+
+type Pulse = BestowResult & { token: number }
 
 interface FloatEntry {
   key: string
@@ -16,27 +20,25 @@ interface FloatEntry {
   muted?: boolean
 }
 
-interface MemberLedgerChipProps {
+interface MusterChipProps {
   member: MemberData
-  skill: number
-  discipline: number
-  pulse: (BestowResult & { token: number }) | null
-  ring: RingType | null
+  // Optional grant-moment feedback (spoils/camp reacts strip)
+  pulse?: Pulse | null
+  ring?: RingType | null
 }
 
-export function MemberLedgerChip({
+// The one way a member renders everywhere: role glyph, name, run-delta badge,
+// personality glyph, and Skill/Discipline pip rows. With a pulse it also plays
+// the grant-moment feedback (flash, floats, preview ring).
+export function MusterChip({
   member,
-  skill,
-  discipline,
-  pulse,
-  ring
-}: MemberLedgerChipProps): React.JSX.Element {
+  pulse = null,
+  ring = null
+}: MusterChipProps): React.JSX.Element {
+  const skill = useLootStore((s) => s.effectiveStat(member, 'skill'))
+  const discipline = useLootStore((s) => s.effectiveStat(member, 'discipline'))
   const personality = usePersonalityStore((s) => s.personalityOf(member.memberName))
   const meta = PERSONALITY_META[personality]
-  const hex = ROLE_HEX[member.role]
-
-  const dispS = useCountUp(skill)
-  const dispD = useCountUp(discipline)
 
   const [flash, setFlash] = useState<'gold' | 'hue' | null>(null)
   const [floats, setFloats] = useState<FloatEntry[]>([])
@@ -83,58 +85,53 @@ export function MemberLedgerChip({
     }
   }, [seenToken])
 
+  // Provenance: how far the run (loot, morale, camp) has moved this member off base
+  const net = skill - member.skill + (discipline - member.discipline)
+  const provenance = [
+    `Skill: base ${member.skill}${skill !== member.skill ? ` → ${skill}` : ''}`,
+    `Discipline: base ${member.discipline}${discipline !== member.discipline ? ` → ${discipline}` : ''}`
+  ].join(' · ')
+
   const flashColor = flash === 'gold' ? LOOT_GOLD : meta.hue
-  const hasSkillFloat = floats.some((f) => f.key === 's')
-  const hasDiscFloat = floats.some((f) => f.key === 'd')
 
   return (
     <div
-      className="ledger-chip"
+      className="muster-chip"
       style={{
-        borderLeftColor: hex,
+        borderLeftColor: ROLE_HEX[member.role],
         background: flash
-          ? `color-mix(in oklab, ${flashColor} 12%, rgba(0,0,0,0.22))`
-          : 'rgba(0,0,0,0.22)',
+          ? `color-mix(in oklab, ${flashColor} 12%, rgba(0, 0, 0, 0.25))`
+          : undefined,
         boxShadow: flash
           ? `0 0 0 1px ${flashColor}, 0 0 13px color-mix(in oklab, ${flashColor} 55%, transparent)`
-          : 'none'
+          : undefined
       }}
+      title={`${member.memberName} — ${ROLE_LABELS[member.role]} · ${meta.label}\n${provenance}`}
     >
-      <PersonalityGlyph glyph={meta.glyph} hue={meta.hue} size={8} glow={!meta.quiet} />
-
-      <span className="ledger-chip__name">{member.memberName.split(' ').slice(-1)[0]}</span>
-
-      <span className="ledger-chip__stats">
-        <span className="ledger-chip__stat">
-          S
-          <b
-            style={{
-              color: flash && hasSkillFloat ? flashColor : 'var(--parch)',
-              transition: 'color 0.3s'
-            }}
+      <div className="muster-chip__head">
+        <RoleGlyph role={member.role} size={22} />
+        <span className="muster-chip__name">{lastName(member.memberName)}</span>
+        {net !== 0 && (
+          <span
+            className="muster-chip__delta"
+            style={{ color: net > 0 ? 'var(--rm-safe)' : 'var(--rm-fail)' }}
           >
-            {dispS}
-          </b>
-        </span>
-        <span className="ledger-chip__stat">
-          D
-          <b
-            style={{
-              color: flash && hasDiscFloat ? flashColor : 'var(--parch)',
-              transition: 'color 0.3s'
-            }}
-          >
-            {dispD}
-          </b>
-        </span>
-      </span>
+            {net > 0 ? `▲${net}` : `▼${Math.abs(net)}`}
+          </span>
+        )}
+        <PersonalityGlyph glyph={meta.glyph} hue={meta.hue} size={8} glow={!meta.quiet} />
+      </div>
+      <div className="muster-chip__stats">
+        <StatBar label="Skill" value={skill} accent="var(--rm-skill)" />
+        <StatBar label="Disc" value={discipline} accent="var(--rm-discipline)" />
+      </div>
 
       {floats.length > 0 && (
-        <div className="ledger-chip__floats">
+        <div className="muster-chip__floats">
           {floats.map((f, i) => (
             <span
               key={f.key}
-              className="ledger-chip__float"
+              className="muster-chip__float"
               style={{
                 color: f.muted ? 'var(--ash)' : f.positive ? '#a6b67c' : '#cc5436',
                 textShadow: f.muted ? 'none' : `0 0 8px ${f.positive ? '#a6b67c' : '#cc5436'}99`,
@@ -150,7 +147,7 @@ export function MemberLedgerChip({
       {ring && (
         <span
           aria-hidden="true"
-          className="ledger-chip__ring"
+          className="muster-chip__ring"
           style={{
             background:
               ring === 'white'
