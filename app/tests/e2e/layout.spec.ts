@@ -59,6 +59,28 @@ async function beginAttemptFromTable(page: Page): Promise<void> {
   await expect(page.locator('.resolution-outcome--visible')).toBeVisible({ timeout: 10_000 })
 }
 
+// AC: after distributing every item, the spoils exit is on screen and clickable
+test('spoils continue stays reachable after distributing all loot at 800px height', async ({
+  page
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 })
+  await seedRandom(page, 0.3)
+  await page.goto('/')
+  await draftFullRoster(page)
+  await beginAttempt(page)
+  await openSpoils(page)
+
+  const equip = page.locator('.loot-card__action--equip')
+  while ((await equip.count()) > 0) {
+    await equip.first().click()
+    await page.locator('.loot-option').first().click()
+  }
+
+  const btn = page.getByRole('button', { name: 'To the War Table' })
+  await expect(btn).toBeVisible()
+  await expect(btn).toBeInViewport()
+})
+
 // AC: the wipe outcome (head, sub and both actions) fits short windows
 test('wipe outcome actions stay on screen at 800px window height', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })

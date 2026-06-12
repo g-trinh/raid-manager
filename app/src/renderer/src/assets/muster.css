@@ -1,9 +1,15 @@
 /* ── Muster theme: dark-fantasy ink/parchment palette ────────────── */
 
 /* One knob for overall UI size. Chromium zoom scales fonts, pips and
-   spacing together, so proportions (and the px-based layout) hold. */
+   spacing together, so proportions hold. The height is compensated:
+   without it, 100% resolves unzoomed and then scales ×zoom, pushing
+   every screen's bottom strip off-viewport. */
+:root {
+  --ui-zoom: 1.15;
+}
+
 html {
-  zoom: 1.15;
+  zoom: var(--ui-zoom);
 }
 
 :root {
@@ -943,6 +949,21 @@ html {
   gap: 6px;
 }
 
+/* Scroll targets clear the sticky reacts strip instead of sliding under it.
+   scroll-margin only affects scrollIntoView, so the blanket selector is free. */
+.spoils-screen__body *,
+.camp-body * {
+  scroll-margin-top: 210px;
+}
+
+/* On short windows the sticky strip would cover the cards beneath it —
+   let it scroll with the content instead. */
+@media (max-height: 860px) {
+  .muster-reacts {
+    position: static;
+  }
+}
+
 /* ── PersonalityLegend ────────────────────────────────────────────── */
 .personality-legend__trigger {
   display: inline-flex;
@@ -1666,7 +1687,8 @@ html {
 
 /* ── Camp screen ──────────────────────────────────────────────────── */
 .camp-screen {
-  min-height: 100vh;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background:
@@ -1708,6 +1730,8 @@ html {
 
 .camp-body {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   width: min(880px, 92vw);
   margin: 0 auto;
   padding: 26px 0 30px;
@@ -2270,7 +2294,7 @@ html {
 /* ── War table (the hub) ──────────────────────────────────────────── */
 .war-table {
   flex: 1;
-  min-height: 100vh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   color: var(--parch);
