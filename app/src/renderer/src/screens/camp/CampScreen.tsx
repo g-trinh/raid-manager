@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { MemberData } from '../../domain/data/memberData'
 import { useCampStore } from '../../domain/stores/useCampStore'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
-import { BestowResult, useLootStore } from '../../domain/stores/useLootStore'
+import { BestowResult, RingType, useLootStore } from '../../domain/stores/useLootStore'
 import { SectionLabel } from '../shared/SectionLabel'
 import { LootCard, LootResolution } from '../spoils/LootCard'
+import { MusterReacts } from '../spoils/MusterReacts'
 import { CampOptionCard } from './CampOptionCard'
 import { RestPicker } from './RestPicker'
 
@@ -13,6 +14,8 @@ interface CampScreenProps {
 }
 
 type Stage = 'idle' | 'rest-pick' | 'resolved'
+
+type Pulse = BestowResult & { token: number }
 
 const STAT_LABEL = { skill: 'Skill', discipline: 'Discipline' } as const
 
@@ -27,11 +30,15 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
   const bestow = useLootStore((s) => s.bestow)
   const bench = useLootStore((s) => s.bench)
   const discard = useLootStore((s) => s.discard)
+  const effectiveStat = useLootStore((s) => s.effectiveStat)
+  const previewRings = useLootStore((s) => s.previewRings)
 
   const [stage, setStage] = useState<Stage>(chosenAction ? 'resolved' : 'idle')
   const [lootResolution, setLootResolution] = useState<LootResolution | null>(null)
   const [benched, setBenched] = useState(false)
-  const [reactions, setReactions] = useState<BestowResult | null>(null)
+  const [pulse, setPulse] = useState<Pulse | null>(null)
+  const [preview, setPreview] = useState<Record<string, RingType> | null>(null)
+  const pulseToken = useRef(0)
 
   const roster = useMemo(() => selectedMembers, [selectedMembers])
 
@@ -53,7 +60,9 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
   const handleEquip = (member: MemberData): void => {
     if (!skirmishResult) return
     const result = bestow(skirmishResult.item, member, roster)
-    setReactions(result)
+    pulseToken.current += 1
+    setPulse({ ...result, token: pulseToken.current })
+    setPreview(null)
     setLootResolution({ type: 'equipped', member })
   }
 
@@ -67,6 +76,14 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
     if (!skirmishResult) return
     discard(skirmishResult.item)
     setLootResolution({ type: 'discarded' })
+  }
+
+  const handleHoverMember = (member: MemberData): void => {
+    setPreview(previewRings(member, roster))
+  }
+
+  const handleLeaveMember = (): void => {
+    setPreview(null)
   }
 
   const skirmishSettled = lootResolution !== null || benched
@@ -146,6 +163,14 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
                 {STAT_LABEL[skirmishResult.bruise.stat]}.
               </div>
             )}
+            <div className="camp-result__muster">
+              <MusterReacts
+                roster={roster}
+                effectiveStat={effectiveStat}
+                pulse={pulse}
+                preview={preview}
+              />
+            </div>
             <div className="camp-result__loot">
               {benched ? (
                 <div className="camp-result__line">
@@ -160,23 +185,11 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
                   onEquip={handleEquip}
                   onBench={handleBench}
                   onDiscard={handleDiscard}
+                  onHoverMember={handleHoverMember}
+                  onLeaveMember={handleLeaveMember}
                 />
               )}
             </div>
-            {reactions && Object.keys(reactions.applied).length > 1 && (
-              <div className="camp-result__reactions">
-                {Object.entries(reactions.applied)
-                  .filter(([name]) => name !== reactions.recipient)
-                  .map(([name, delta]) => (
-                    <div key={name} className="camp-result__line camp-result__line--reaction">
-                      <b>{name}</b>
-                      {delta.skill !== 0 && ` ${delta.skill > 0 ? '+' : ''}${delta.skill} Skill`}
-                      {delta.discipline !== 0 &&
-                        ` ${delta.discipline > 0 ? '+' : ''}${delta.discipline} Discipline`}
-                    </div>
-                  ))}
-              </div>
-            )}
           </div>
         )}
       </main>

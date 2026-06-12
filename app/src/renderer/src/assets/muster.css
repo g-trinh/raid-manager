@@ -2003,3 +2003,9 @@
   color: var(--ash);
   font-style: italic;
 }
+
+.camp-result__muster {
+  width: min(880px, 100%);
+  margin: 18px auto 0;
+  text-align: left;
+}
