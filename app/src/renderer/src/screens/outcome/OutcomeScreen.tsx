@@ -253,7 +253,7 @@ function AttemptReveal({
             <button className="rm-btn rm-btn--default" onClick={onRetry}>
               Pull Again
             </button>
-            <button className="rm-btn" onClick={onRetreat}>
+            <button className="rm-btn rm-btn--ghost" onClick={onRetreat}>
               Retreat to Camp
             </button>
           </div>
