@@ -52,6 +52,8 @@ function MemberOption({ member, item, onPick, onHover }: MemberOptionProps): Rea
 interface LootCardProps {
   item: LootItemData
   eligibleMembers: MemberData[]
+  // Full muster — needed to predict bystander reactions on hover
+  roster?: MemberData[]
   resolution?: LootResolution
   showBench?: boolean
   onEquip: (member: MemberData) => void
@@ -64,6 +66,7 @@ interface LootCardProps {
 export function LootCard({
   item,
   eligibleMembers,
+  roster = [],
   resolution,
   showBench = false,
   onEquip,
@@ -73,6 +76,20 @@ export function LootCard({
   onLeaveMember
 }: LootCardProps): React.JSX.Element {
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [hovered, setHovered] = useState<MemberData | null>(null)
+  const previewReactions = useLootStore((s) => s.previewReactions)
+
+  const hintLines = hovered && roster.length > 0 ? previewReactions(item, hovered, roster) : []
+
+  const handleHover = (member: MemberData): void => {
+    setHovered(member)
+    onHoverMember?.(member)
+  }
+
+  const handleLeave = (): void => {
+    setHovered(null)
+    onLeaveMember?.()
+  }
   const hex = ROLE_HEX[item.roleLock]
 
   if (resolution) {
@@ -116,21 +133,36 @@ export function LootCard({
       </div>
 
       {pickerOpen ? (
-        <div className="loot-card__picker" onMouseLeave={() => onLeaveMember?.()}>
+        <div className="loot-card__picker" onMouseLeave={handleLeave}>
           {eligibleMembers.map((member) => (
             <MemberOption
               key={member.memberName}
               member={member}
               item={item}
               onPick={onEquip}
-              onHover={onHoverMember}
+              onHover={handleHover}
             />
           ))}
+          {hovered && (
+            <div className="loot-card__hint">
+              {hintLines.length > 0 ? (
+                hintLines.map((line) => (
+                  <div key={line} className="loot-card__hint-line">
+                    {line}
+                  </div>
+                ))
+              ) : (
+                <div className="loot-card__hint-line loot-card__hint-line--quiet">
+                  Nobody else will react.
+                </div>
+              )}
+            </div>
+          )}
           <button
             className="loot-card__action loot-card__action--cancel"
             onClick={() => {
               setPickerOpen(false)
-              onLeaveMember?.()
+              handleLeave()
             }}
           >
             Back

@@ -13,6 +13,7 @@ interface FloatEntry {
   key: string
   text: string
   positive: boolean
+  muted?: boolean
 }
 
 interface MemberLedgerChipProps {
@@ -46,9 +47,9 @@ export function MemberLedgerChip({
   if (pulse && pulse.token !== seenToken) {
     setSeenToken(pulse.token)
     const delta = pulse.applied[member.memberName]
-    if (delta && (delta.skill !== 0 || delta.discipline !== 0)) {
-      setFlash(pulse.recipient === member.memberName ? 'gold' : 'hue')
-      const fl: FloatEntry[] = []
+    const capped = pulse.capped?.[member.memberName]
+    const fl: FloatEntry[] = []
+    if (delta) {
       if (delta.skill !== 0)
         fl.push({
           key: 's',
@@ -61,6 +62,13 @@ export function MemberLedgerChip({
           text: `${delta.discipline > 0 ? '+' : ''}${delta.discipline} Disc`,
           positive: delta.discipline > 0
         })
+    }
+    // Reactions fully swallowed by the [0,5] clamp still announce themselves
+    if (capped?.skill) fl.push({ key: 'sc', text: 'Skill at peak', positive: true, muted: true })
+    if (capped?.discipline)
+      fl.push({ key: 'dc', text: 'Disc at peak', positive: true, muted: true })
+    if (fl.length > 0) {
+      setFlash(pulse.recipient === member.memberName ? 'gold' : 'hue')
       setFloats(fl)
     }
   }
@@ -128,8 +136,8 @@ export function MemberLedgerChip({
               key={f.key}
               className="ledger-chip__float"
               style={{
-                color: f.positive ? '#a6b67c' : '#cc5436',
-                textShadow: `0 0 8px ${f.positive ? '#a6b67c' : '#cc5436'}99`,
+                color: f.muted ? 'var(--ash)' : f.positive ? '#a6b67c' : '#cc5436',
+                textShadow: f.muted ? 'none' : `0 0 8px ${f.positive ? '#a6b67c' : '#cc5436'}99`,
                 animationDelay: `${i * 0.06}s`
               }}
             >

@@ -4,6 +4,7 @@ import { CampScreen } from './screens/camp/CampScreen'
 import { ChoiceScreen } from './screens/choice/ChoiceScreen'
 import { DraftScreen } from './screens/draft/DraftScreen'
 import { OutcomeScreen } from './screens/outcome/OutcomeScreen'
+import { ChronicleDrawer } from './screens/shared/ChronicleDrawer'
 import { MusterDrawer } from './screens/shared/MusterDrawer'
 
 type Screen = 'draft' | 'outcome' | 'camp' | 'choice'
@@ -40,6 +41,7 @@ function App(): React.JSX.Element {
     <>
       {current}
       {showDrawer && <MusterDrawer />}
+      <ChronicleDrawer />
     </>
   )
 }

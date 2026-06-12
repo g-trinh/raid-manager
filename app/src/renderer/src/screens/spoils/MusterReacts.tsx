@@ -22,6 +22,8 @@ export function MusterReacts({
   preview
 }: MusterReactsProps): React.JSX.Element {
   const ordered = ROLE_ORDER.flatMap((r) => roster.filter((m) => m.role === r))
+  const silentGrant =
+    pulse !== null && pulse.reactions.every((r) => r.memberName === pulse.recipient)
   return (
     <div className="muster-reacts">
       <div className="muster-reacts__header">
@@ -40,6 +42,9 @@ export function MusterReacts({
           />
         ))}
       </div>
+      {silentGrant && (
+        <div className="muster-reacts__silent">The rest of the muster doesn&apos;t react.</div>
+      )}
     </div>
   )
 }

@@ -12,7 +12,11 @@ function average(vals: number[]): number {
   return vals.reduce((sum, v) => sum + v, 0) / vals.length
 }
 
-function roleAverage(members: MemberData[], role: Role, statKey: 'skill' | 'discipline'): number {
+export function roleAverage(
+  members: MemberData[],
+  role: Role,
+  statKey: 'skill' | 'discipline'
+): number {
   const vals = members.filter((m) => m.role === role).map((m) => m[statKey])
   return average(vals)
 }

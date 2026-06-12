@@ -180,6 +180,7 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
                 <LootCard
                   item={skirmishResult.item}
                   eligibleMembers={roster.filter((m) => m.role === skirmishResult.item.roleLock)}
+                  roster={roster}
                   resolution={lootResolution ?? undefined}
                   showBench
                   onEquip={handleEquip}

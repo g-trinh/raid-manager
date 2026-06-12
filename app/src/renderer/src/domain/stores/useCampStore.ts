@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { commonLootPool } from '../data/gameData'
 import { LootItemData } from '../data/lootData'
 import { MemberData } from '../data/memberData'
+import { useChronicleStore } from './useChronicleStore'
 import { useLootStore } from './useLootStore'
 
 export type CampAction = 'rest' | 'scout' | 'skirmish'
@@ -22,6 +23,8 @@ export interface SkirmishResult {
 }
 
 const BRUISE_CHANCE = 0.3
+
+const STAT_LABEL = { skill: 'Skill', discipline: 'Discipline' } as const
 
 interface CampState {
   // Action chosen at the current camp, null while undecided
@@ -62,11 +65,17 @@ export const useCampStore = create<CampState>((set) => ({
     applyDelta(member.memberName, stat === 'skill' ? 1 : 0, stat === 'discipline' ? 1 : 0)
 
     const result: RestResult = { memberName: member.memberName, stat }
+    useChronicleStore
+      .getState()
+      .log('camp', `Rest — ${member.memberName} recovers: +1 ${STAT_LABEL[stat]}`)
     set({ chosenAction: 'rest', restResult: result })
     return result
   },
 
   scout: () => {
+    useChronicleStore
+      .getState()
+      .log('camp', 'Outriders sent — the next foes will be fully forecast')
     set({ chosenAction: 'scout', scouted: true })
   },
 
@@ -82,6 +91,12 @@ export const useCampStore = create<CampState>((set) => ({
         .getState()
         .applyDelta(victim.memberName, stat === 'skill' ? -1 : 0, stat === 'discipline' ? -1 : 0)
       bruise = { memberName: victim.memberName, stat }
+    }
+
+    const { log } = useChronicleStore.getState()
+    log('camp', `Skirmish won — 「${item.name}」 claimed from the warband`)
+    if (bruise) {
+      log('camp', `${bruise.memberName} bruised in the skirmish — −1 ${STAT_LABEL[bruise.stat]}`)
     }
 
     const result: SkirmishResult = { item, bruise }

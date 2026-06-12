@@ -3,6 +3,7 @@ import { createCommonItem, createLootItem, LootItemData } from '../data/lootData
 import { createMember, MemberData } from '../data/memberData'
 import { Personality } from '../data/personality'
 import { Role } from '../data/role'
+import { useChronicleStore } from './useChronicleStore'
 import { useLootStore } from './useLootStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
@@ -53,7 +54,12 @@ function stats(member: MemberData): { skill: number; discipline: number } {
 beforeEach(() => {
   useLootStore.getState().reset()
   usePersonalityStore.setState({ assignments: {} })
+  useChronicleStore.getState().reset()
 })
+
+function chronicleTexts(): string[] {
+  return useChronicleStore.getState().entries.map((e) => e.text)
+}
 
 // AC: equipped items grant their bonuses to the wearer (loot.md)
 describe('bestow — item bonus', () => {
@@ -149,5 +155,115 @@ describe('bestow — applied report', () => {
     expect(result.applied[dpsA.memberName]).toEqual({ skill: 1, discipline: 1 })
     expect(result.applied[healA.memberName]).toEqual({ skill: 0, discipline: 1 })
     expect(result.applied[dpsB.memberName]).toEqual({ skill: 0, discipline: -1 })
+  })
+})
+
+// AC: a reaction swallowed by the stat clamp is still reported, flagged as capped
+describe('bestow — capped reactions', () => {
+  it('flags an altruist already at Discipline 5 as capped instead of silent', () => {
+    const cappedAltruist = createMember('Capped Heal', Role.HEAL, 3, 5)
+    const fullRoster = [...roster, cappedAltruist]
+    assignPersonalities({ [cappedAltruist.memberName]: Personality.ALTRUIST })
+
+    const result = useLootStore.getState().bestow(dpsItem, dpsA, fullRoster)
+
+    expect(result.applied[cappedAltruist.memberName]).toBeUndefined()
+    expect(result.capped[cappedAltruist.memberName]).toEqual({ skill: false, discipline: true })
+  })
+
+  it('does not flag members whose reaction fully applied', () => {
+    assignPersonalities({ [healA.memberName]: Personality.ALTRUIST })
+    const result = useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    expect(result.capped[healA.memberName]).toBeUndefined()
+  })
+})
+
+// AC: bestow lists the personality reactions it triggered (for hints and the chronicle)
+describe('bestow — reactions report', () => {
+  it('lists altruist and same-role glory hound reactions with their reasons', () => {
+    assignPersonalities({
+      [healA.memberName]: Personality.ALTRUIST,
+      [dpsB.memberName]: Personality.GLORY_HOUND
+    })
+    const result = useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    const byName = Object.fromEntries(result.reactions.map((r) => [r.memberName, r]))
+    expect(byName[healA.memberName]).toMatchObject({ discipline: 1, reason: 'heartened' })
+    expect(byName[dpsB.memberName]).toMatchObject({ discipline: -1, reason: 'sulks' })
+  })
+
+  it('lists the glory hound recipient bask as a reaction', () => {
+    assignPersonalities({ [dpsA.memberName]: Personality.GLORY_HOUND })
+    const result = useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    expect(result.reactions).toContainEqual(
+      expect.objectContaining({ memberName: dpsA.memberName, skill: 1, reason: 'basks' })
+    )
+  })
+
+  it('reports no reactions when the muster is all loners', () => {
+    const result = useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    expect(result.reactions).toEqual([])
+  })
+})
+
+// AC: every grant writes the chronicle — including silent and capped ones
+describe('bestow — chronicle entries', () => {
+  it('logs the grant and each reaction', () => {
+    assignPersonalities({ [healA.memberName]: Personality.ALTRUIST })
+    useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    const texts = chronicleTexts()
+    expect(texts.some((t) => t.includes('Test Fang') && t.includes(dpsA.memberName))).toBe(true)
+    expect(texts.some((t) => t.includes(healA.memberName) && t.includes('+1 Discipline'))).toBe(
+      true
+    )
+  })
+
+  it('logs that the muster does not react when nobody is moved', () => {
+    useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    expect(chronicleTexts().some((t) => t.includes("doesn't react"))).toBe(true)
+  })
+
+  it('logs a capped reaction as at peak', () => {
+    const cappedAltruist = createMember('Capped Heal', Role.HEAL, 3, 5)
+    assignPersonalities({ [cappedAltruist.memberName]: Personality.ALTRUIST })
+    useLootStore.getState().bestow(dpsItem, dpsA, [...roster, cappedAltruist])
+    expect(chronicleTexts().some((t) => t.includes('Capped Heal') && t.includes('at peak'))).toBe(
+      true
+    )
+  })
+
+  it('logs bench and discard', () => {
+    useLootStore.getState().bench(dpsItem)
+    useLootStore.getState().discard(tankItem)
+    const texts = chronicleTexts()
+    expect(texts.some((t) => t.includes('Test Fang') && t.includes('satchel'))).toBe(true)
+    expect(texts.some((t) => t.includes('Test Plate') && t.includes('cast aside'))).toBe(true)
+  })
+})
+
+// AC: hovering a member in the picker predicts the grant's consequences
+describe('previewReactions', () => {
+  it('predicts altruist and same-role glory hound reactions', () => {
+    assignPersonalities({
+      [healA.memberName]: Personality.ALTRUIST,
+      [dpsB.memberName]: Personality.GLORY_HOUND
+    })
+    const lines = useLootStore.getState().previewReactions(dpsItem, dpsA, roster)
+    expect(lines.some((l) => l.includes(healA.memberName) && l.includes('+1 Discipline'))).toBe(
+      true
+    )
+    expect(lines.some((l) => l.includes(dpsB.memberName) && l.includes('−1 Discipline'))).toBe(true)
+  })
+
+  it('predicts an at-peak reaction for a capped altruist', () => {
+    const cappedAltruist = createMember('Capped Heal', Role.HEAL, 3, 5)
+    assignPersonalities({ [cappedAltruist.memberName]: Personality.ALTRUIST })
+    const lines = useLootStore
+      .getState()
+      .previewReactions(dpsItem, dpsA, [...roster, cappedAltruist])
+    expect(lines.some((l) => l.includes('Capped Heal') && l.includes('at peak'))).toBe(true)
+  })
+
+  it('returns no lines when nobody would react', () => {
+    expect(useLootStore.getState().previewReactions(dpsItem, dpsA, roster)).toEqual([])
   })
 })

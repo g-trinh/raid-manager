@@ -3,6 +3,7 @@ import { MemberData } from '../../domain/data/memberData'
 import { projectPhase } from '../../domain/logic/phaseProjection'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
 import { useRunStore } from '../../domain/stores/useRunStore'
+import { ROMAN } from '../shared/formatting'
 import { MusterPanel } from '../shared/MusterPanel'
 import { SectionLabel } from '../shared/SectionLabel'
 import { CandidateCard } from './CandidateCard'
@@ -28,6 +29,25 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
     () => boss.phases.map((phase) => projectPhase(phase, selectedMembers)),
     [boss.phases, selectedMembers]
   )
+
+  // Pick hint: would this candidate meaningfully lift the weakest projected phase?
+  const HINT_THRESHOLD = 0.05
+  const candidateHints = useMemo(() => {
+    if (currentCandidates.length === 0) return {}
+    let weakest = 0
+    projections.forEach((p, i) => {
+      if (p.chance < projections[weakest].chance) weakest = i
+    })
+    const phase = boss.phases[weakest]
+    const hints: Record<string, string> = {}
+    for (const candidate of currentCandidates) {
+      const lifted = projectPhase(phase, [...selectedMembers, candidate]).chance
+      if (lifted - projections[weakest].chance >= HINT_THRESHOLD) {
+        hints[candidate.memberName] = `Shores up Phase ${ROMAN[weakest]}`
+      }
+    }
+    return hints
+  }, [boss.phases, currentCandidates, projections, selectedMembers])
 
   const handlePick = (member: MemberData): void => {
     if (full) return
@@ -68,7 +88,12 @@ export function DraftScreen({ onProceed }: DraftScreenProps): React.JSX.Element 
             <SectionLabel accent="var(--parch)">{`Choose One · Round ${round} / 8`}</SectionLabel>
             <div className="muster-candidates">
               {currentCandidates.map((member) => (
-                <CandidateCard key={member.memberName} member={member} onPick={handlePick} />
+                <CandidateCard
+                  key={member.memberName}
+                  member={member}
+                  hint={candidateHints[member.memberName]}
+                  onPick={handlePick}
+                />
               ))}
             </div>
           </>

@@ -2,13 +2,27 @@ import { create } from 'zustand'
 import { LootItemData } from '../data/lootData'
 import { MemberData } from '../data/memberData'
 import { Personality } from '../data/personality'
+import { useChronicleStore } from './useChronicleStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
 type StatKey = 'skill' | 'discipline'
 type StatBonus = Record<StatKey, number>
 
+export type ReactionReason = 'basks' | 'heartened' | 'resents' | 'sulks'
+
+export interface GrantReaction {
+  memberName: string
+  skill: number
+  discipline: number
+  reason: ReactionReason
+}
+
 export interface BestowResult {
   applied: Record<string, StatBonus>
+  // Per-stat flags for intended deltas fully swallowed by the [0, 5] clamp
+  capped: Record<string, Record<StatKey, boolean>>
+  // Personality reactions the grant triggered (intent, before clamping)
+  reactions: GrantReaction[]
   recipient: string
 }
 
@@ -16,6 +30,63 @@ export type RingType = 'white' | 'trait' | 'gradient'
 
 function clampStat(value: number): number {
   return Math.max(0, Math.min(5, value))
+}
+
+// The personality reactions a grant to `recipient` triggers — intent only, no clamping.
+// Single source of truth shared by bestow(), previewRings() and previewReactions().
+function grantReactions(recipient: MemberData, roster: MemberData[]): GrantReaction[] {
+  const { personalityOf } = usePersonalityStore.getState()
+  const recipientPersonality = personalityOf(recipient.memberName)
+  const reactions: GrantReaction[] = []
+
+  if (recipientPersonality === Personality.GLORY_HOUND) {
+    reactions.push({ memberName: recipient.memberName, skill: 1, discipline: 0, reason: 'basks' })
+  }
+
+  for (const bystander of roster) {
+    if (bystander.memberName === recipient.memberName) continue
+    const personality = personalityOf(bystander.memberName)
+    if (personality === Personality.ALTRUIST) {
+      reactions.push({
+        memberName: bystander.memberName,
+        skill: 0,
+        discipline: 1,
+        reason: 'heartened'
+      })
+      if (recipientPersonality === Personality.GLORY_HOUND) {
+        reactions.push({
+          memberName: bystander.memberName,
+          skill: -1,
+          discipline: 0,
+          reason: 'resents'
+        })
+      }
+    } else if (personality === Personality.GLORY_HOUND && bystander.role === recipient.role) {
+      // Sulks only when a rival of their own role is geared instead of them
+      reactions.push({
+        memberName: bystander.memberName,
+        skill: 0,
+        discipline: -1,
+        reason: 'sulks'
+      })
+    }
+  }
+  return reactions
+}
+
+const REASON_TEXT: Record<ReactionReason, string> = {
+  basks: 'basks in the recognition',
+  heartened: 'is heartened',
+  resents: 'resents the Glory Hound',
+  sulks: 'sulks at being passed over'
+}
+
+function deltaText(skill: number, discipline: number): string {
+  const parts: string[] = []
+  if (skill !== 0) parts.push(`${skill > 0 ? '+' : '−'}${Math.abs(skill)} Skill`)
+  if (discipline !== 0)
+    parts.push(`${discipline > 0 ? '+' : '−'}${Math.abs(discipline)} Discipline`)
+  return parts.join(' · ')
 }
 
 interface LootState {
@@ -29,6 +100,7 @@ interface LootState {
   projectedStat: (member: MemberData, item: LootItemData, key: StatKey) => number
   applyDelta: (memberName: string, skill: number, discipline: number) => void
   previewRings: (member: MemberData, roster: MemberData[]) => Record<string, RingType>
+  previewReactions: (item: LootItemData, member: MemberData, roster: MemberData[]) => string[]
   bestow: (item: LootItemData, member: MemberData, roster: MemberData[]) => BestowResult
   bench: (item: LootItemData) => void
   discard: (item: LootItemData) => void
@@ -73,39 +145,42 @@ export const useLootStore = create<LootState>((set, get) => ({
     })
   },
 
-  // Which members a grant to `member` would touch, and how to ring each one.
-  // Mirrors bestow()'s trait rules exactly (no stats are mutated):
+  // Which members a grant to `member` would touch, and how to ring each one:
   //   - recipient            -> 'white'  (they receive the item)
   //   - recipient is GH      -> 'gradient' (white + their own crimson trait,
   //                              a Glory Hound also basking in own loot)
-  //   - other Altruist       -> 'trait'  (reacts to any grant)
-  //   - other same-role GH   -> 'trait'  (sulks only when a role rival is geared)
-  //   - Loners / unaffected  -> no ring
+  //   - reacting bystander   -> 'trait'
   previewRings: (member, roster) => {
     const { personalityOf } = usePersonalityStore.getState()
-    const recipientPersonality = personalityOf(member.memberName)
     const rings: Record<string, RingType> = {}
     rings[member.memberName] =
-      recipientPersonality === Personality.GLORY_HOUND ? 'gradient' : 'white'
+      personalityOf(member.memberName) === Personality.GLORY_HOUND ? 'gradient' : 'white'
 
-    for (const bystander of roster) {
-      if (bystander.memberName === member.memberName) continue
-      const bp = personalityOf(bystander.memberName)
-      if (
-        bp === Personality.ALTRUIST ||
-        (bp === Personality.GLORY_HOUND && bystander.role === member.role)
-      ) {
-        rings[bystander.memberName] = 'trait'
-      }
+    for (const reaction of grantReactions(member, roster)) {
+      if (reaction.memberName !== member.memberName) rings[reaction.memberName] = 'trait'
     }
     return rings
   },
 
+  // Human-readable consequence lines for the picker hover hint. Mirrors bestow(),
+  // including "at peak" when the clamp would swallow the whole reaction.
+  previewReactions: (_item, member, roster) => {
+    const { effectiveStat } = get()
+    return grantReactions(member, roster).map((reaction) => {
+      const target = roster.find((m) => m.memberName === reaction.memberName)
+      const key: StatKey = reaction.skill !== 0 ? 'skill' : 'discipline'
+      const delta = reaction.skill !== 0 ? reaction.skill : reaction.discipline
+      const current = target ? effectiveStat(target, key) : 0
+      const blocked = delta > 0 ? current >= 5 : current <= 0
+      const effect = blocked
+        ? 'already at peak — no change'
+        : deltaText(reaction.skill, reaction.discipline)
+      return `${reaction.memberName} ${REASON_TEXT[reaction.reason]} — ${effect}`
+    })
+  },
+
   bestow: (item, member, roster) => {
     const { bonuses, equippedBy } = get()
-    const { personalityOf } = usePersonalityStore.getState()
-
-    const recipientPersonality = personalityOf(member.memberName)
     const updated: Record<string, StatBonus> = { ...bonuses }
 
     const addDelta = (name: string, skill: number, discipline: number): void => {
@@ -113,42 +188,47 @@ export const useLootStore = create<LootState>((set, get) => ({
       updated[name] = { skill: cur.skill + skill, discipline: cur.discipline + discipline }
     }
 
-    // Item bonus to recipient
+    // Item bonus to recipient, then personality reactions
     addDelta(member.memberName, item.skillBonus, item.disciplineBonus)
-
-    // Recipient personality — Glory Hound basks
-    if (recipientPersonality === Personality.GLORY_HOUND) {
-      addDelta(member.memberName, 1, 0)
+    const reactions = grantReactions(member, roster)
+    for (const reaction of reactions) {
+      addDelta(reaction.memberName, reaction.skill, reaction.discipline)
     }
 
-    // Bystander reactions
-    for (const bystander of roster) {
-      if (bystander.memberName === member.memberName) continue
-      const bp = personalityOf(bystander.memberName)
-      if (bp === Personality.ALTRUIST) {
-        addDelta(bystander.memberName, recipientPersonality === Personality.GLORY_HOUND ? -1 : 0, 1)
-      } else if (bp === Personality.GLORY_HOUND && bystander.role === member.role) {
-        // Sulks only when a rival of their own role is geared instead of them
-        addDelta(bystander.memberName, 0, -1)
+    // Intended total per member (item + reactions), to detect clamp-swallowed intent
+    const intended: Record<string, StatBonus> = {}
+    intended[member.memberName] = { skill: item.skillBonus, discipline: item.disciplineBonus }
+    for (const reaction of reactions) {
+      const cur = intended[reaction.memberName] ?? { skill: 0, discipline: 0 }
+      intended[reaction.memberName] = {
+        skill: cur.skill + reaction.skill,
+        discipline: cur.discipline + reaction.discipline
       }
     }
 
-    // Compute actual applied delta = new effective − old effective (post-clamp)
+    // Actual applied delta = new effective − old effective (post-clamp)
     const applied: Record<string, StatBonus> = {}
+    const capped: Record<string, Record<StatKey, boolean>> = {}
     const memberByName = Object.fromEntries(roster.map((m) => [m.memberName, m]))
     for (const name of Object.keys(updated)) {
       const base = memberByName[name]
       if (!base) continue
       const prevBonus = bonuses[name] ?? { skill: 0, discipline: 0 }
       const newBonus = updated[name]
-      const prevS = clampStat(base.skill + prevBonus.skill)
-      const prevD = clampStat(base.discipline + prevBonus.discipline)
-      const newS = clampStat(base.skill + newBonus.skill)
-      const newD = clampStat(base.discipline + newBonus.discipline)
-      const ds = newS - prevS
-      const dd = newD - prevD
+      const ds = clampStat(base.skill + newBonus.skill) - clampStat(base.skill + prevBonus.skill)
+      const dd =
+        clampStat(base.discipline + newBonus.discipline) -
+        clampStat(base.discipline + prevBonus.discipline)
       if (ds !== 0 || dd !== 0) {
         applied[name] = { skill: ds, discipline: dd }
+      }
+      const intent = intended[name]
+      if (intent) {
+        const skillCapped = intent.skill !== 0 && ds === 0
+        const disciplineCapped = intent.discipline !== 0 && dd === 0
+        if (skillCapped || disciplineCapped) {
+          capped[name] = { skill: skillCapped, discipline: disciplineCapped }
+        }
       }
     }
 
@@ -160,14 +240,33 @@ export const useLootStore = create<LootState>((set, get) => ({
       }
     })
 
-    return { applied, recipient: member.memberName }
+    // Chronicle: the grant, every reaction (capped ones included), or the silence
+    const { log } = useChronicleStore.getState()
+    const grantDelta = deltaText(item.skillBonus, item.disciplineBonus)
+    log('loot', `「${item.name}」 bestowed upon ${member.memberName} (${grantDelta})`)
+    for (const reaction of reactions) {
+      const wasCapped =
+        (reaction.skill !== 0 && capped[reaction.memberName]?.skill) ||
+        (reaction.discipline !== 0 && capped[reaction.memberName]?.discipline)
+      const effect = wasCapped
+        ? 'already at peak — no change'
+        : deltaText(reaction.skill, reaction.discipline)
+      log('reaction', `${reaction.memberName} ${REASON_TEXT[reaction.reason]} — ${effect}`)
+    }
+    if (reactions.length === 0) {
+      log('reaction', "The muster doesn't react.")
+    }
+
+    return { applied, capped, reactions, recipient: member.memberName }
   },
 
   bench: (item) => {
+    useChronicleStore.getState().log('loot', `「${item.name}」 stowed in the satchel`)
     set((state) => ({ satchel: [...state.satchel, item] }))
   },
 
   discard: (item) => {
+    useChronicleStore.getState().log('loot', `「${item.name}」 cast aside, lost to the dark`)
     set((state) => ({ discarded: [...state.discarded, item] }))
   },
 

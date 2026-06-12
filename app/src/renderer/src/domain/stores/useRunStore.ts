@@ -7,6 +7,7 @@ import { drawCandidates, drawOpener, partitionPool } from '../logic/bossTiers'
 import { projectPhase } from '../logic/phaseProjection'
 import { selectDroppedItems } from '../logic/signatureLoot'
 import { useCampStore } from './useCampStore'
+import { useChronicleStore } from './useChronicleStore'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
 import { usePersonalityStore } from './usePersonalityStore'
@@ -21,6 +22,7 @@ export enum Outcome {
 
 export interface PhaseResult {
   phase: BossPhaseData
+  score: number
   chance: number
   success: boolean
 }
@@ -53,8 +55,8 @@ interface RunState {
 function attemptBoss(boss: BossData): AttemptResult {
   const members = useLootStore.getState().effectiveRoster(useDraftStore.getState().selectedMembers)
   const phaseResults: PhaseResult[] = boss.phases.map((phase) => {
-    const { chance } = projectPhase(phase, members)
-    return { phase, chance, success: Math.random() <= chance }
+    const { score, chance } = projectPhase(phase, members)
+    return { phase, score, chance, success: Math.random() <= chance }
   })
   const phasesSucceeded = phaseResults.filter((r) => r.success).length
 
@@ -64,6 +66,34 @@ function attemptBoss(boss: BossData): AttemptResult {
   else outcome = Outcome.DEFEAT
 
   return { phaseResults, phasesSucceeded, outcome }
+}
+
+const ROMAN = ['I', 'II', 'III']
+
+function chronicleAttempt(
+  boss: BossData,
+  phaseResults: PhaseResult[],
+  outcome: Outcome,
+  droppedCount: number
+): void {
+  const { log } = useChronicleStore.getState()
+  phaseResults.forEach((result, i) => {
+    const odds = Math.round(result.chance * 100)
+    log(
+      'battle',
+      `Phase ${ROMAN[i]} — ${result.phase.name}: ${result.success ? 'Held' : 'Broke'} (${odds}% to hold)`
+    )
+  })
+  if (outcome === Outcome.FULL_VICTORY) {
+    log('battle', `Full Victory — ${boss.bossName} falls`)
+  } else if (outcome === Outcome.NARROW_VICTORY) {
+    log('battle', `Narrow Victory — ${boss.bossName} falls, at a cost`)
+  } else {
+    log('battle', `Defeat — the muster breaks against ${boss.bossName}`)
+  }
+  if (droppedCount > 0) {
+    log('loot', `${droppedCount} signature item${droppedCount > 1 ? 's' : ''} drop`)
+  }
 }
 
 function drawBoss1(): BossData {
@@ -96,6 +126,7 @@ export const useRunStore = create<RunState>((set, get) => {
       const boss = get().runBosses[0]
       const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
       const droppedItems = selectDroppedItems(boss, outcome, phaseResults)
+      chronicleAttempt(boss, phaseResults, outcome, droppedItems.length)
       const isFinalBoss = 0 === TOTAL_BOSSES - 1
       const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
       const pendingChoice = isRunOver ? null : drawCandidates(partitionPool(bossPool).mid, [boss])
@@ -123,8 +154,10 @@ export const useRunStore = create<RunState>((set, get) => {
       }
 
       const nextIndex = bossIndex + 1
+      useChronicleStore.getState().log('system', `Path chosen — ${picked.bossName}`)
       const { phaseResults, phasesSucceeded, outcome } = attemptBoss(picked)
       const droppedItems = selectDroppedItems(picked, outcome, phaseResults)
+      chronicleAttempt(picked, phaseResults, outcome, droppedItems.length)
       const nextRunBosses = [...runBosses, picked]
       const nextBossOutcomes = [...bossOutcomes, outcome]
       const isFinalBoss = nextIndex === TOTAL_BOSSES - 1
@@ -174,6 +207,7 @@ export const useRunStore = create<RunState>((set, get) => {
       useDraftStore.getState().reset()
       useLootStore.getState().reset()
       useCampStore.getState().reset()
+      useChronicleStore.getState().reset()
       usePersonalityStore.getState().reset()
       usePersonalityStore.getState().rollForRoster(memberPool)
     }

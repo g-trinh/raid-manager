@@ -130,6 +130,7 @@ export function SpoilsScreen({ onContinue, continueLabel }: SpoilsScreenProps): 
                   eligibleMembers={selectedMembers.filter(
                     (member) => member.role === item.roleLock
                   )}
+                  roster={selectedMembers}
                   showBench={droppedIds.has(item.id) && !satchel.some((i) => i.id === item.id)}
                   onEquip={(member) => handleEquip(item, member)}
                   onBench={() => handleBench(item)}

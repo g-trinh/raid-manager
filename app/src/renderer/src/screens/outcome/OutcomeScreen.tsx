@@ -1,8 +1,32 @@
-import { useEffect, useState } from 'react'
-import { PhaseType } from '../../domain/data/bossPhaseData'
+import { useEffect, useMemo, useState } from 'react'
+import { BossPhaseData, PhaseType } from '../../domain/data/bossPhaseData'
+import { MemberData } from '../../domain/data/memberData'
+import { Role, ROLE_LABELS } from '../../domain/data/role'
+import { roleAverage } from '../../domain/logic/phaseProjection'
+import { useDraftStore } from '../../domain/stores/useDraftStore'
+import { useLootStore } from '../../domain/stores/useLootStore'
 import { Outcome, PhaseResult, useRunStore } from '../../domain/stores/useRunStore'
 import { SpoilsScreen } from '../spoils/SpoilsScreen'
 import { ROMAN, pct } from '../shared/formatting'
+
+// The role(s) the phase leaned on hardest, and how the muster's tested stat
+// averaged there — turns "Broke" into something the player can act on.
+function failureCause(phase: BossPhaseData, roster: MemberData[]): string {
+  const statKey = phase.phaseType === PhaseType.SKILL_HEAVY ? 'skill' : 'discipline'
+  const statLabel = statKey === 'skill' ? 'Skill' : 'Discipline'
+  const weights: [Role, number][] = [
+    [Role.DPS, phase.dpsWeight],
+    [Role.TANK, phase.tankWeight],
+    [Role.HEAL, phase.healWeight]
+  ]
+  const top = Math.max(...weights.map(([, w]) => w))
+  const leadRoles = weights.filter(([, w]) => w === top).map(([role]) => role)
+  const parts = leadRoles.map(
+    (role) =>
+      `${ROLE_LABELS[role]} ${statLabel} averages ${roleAverage(roster, role, statKey).toFixed(1)}`
+  )
+  return `Leaned on ${leadRoles.map((r) => ROLE_LABELS[r]).join(' & ')} — your ${parts.join(', ')} of 5`
+}
 
 interface OutcomeScreenProps {
   onPlayAgain: () => void
@@ -42,9 +66,15 @@ interface PhaseResolveRowProps {
   result: PhaseResult
   index: number
   visible: boolean
+  roster: MemberData[]
 }
 
-function PhaseResolveRow({ result, index, visible }: PhaseResolveRowProps): React.JSX.Element {
+function PhaseResolveRow({
+  result,
+  index,
+  visible,
+  roster
+}: PhaseResolveRowProps): React.JSX.Element {
   const { phase, chance, success } = result
   const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'
   return (
@@ -58,6 +88,9 @@ function PhaseResolveRow({ result, index, visible }: PhaseResolveRowProps): Reac
         <div className="phase-resolve-row__sub">
           {tested} check · {pct(chance)}% to hold
         </div>
+        {visible && !success && (
+          <div className="phase-resolve-row__cause">{failureCause(phase, roster)}</div>
+        )}
       </div>
       <div
         className={`phase-resolve-row__pill${visible ? ' phase-resolve-row__pill--visible' : ''}`}
@@ -95,6 +128,9 @@ function AttemptReveal({
   const [revealed, setRevealed] = useState(0)
   const [showOutcome, setShowOutcome] = useState(false)
   const [showSpoils, setShowSpoils] = useState(false)
+  const selectedMembers = useDraftStore((s) => s.selectedMembers)
+  const effectiveRoster = useLootStore((s) => s.effectiveRoster)
+  const roster = useMemo(() => effectiveRoster(selectedMembers), [effectiveRoster, selectedMembers])
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
@@ -142,6 +178,7 @@ function AttemptReveal({
             result={result}
             index={i}
             visible={revealed > i}
+            roster={roster}
           />
         ))}
       </div>
