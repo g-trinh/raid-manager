@@ -38,7 +38,7 @@ export const PERSONALITY_META: Record<Personality, PersonalityMeta> = {
     glyph: 'disc',
     hue: 'var(--rm-glory)',
     quiet: false,
-    effect: '+Skill when gifted loot · −Discipline when passed over.',
+    effect: '+Skill when gifted loot · −Discipline when a same-role rival is geared instead.',
     flavor: 'Lives for recognition. Gear them and they shine; overlook them and they curdle.'
   }
 }

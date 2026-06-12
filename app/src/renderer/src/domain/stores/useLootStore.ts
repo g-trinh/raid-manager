@@ -64,7 +64,8 @@ export const useLootStore = create<LootState>((set, get) => ({
   //   - recipient            -> 'white'  (they receive the item)
   //   - recipient is GH      -> 'gradient' (white + their own crimson trait,
   //                              a Glory Hound also basking in own loot)
-  //   - other Altruist/GH    -> 'trait'  (a personality reaction fires on them)
+  //   - other Altruist       -> 'trait'  (reacts to any grant)
+  //   - other same-role GH   -> 'trait'  (sulks only when a role rival is geared)
   //   - Loners / unaffected  -> no ring
   previewRings: (member, roster) => {
     const { personalityOf } = usePersonalityStore.getState()
@@ -76,7 +77,10 @@ export const useLootStore = create<LootState>((set, get) => ({
     for (const bystander of roster) {
       if (bystander.memberName === member.memberName) continue
       const bp = personalityOf(bystander.memberName)
-      if (bp === Personality.ALTRUIST || bp === Personality.GLORY_HOUND) {
+      if (
+        bp === Personality.ALTRUIST ||
+        (bp === Personality.GLORY_HOUND && bystander.role === member.role)
+      ) {
         rings[bystander.memberName] = 'trait'
       }
     }
@@ -109,7 +113,8 @@ export const useLootStore = create<LootState>((set, get) => ({
       const bp = personalityOf(bystander.memberName)
       if (bp === Personality.ALTRUIST) {
         addDelta(bystander.memberName, recipientPersonality === Personality.GLORY_HOUND ? -1 : 0, 1)
-      } else if (bp === Personality.GLORY_HOUND) {
+      } else if (bp === Personality.GLORY_HOUND && bystander.role === member.role) {
+        // Sulks only when a rival of their own role is geared instead of them
         addDelta(bystander.memberName, 0, -1)
       }
     }

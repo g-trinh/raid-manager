@@ -8,7 +8,7 @@ This adds a layer of roster-management tension on top of the existing loot-distr
 
 ## Why We Are Building This
 
-Right now every roster member is a pure stat block: Skill, Discipline, Role, Name, with loot only ever improving stats. Personalities make the **loot-grant moment** — already a meaningful player decision — carry social weight: who you gear up changes how *other* members feel and perform. A Loner (80% of the roster) is unaffected — the baseline. A Glory Hound basks when gifted loot and sulks when passed over. An Altruist is heartened when others get gear, but resents seeing a Glory Hound rewarded. This turns loot decisions into roster-management trade-offs, not just stat optimization.
+Right now every roster member is a pure stat block: Skill, Discipline, Role, Name, with loot only ever improving stats. Personalities make the **loot-grant moment** — already a meaningful player decision — carry social weight: who you gear up changes how *other* members feel and perform. A Loner (80% of the roster) is unaffected — the baseline. A Glory Hound basks when gifted loot and sulks when a member of their own role is geared instead. An Altruist is heartened when others get gear, but resents seeing a Glory Hound rewarded. This turns loot decisions into roster-management trade-offs, not just stat optimization.
 
 ## Goals
 
@@ -46,7 +46,7 @@ Right now every roster member is a pure stat block: Skill, Discipline, Role, Nam
 | **Altruist** | Loot is granted to **another member** (not self) | — | **+1** | Happy to see the squad gear up — becomes more reliable |
 | **Altruist** | Loot is granted to a **Glory Hound** | **−1** | — | Resents members who don't play for the guild — personal performance dips |
 | **Glory Hound** | Loot is granted to **self** | **+1** | — | Basks in the recognition — performs better |
-| **Glory Hound** | Loot is granted to **someone else** | — | **−1** | Sulks at being passed over — becomes less reliable ("loses reliability" → Discipline decreases) |
+| **Glory Hound** | Loot is granted to **someone else of the same role** | — | **−1** | Sulks at seeing a role rival geared instead — becomes less reliable ("loses reliability" → Discipline decreases) |
 
 ### Roll
 
@@ -78,7 +78,7 @@ All triggers fire on **Signature Loot grant events** — the moment the player a
 ### Glory Hound
 
 - **Loot to self**: every time this Glory Hound personally receives loot, their Skill **+1** (stacks, clamped to [0, 5])
-- **Loot to someone else**: every time loot is granted to anyone other than this Glory Hound, their Discipline **−1** (stacks, clamped to [0, 5])
+- **Loot to a same-role member**: every time loot is granted to another member who shares this Glory Hound's role, their Discipline **−1** (stacks, clamped to [0, 5]). Grants to members of other roles leave the Glory Hound indifferent — they only resent being out-shone in their own role
 
 ### Loner
 
@@ -120,8 +120,8 @@ sequenceDiagram
             alt X is a Glory Hound
                 L->>RS: Apply -1 Skill to M (resents the Glory Hound getting gear)
             end
-        else M is a Glory Hound
-            L->>RS: Apply -1 Discipline to M (sulks at being passed over)
+        else M is a Glory Hound with the same role as X
+            L->>RS: Apply -1 Discipline to M (sulks at seeing a role rival geared)
         end
     end
 ```
@@ -130,11 +130,12 @@ sequenceDiagram
 
 ## Worked Example
 
-Roster includes **Marrow Vex** (Glory Hound), **Sera Lindwell** (Altruist), and several Loners.
+Roster includes **Marrow Vex** (Glory Hound, DPS), **Sera Lindwell** (Altruist, Heal), and several Loners.
 
-1. Player grants an item to **Marrow Vex**. Marrow Vex's Skill rises from 70 to **80** (basks in the recognition). Sera Lindwell's Discipline rises from 48 to **58** (happy gear went to a teammate) but her Skill drops from 60 to **50** (resents that it went to a Glory Hound specifically). Loners are unaffected.
-2. Later, the player grants an item to a Loner instead. Marrow Vex's Discipline drops from 55 to **45** (sulks at being passed over). Sera Lindwell's Discipline rises again, from 58 to **68** (happy for the squad — no Glory Hound penalty this time, since the recipient wasn't one).
-3. All deltas persist and stack for the rest of the run, composing normally with the item's own stat bonuses through the existing `effectiveStat` + `clampStat` pipeline.
+1. Player grants an item to **Marrow Vex**. Marrow Vex's Skill rises from 3 to **4** (basks in the recognition). Sera Lindwell's Discipline rises from 2 to **3** (happy gear went to a teammate) but her Skill drops from 3 to **2** (resents that it went to a Glory Hound specifically). Loners are unaffected.
+2. Later, the player grants an item to a Loner **DPS** instead. Marrow Vex's Discipline drops from 3 to **2** (sulks at seeing a fellow DPS geared over him). Sera Lindwell's Discipline rises again, from 3 to **4** (happy for the squad — no Glory Hound penalty this time, since the recipient wasn't one).
+3. Later still, the player grants an item to a Loner **Tank**. Marrow Vex doesn't react — the recipient is no rival to a DPS. Sera Lindwell's Discipline rises again (capped at 5).
+4. All deltas persist and stack for the rest of the run, composing normally with the item's own stat bonuses through the existing `effectiveStat` + `clampStat` pipeline.
 
 ---
 
@@ -142,7 +143,7 @@ Roster includes **Marrow Vex** (Glory Hound), **Sera Lindwell** (Altruist), and 
 
 This spec finalizes the open points raised during design review:
 
-- **Sign convention**: Glory Hound's "loses reliability" when passed over maps to **Discipline −1** (a decrease) — high Discipline is good in this system, so "losing reliability" must lower it
-- **Caps**: handled entirely by the existing `clampStat()` ([0, 100]) and per-member bonus accumulator — no new clamping logic needed
+- **Sign convention**: Glory Hound's "loses reliability" when a same-role rival is geared maps to **Discipline −1** (a decrease) — high Discipline is good in this system, so "losing reliability" must lower it
+- **Caps**: handled entirely by the existing `clampStat()` ([0, 5]) and per-member bonus accumulator — no new clamping logic needed
 - **Roll model**: pure independent random roll per member at draft (80% Loner / 10% Altruist / 10% Glory Hound), visible to the player at draft time. No forced "at least one of each" — occasional runs with zero Altruists and/or zero Glory Hounds are accepted as natural replayability variance
 - **Fixed personality**: no redemption arcs — a member's personality never changes once rolled
