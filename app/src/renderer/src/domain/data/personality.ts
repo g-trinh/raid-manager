@@ -49,9 +49,10 @@ export const PERSONALITY_LABELS: Record<Personality, string> = {
   [Personality.GLORY_HOUND]: 'Glory Hound'
 }
 
+// 80% Loner / 10% Altruist / 10% Glory Hound — see docs/feature/personalities.md
 export function rollPersonality(): Personality {
   const roll = Math.random()
-  if (roll < 0.125) return Personality.ALTRUIST
-  if (roll < 0.25) return Personality.GLORY_HOUND
+  if (roll < 0.1) return Personality.ALTRUIST
+  if (roll < 0.2) return Personality.GLORY_HOUND
   return Personality.LONER
 }
