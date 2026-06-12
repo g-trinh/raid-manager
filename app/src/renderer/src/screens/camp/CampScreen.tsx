@@ -3,6 +3,7 @@ import { MemberData } from '../../domain/data/memberData'
 import { useCampStore } from '../../domain/stores/useCampStore'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
 import { BestowResult, RingType, useLootStore } from '../../domain/stores/useLootStore'
+import { useRunStore } from '../../domain/stores/useRunStore'
 import { SectionLabel } from '../shared/SectionLabel'
 import { LootCard, LootResolution } from '../spoils/LootCard'
 import { MusterReacts } from '../spoils/MusterReacts'
@@ -21,6 +22,8 @@ const STAT_LABEL = { skill: 'Skill', discipline: 'Discipline' } as const
 
 export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
   const selectedMembers = useDraftStore((s) => s.selectedMembers)
+  const bossDown = useRunStore((s) => s.bossDown)
+  const bossName = useRunStore((s) => s.boss.bossName)
   const chosenAction = useCampStore((s) => s.chosenAction)
   const restResult = useCampStore((s) => s.restResult)
   const skirmishResult = useCampStore((s) => s.skirmishResult)
@@ -91,10 +94,12 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
   return (
     <div className="camp-screen">
       <header className="camp-header">
-        <div className="camp-header__kicker">The Road Between</div>
+        <div className="camp-header__kicker">{bossDown ? 'The Road Between' : 'The Retreat'}</div>
         <div className="camp-header__title">Make Camp</div>
         <div className="camp-header__sub">
-          The fires are lit. One thing can be done before dawn — choose it well.
+          {bossDown
+            ? 'The fires are lit. One thing can be done before dawn — choose it well.'
+            : `${bossName} still stands. One thing can be done before the next pull — choose it well.`}
         </div>
       </header>
 
@@ -107,16 +112,18 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
                 title="Bind Wounds"
                 action="Rest"
                 flavor="Tend to one of your own through the night."
-                effect="Pick a member: +1 to their weaker stat."
+                effect="Pick a member: +1 to their weaker stat, +3 morale."
                 onPick={() => setStage('rest-pick')}
               />
-              <CampOptionCard
-                title="Send Outriders"
-                action="Scout"
-                flavor="Riders slip into the dark to study the foes ahead."
-                effect="The next boss choice shows full forecasts."
-                onPick={handleScout}
-              />
+              {bossDown && (
+                <CampOptionCard
+                  title="Send Outriders"
+                  action="Scout"
+                  flavor="Riders slip into the dark to study the foes ahead."
+                  effect="The next boss choice shows full forecasts."
+                  onPick={handleScout}
+                />
+              )}
               <CampOptionCard
                 title="Hunt the Road"
                 action="Skirmish"
@@ -139,7 +146,8 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
           <div className="camp-result">
             <div className="camp-result__head">Wounds bound, spirits mended</div>
             <div className="camp-result__line">
-              <b>{restResult.memberName}</b> rests easy — +1 {STAT_LABEL[restResult.stat]}.
+              <b>{restResult.memberName}</b> rests easy — +1 {STAT_LABEL[restResult.stat]}, +3
+              morale.
             </div>
           </div>
         )}
@@ -192,7 +200,7 @@ export function CampScreen({ onContinue }: CampScreenProps): React.JSX.Element {
       <footer className="camp-footer">
         {canBreakCamp && (
           <button className="rm-btn rm-btn--default" onClick={onContinue}>
-            Break Camp
+            {bossDown ? 'Break Camp' : 'Return to the Boss'}
           </button>
         )}
       </footer>

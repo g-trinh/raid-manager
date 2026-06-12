@@ -4,6 +4,7 @@ import { Role } from '../data/role'
 import { useCampStore } from './useCampStore'
 import { useChronicleStore } from './useChronicleStore'
 import { useLootStore } from './useLootStore'
+import { useMoraleStore } from './useMoraleStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
 const tank = createMember('Camp Tank', Role.TANK, 3, 3)
@@ -18,6 +19,7 @@ beforeEach(() => {
   useLootStore.getState().reset()
   useCampStore.getState().reset()
   useChronicleStore.getState().reset()
+  useMoraleStore.getState().reset()
   usePersonalityStore.setState({ assignments: {} })
 })
 
@@ -53,5 +55,14 @@ describe('camp — chronicle entries', () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.9) // bruise check 0.9 >= 0.3 → safe
     useCampStore.getState().skirmish(roster)
     expect(chronicleTexts().some((t) => t.includes('bruised'))).toBe(false)
+  })
+})
+
+// AC: a night's care mends the spirit, not just the stat
+describe('camp — rest morale', () => {
+  it('rest restores +3 morale to the chosen member', () => {
+    useMoraleStore.setState({ morale: { 'Camp Heal': 4 } })
+    useCampStore.getState().rest(heal)
+    expect(useMoraleStore.getState().moraleOf('Camp Heal')).toBe(7)
   })
 })

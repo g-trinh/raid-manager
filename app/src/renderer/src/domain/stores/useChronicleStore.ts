@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type ChronicleKind = 'loot' | 'reaction' | 'camp' | 'battle' | 'system'
+export type ChronicleKind = 'loot' | 'reaction' | 'camp' | 'battle' | 'morale' | 'system'
 
 export interface ChronicleEntry {
   id: number

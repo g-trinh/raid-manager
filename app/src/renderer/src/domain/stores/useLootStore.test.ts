@@ -5,6 +5,7 @@ import { Personality } from '../data/personality'
 import { Role } from '../data/role'
 import { useChronicleStore } from './useChronicleStore'
 import { useLootStore } from './useLootStore'
+import { useMoraleStore } from './useMoraleStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
 // Roster: 2 tanks, 2 heals, 4 dps — mid stats so deltas never clamp unless intended
@@ -53,8 +54,20 @@ function stats(member: MemberData): { skill: number; discipline: number } {
 
 beforeEach(() => {
   useLootStore.getState().reset()
+  useMoraleStore.getState().reset()
   usePersonalityStore.setState({ assignments: {} })
   useChronicleStore.getState().reset()
+})
+
+// AC: being geared keeps people in the guild — rare loot more than commons
+describe('bestow — morale', () => {
+  it('a rare grant restores +2 morale, a common +1', () => {
+    useMoraleStore.setState({ morale: { 'Dps Alpha': 5, 'Tank Alpha': 5 } })
+    useLootStore.getState().bestow(dpsItem, dpsA, roster)
+    useLootStore.getState().bestow(tankItem, tankA, roster)
+    expect(useMoraleStore.getState().moraleOf('Dps Alpha')).toBe(7)
+    expect(useMoraleStore.getState().moraleOf('Tank Alpha')).toBe(6)
+  })
 })
 
 function chronicleTexts(): string[] {

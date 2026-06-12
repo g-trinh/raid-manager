@@ -1,8 +1,9 @@
 import { create } from 'zustand'
 import { BossData } from '../data/bossData'
-import { BossPhaseData } from '../data/bossPhaseData'
+import { BossPhaseData, PhaseType } from '../data/bossPhaseData'
 import { bossPool, memberPool } from '../data/gameData'
 import { LootItemData } from '../data/lootData'
+import { MemberData } from '../data/memberData'
 import { drawCandidates, drawOpener, partitionPool } from '../logic/bossTiers'
 import { projectPhase } from '../logic/phaseProjection'
 import { selectDroppedItems } from '../logic/signatureLoot'
@@ -10,90 +11,238 @@ import { useCampStore } from './useCampStore'
 import { useChronicleStore } from './useChronicleStore'
 import { useDraftStore } from './useDraftStore'
 import { useLootStore } from './useLootStore'
+import { useMasteryStore } from './useMasteryStore'
+import { useMoraleStore } from './useMoraleStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
 const TOTAL_BOSSES = 3
 
+// A fumble's chance per missing pip of the tested stat, and the odds that any
+// given fumble proves lethal (wipes the raid then and there).
+const FUMBLE_CHANCE_PER_PIP = 0.06
+const FUMBLE_LETHALITY = 0.05
+
 export enum Outcome {
-  FULL_VICTORY = 'FULL_VICTORY',
-  NARROW_VICTORY = 'NARROW_VICTORY',
-  DEFEAT = 'DEFEAT'
+  FULL_VICTORY = 'FULL_VICTORY', // one-shot kill
+  NARROW_VICTORY = 'NARROW_VICTORY', // kill after wipes
+  WIPE = 'WIPE', // pull lost — retry available
+  DISBAND = 'DISBAND' // someone gquit — run over
 }
+
+export type WipeCause = 'blunder' | 'learning'
 
 export interface PhaseResult {
   phase: BossPhaseData
   score: number
   chance: number
   success: boolean
+  // Sequential pulls: a phase past the wipe was never seen
+  reached: boolean
+  // Roster mastery of the phase going into this pull, 0–100
+  masteryPct: number
+  fumblers: string[]
+  cause?: WipeCause
+  blunderer?: string
 }
 
 interface AttemptResult {
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
+  wipePhaseIndex: number | null
+  quitter: string | null
 }
 
 interface RunState {
   bossIndex: number
   boss: BossData
   runBosses: BossData[]
+  // Fought bosses plus roads not taken — excluded from future draws
+  seenBosses: BossData[]
   bossOutcomes: Outcome[]
   pendingChoice: BossData[] | null
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
+  pullsThisBoss: number
+  wipePhaseIndex: number | null
+  quitter: string | null
+  bossDown: boolean
   droppedItems: LootItemData[]
   isResolved: boolean
   isFinalBoss: boolean
   isRunOver: boolean
 
   resolve: () => void
+  retry: () => void
   chooseBoss: (boss: BossData) => void
   reset: () => void
 }
 
-function attemptBoss(boss: BossData): AttemptResult {
-  const members = useLootStore.getState().effectiveRoster(useDraftStore.getState().selectedMembers)
-  const phaseResults: PhaseResult[] = boss.phases.map((phase) => {
-    const { score, chance } = projectPhase(phase, members)
-    return { phase, score, chance, success: Math.random() <= chance }
-  })
-  const phasesSucceeded = phaseResults.filter((r) => r.success).length
-
-  let outcome: Outcome
-  if (phasesSucceeded === 3) outcome = Outcome.FULL_VICTORY
-  else if (phasesSucceeded === 2) outcome = Outcome.NARROW_VICTORY
-  else outcome = Outcome.DEFEAT
-
-  return { phaseResults, phasesSucceeded, outcome }
-}
-
 const ROMAN = ['I', 'II', 'III']
 
-function chronicleAttempt(
-  boss: BossData,
-  phaseResults: PhaseResult[],
-  outcome: Outcome,
-  droppedCount: number
-): void {
+function testedStat(phase: BossPhaseData): 'skill' | 'discipline' {
+  return phase.phaseType === PhaseType.SKILL_HEAVY ? 'skill' : 'discipline'
+}
+
+interface PhasePull {
+  result: PhaseResult
+  blunderer: string | null
+}
+
+// One phase of one pull: fumble rolls first (a lethal one wipes the raid on
+// the spot, attributed by name), then the unfamiliarity roll — which mastery
+// erases. Random order matters for the seeded tests: |roster| fumble rolls,
+// one lethality roll per fumbler, then one pass roll if nobody proved lethal.
+function pullPhase(phase: BossPhaseData, phaseIndex: number, roster: MemberData[]): PhasePull {
   const { log } = useChronicleStore.getState()
+  const morale = useMoraleStore.getState()
+  const statKey = testedStat(phase)
+
+  const masteryPct = useMasteryStore.getState().rosterMastery(roster, phaseIndex)
+  const { score, chance: base } = projectPhase(phase, roster)
+  const chance = 1 - (1 - masteryPct / 100) * (1 - base)
+
+  const fumblers: string[] = []
+  for (const member of roster) {
+    const fumbleChance = (5 - member[statKey]) * FUMBLE_CHANCE_PER_PIP
+    if (Math.random() < fumbleChance) {
+      fumblers.push(member.memberName)
+      morale.recordFumble(member.memberName)
+      log('battle', `${member.memberName} fumbles in Phase ${ROMAN[phaseIndex]}`)
+    }
+  }
+
+  let blunderer: string | null = null
+  for (const name of fumblers) {
+    if (Math.random() < FUMBLE_LETHALITY) {
+      blunderer = name
+      break
+    }
+  }
+
+  let success: boolean
+  let cause: WipeCause | undefined
+  if (blunderer) {
+    success = false
+    cause = 'blunder'
+  } else {
+    success = Math.random() <= chance
+    cause = success ? undefined : 'learning'
+  }
+
+  return {
+    result: {
+      phase,
+      score,
+      chance,
+      success,
+      reached: true,
+      masteryPct,
+      fumblers,
+      cause,
+      blunderer: blunderer ?? undefined
+    },
+    blunderer
+  }
+}
+
+function attemptBoss(boss: BossData, pullNumber: number): AttemptResult {
+  const roster = useLootStore.getState().effectiveRoster(useDraftStore.getState().selectedMembers)
+  const morale = useMoraleStore.getState()
+
+  const phaseResults: PhaseResult[] = []
+  let wipePhaseIndex: number | null = null
+  let blunderer: string | null = null
+
+  boss.phases.forEach((phase, i) => {
+    if (wipePhaseIndex !== null) {
+      phaseResults.push({
+        phase,
+        score: 0,
+        chance: 0,
+        success: false,
+        reached: false,
+        masteryPct: useMasteryStore.getState().rosterMastery(roster, i),
+        fumblers: []
+      })
+      return
+    }
+    const pull = pullPhase(phase, i, roster)
+    phaseResults.push(pull.result)
+    if (!pull.result.success) {
+      wipePhaseIndex = i
+      blunderer = pull.blunderer
+    }
+  })
+
+  // Everyone learns every phase the pull reached — the failed one included
+  const phasesReached = wipePhaseIndex === null ? boss.phases.length : wipePhaseIndex + 1
+  useMasteryStore.getState().recordPull(
+    phasesReached,
+    roster,
+    boss.phases.map((p) => p.mechanicCount)
+  )
+
+  let outcome: Outcome
+  let quitter: string | null = null
+  if (wipePhaseIndex === null) {
+    outcome = pullNumber === 1 ? Outcome.FULL_VICTORY : Outcome.NARROW_VICTORY
+    morale.applyKill(roster)
+  } else {
+    morale.applyWipe(wipePhaseIndex, blunderer, roster)
+    quitter = morale.quitterIn(roster)
+    outcome = quitter ? Outcome.DISBAND : Outcome.WIPE
+  }
+
+  const phasesSucceeded = phaseResults.filter((r) => r.success).length
+  return { phaseResults, phasesSucceeded, outcome, wipePhaseIndex, quitter }
+}
+
+function chronicleAttempt(boss: BossData, attempt: AttemptResult, pullNumber: number): void {
+  const { log } = useChronicleStore.getState()
+  const { phaseResults, outcome, wipePhaseIndex, quitter } = attempt
+
   phaseResults.forEach((result, i) => {
+    if (!result.reached) return
     const odds = Math.round(result.chance * 100)
     log(
       'battle',
       `Phase ${ROMAN[i]} — ${result.phase.name}: ${result.success ? 'Held' : 'Broke'} (${odds}% to hold)`
     )
   })
+
   if (outcome === Outcome.FULL_VICTORY) {
-    log('battle', `Full Victory — ${boss.bossName} falls`)
+    log('battle', `Full Victory — ${boss.bossName} falls in one pull`)
   } else if (outcome === Outcome.NARROW_VICTORY) {
-    log('battle', `Narrow Victory — ${boss.bossName} falls, at a cost`)
-  } else {
-    log('battle', `Defeat — the muster breaks against ${boss.bossName}`)
+    log('battle', `Victory — ${boss.bossName} falls on pull ${pullNumber}`)
+  } else if (wipePhaseIndex !== null) {
+    const failed = phaseResults[wipePhaseIndex]
+    if (failed.cause === 'blunder' && failed.blunderer) {
+      log(
+        'battle',
+        `${failed.blunderer}'s blunder wipes the muster in Phase ${ROMAN[wipePhaseIndex]}`
+      )
+    } else {
+      log('battle', `Wipe in Phase ${ROMAN[wipePhaseIndex]} — the muster is still learning`)
+    }
   }
+
+  if (outcome === Outcome.DISBAND && quitter) {
+    log('morale', `${quitter} has had enough — they quit, and the guild disbands`)
+  }
+}
+
+function chronicleDrops(droppedCount: number): void {
   if (droppedCount > 0) {
-    log('loot', `${droppedCount} signature item${droppedCount > 1 ? 's' : ''} drop`)
+    useChronicleStore
+      .getState()
+      .log('loot', `${droppedCount} signature item${droppedCount > 1 ? 's' : ''} drop`)
   }
+}
+
+function isVictory(outcome: Outcome): boolean {
+  return outcome === Outcome.FULL_VICTORY || outcome === Outcome.NARROW_VICTORY
 }
 
 function drawBoss1(): BossData {
@@ -103,15 +252,54 @@ function drawBoss1(): BossData {
 export const useRunStore = create<RunState>((set, get) => {
   const initialBoss = drawBoss1()
 
+  // Resolve one pull against the current boss and project the next screen
+  function performPull(boss: BossData, pullNumber: number): void {
+    const { bossIndex, seenBosses, bossOutcomes } = get()
+    const attempt = attemptBoss(boss, pullNumber)
+    const { phaseResults, phasesSucceeded, outcome, wipePhaseIndex, quitter } = attempt
+    const droppedItems = selectDroppedItems(boss, outcome)
+    chronicleAttempt(boss, attempt, pullNumber)
+    chronicleDrops(droppedItems.length)
+
+    const bossDown = isVictory(outcome)
+    const isFinalBoss = bossIndex === TOTAL_BOSSES - 1
+    const isRunOver = outcome === Outcome.DISBAND || (bossDown && isFinalBoss)
+    const pendingChoice =
+      bossDown && !isFinalBoss
+        ? drawCandidates(partitionPool(bossPool)[bossIndex === 0 ? 'mid' : 'hard'], seenBosses)
+        : null
+
+    set({
+      bossOutcomes: bossDown ? [...bossOutcomes, outcome] : bossOutcomes,
+      pendingChoice,
+      phaseResults,
+      phasesSucceeded,
+      outcome,
+      pullsThisBoss: pullNumber,
+      wipePhaseIndex,
+      quitter,
+      bossDown,
+      droppedItems,
+      isResolved: true,
+      isFinalBoss,
+      isRunOver
+    })
+  }
+
   return {
     bossIndex: 0,
     boss: initialBoss,
     runBosses: [initialBoss],
+    seenBosses: [initialBoss],
     bossOutcomes: [],
     pendingChoice: null,
     phaseResults: [],
     phasesSucceeded: 0,
-    outcome: Outcome.DEFEAT,
+    outcome: Outcome.WIPE,
+    pullsThisBoss: 0,
+    wipePhaseIndex: null,
+    quitter: null,
+    bossDown: false,
     droppedItems: [],
     isResolved: false,
     isFinalBoss: false,
@@ -122,70 +310,40 @@ export const useRunStore = create<RunState>((set, get) => {
         console.warn('RunState.resolve() called before draft is complete')
         return
       }
+      performPull(get().runBosses[0], 1)
+    },
 
-      const boss = get().runBosses[0]
-      const { phaseResults, phasesSucceeded, outcome } = attemptBoss(boss)
-      const droppedItems = selectDroppedItems(boss, outcome, phaseResults)
-      chronicleAttempt(boss, phaseResults, outcome, droppedItems.length)
-      const isFinalBoss = 0 === TOTAL_BOSSES - 1
-      const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
-      const pendingChoice = isRunOver ? null : drawCandidates(partitionPool(bossPool).mid, [boss])
-
-      set({
-        bossIndex: 0,
-        boss,
-        bossOutcomes: [outcome],
-        pendingChoice,
-        phaseResults,
-        phasesSucceeded,
-        outcome,
-        droppedItems,
-        isResolved: true,
-        isFinalBoss,
-        isRunOver
-      })
+    retry: () => {
+      const { outcome, boss, pullsThisBoss } = get()
+      if (outcome !== Outcome.WIPE) {
+        console.warn('RunState.retry() called without a wipe to retry')
+        return
+      }
+      performPull(boss, pullsThisBoss + 1)
     },
 
     chooseBoss: (picked) => {
-      const { bossIndex, runBosses, bossOutcomes, pendingChoice } = get()
+      const { bossIndex, runBosses, pendingChoice } = get()
       if (!pendingChoice) {
         console.warn('RunState.chooseBoss() called without a pending choice')
         return
       }
 
-      const nextIndex = bossIndex + 1
       useChronicleStore.getState().log('system', `Path chosen — ${picked.bossName}`)
-      const { phaseResults, phasesSucceeded, outcome } = attemptBoss(picked)
-      const droppedItems = selectDroppedItems(picked, outcome, phaseResults)
-      chronicleAttempt(picked, phaseResults, outcome, droppedItems.length)
-      const nextRunBosses = [...runBosses, picked]
-      const nextBossOutcomes = [...bossOutcomes, outcome]
-      const isFinalBoss = nextIndex === TOTAL_BOSSES - 1
-      const isRunOver = outcome === Outcome.DEFEAT || isFinalBoss
+      // New boss, new mechanics — the old mastery is worthless
+      useMasteryStore.getState().resetBoss()
 
-      let nextPendingChoice: BossData[] | null = null
-      if (!isRunOver) {
-        const unpicked = pendingChoice.filter((b) => b.bossName !== picked.bossName)
-        nextPendingChoice = drawCandidates(partitionPool(bossPool).hard, [
-          ...nextRunBosses,
-          ...unpicked
-        ])
-      }
-
-      set({
-        bossIndex: nextIndex,
+      // The road not taken is lost — exclude it from every later draw
+      const unpicked = pendingChoice.filter((b) => b.bossName !== picked.bossName)
+      set((state) => ({
+        bossIndex: bossIndex + 1,
         boss: picked,
-        runBosses: nextRunBosses,
-        bossOutcomes: nextBossOutcomes,
-        pendingChoice: nextPendingChoice,
-        phaseResults,
-        phasesSucceeded,
-        outcome,
-        droppedItems,
-        isResolved: true,
-        isFinalBoss,
-        isRunOver
-      })
+        runBosses: [...runBosses, picked],
+        seenBosses: [...state.seenBosses, picked, ...unpicked],
+        pendingChoice: null
+      }))
+
+      performPull(picked, 1)
     },
 
     reset: () => {
@@ -194,11 +352,16 @@ export const useRunStore = create<RunState>((set, get) => {
         bossIndex: 0,
         boss: boss1,
         runBosses: [boss1],
+        seenBosses: [boss1],
         bossOutcomes: [],
         pendingChoice: null,
         phaseResults: [],
         phasesSucceeded: 0,
-        outcome: Outcome.DEFEAT,
+        outcome: Outcome.WIPE,
+        pullsThisBoss: 0,
+        wipePhaseIndex: null,
+        quitter: null,
+        bossDown: false,
         droppedItems: [],
         isResolved: false,
         isFinalBoss: false,
@@ -208,6 +371,8 @@ export const useRunStore = create<RunState>((set, get) => {
       useLootStore.getState().reset()
       useCampStore.getState().reset()
       useChronicleStore.getState().reset()
+      useMasteryStore.getState().reset()
+      useMoraleStore.getState().reset()
       usePersonalityStore.getState().reset()
       usePersonalityStore.getState().rollForRoster(memberPool)
     }

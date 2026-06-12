@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useCampStore } from './domain/stores/useCampStore'
+import { useRunStore } from './domain/stores/useRunStore'
 import { CampScreen } from './screens/camp/CampScreen'
 import { ChoiceScreen } from './screens/choice/ChoiceScreen'
 import { DraftScreen } from './screens/draft/DraftScreen'
@@ -17,9 +18,20 @@ function App(): React.JSX.Element {
     setScreen('camp')
   }
 
+  // After a kill, camp leads to the next boss choice. Mid-progression
+  // (retreated after a wipe), breaking camp means going back to the pull.
+  const breakCamp = (): void => {
+    if (useRunStore.getState().bossDown) {
+      setScreen('choice')
+    } else {
+      useRunStore.getState().retry()
+      setScreen('outcome')
+    }
+  }
+
   let current: React.JSX.Element
   if (screen === 'camp') {
-    current = <CampScreen onContinue={() => setScreen('choice')} />
+    current = <CampScreen onContinue={breakCamp} />
   } else if (screen === 'choice') {
     current = <ChoiceScreen onPicked={() => setScreen('outcome')} />
   } else if (screen === 'outcome') {
@@ -27,6 +39,7 @@ function App(): React.JSX.Element {
       <OutcomeScreen
         onPlayAgain={() => setScreen('draft')}
         onChoosePath={goToCamp}
+        onRetreat={goToCamp}
         onInvalidState={() => setScreen('draft')}
       />
     )

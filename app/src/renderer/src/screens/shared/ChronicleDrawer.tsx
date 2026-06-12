@@ -6,6 +6,7 @@ const KIND_HUE: Record<ChronicleKind, string> = {
   reaction: 'var(--rm-altruist)',
   camp: 'var(--rm-amber)',
   battle: 'var(--blood)',
+  morale: '#d98a9c',
   system: 'var(--ash)'
 }
 

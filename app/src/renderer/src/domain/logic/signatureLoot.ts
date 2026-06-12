@@ -1,21 +1,25 @@
 import { BossData } from '../data/bossData'
 import { LootItemData } from '../data/lootData'
 import { Role } from '../data/role'
-import { Outcome, type PhaseResult } from '../stores/useRunStore'
+import { Outcome } from '../stores/useRunStore'
 
-export function selectDroppedItems(
-  boss: BossData,
-  outcome: Outcome,
-  phaseResults: PhaseResult[]
-): LootItemData[] {
-  if (outcome === Outcome.DEFEAT) return []
+// A one-shot kill drops the boss's full signature set; a kill ground out over
+// several pulls loses one item to the chaos. Wipes drop nothing.
+export function selectDroppedItems(boss: BossData, outcome: Outcome): LootItemData[] {
+  if (outcome === Outcome.WIPE || outcome === Outcome.DISBAND) return []
 
   const dropped =
     outcome === Outcome.FULL_VICTORY
       ? boss.signatureItems
-      : boss.signatureItems.filter((_, index) => phaseResults[index]?.success)
+      : boss.signatureItems.filter(
+          (_, index) => index !== lostItemIndex(boss.signatureItems.length)
+        )
 
   return dropped.map(resolveRoleLock)
+}
+
+function lostItemIndex(count: number): number {
+  return Math.floor(Math.random() * count)
 }
 
 function resolveRoleLock(item: LootItemData): LootItemData {

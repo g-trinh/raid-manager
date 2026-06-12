@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { BossPhaseData, PhaseType } from '../../domain/data/bossPhaseData'
 import { MemberData } from '../../domain/data/memberData'
 import { Role, ROLE_LABELS } from '../../domain/data/role'
+import { masteryBand } from '../../domain/logic/mastery'
 import { roleAverage } from '../../domain/logic/phaseProjection'
 import { useDraftStore } from '../../domain/stores/useDraftStore'
 import { useLootStore } from '../../domain/stores/useLootStore'
@@ -31,6 +32,7 @@ function failureCause(phase: BossPhaseData, roster: MemberData[]): string {
 interface OutcomeScreenProps {
   onPlayAgain: () => void
   onChoosePath: () => void
+  onRetreat: () => void
   onInvalidState: () => void
 }
 
@@ -44,17 +46,22 @@ const OUTCOME_META: Record<Outcome, OutcomeMeta> = {
   [Outcome.FULL_VICTORY]: {
     color: '#a6b67c',
     head: 'Flawless Hold',
-    sub: 'Three trials, three triumphs. The raid stands whole and unbroken.'
+    sub: 'One pull, three phases, no doubt. The raid stands whole and unbroken.'
   },
   [Outcome.NARROW_VICTORY]: {
     color: '#d99a3c',
-    head: 'A Costly Triumph',
-    sub: 'The foe falls — but the muster paid in blood for it.'
+    head: 'The Boss Falls',
+    sub: 'Ground out pull by pull — but down is down, and the muster breathes again.'
   },
-  [Outcome.DEFEAT]: {
+  [Outcome.WIPE]: {
     color: '#b8472f',
-    head: 'The Guild Is Broken',
-    sub: 'The dark takes them. No retreat, no retry, no dawn.'
+    head: 'The Muster Wipes',
+    sub: 'The pull is lost, the lesson is not. Regroup, and go again.'
+  },
+  [Outcome.DISBAND]: {
+    color: '#6b6357',
+    head: 'The Guild Disbands',
+    sub: 'One wipe too many. The muster scatters into the dark, and the run is done.'
   }
 }
 
@@ -75,8 +82,36 @@ function PhaseResolveRow({
   visible,
   roster
 }: PhaseResolveRowProps): React.JSX.Element {
-  const { phase, chance, success } = result
+  const { phase, chance, success, reached, masteryPct, cause, blunderer } = result
   const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'
+
+  if (!reached) {
+    return (
+      <div
+        className={`phase-resolve-row phase-resolve-row--unreached${visible ? ' phase-resolve-row--visible' : ''}`}
+      >
+        <span className="phase-resolve-row__roman">{ROMAN[index]}</span>
+        <div className="phase-resolve-row__body">
+          <div className="phase-resolve-row__name">{phase.name}</div>
+          <div className="phase-resolve-row__sub">The pull never got this far</div>
+        </div>
+        <div
+          className={`phase-resolve-row__pill${visible ? ' phase-resolve-row__pill--visible' : ''}`}
+          style={{ color: 'var(--ash)', borderColor: 'var(--ash2)' }}
+        >
+          Not reached
+        </div>
+      </div>
+    )
+  }
+
+  const causeLine =
+    cause === 'blunder' && blunderer
+      ? `${blunderer}'s blunder wiped the muster — the mechanics were not the problem`
+      : cause === 'learning'
+        ? `${failureCause(phase, roster)} — and the phase isn't learned yet`
+        : null
+
   return (
     <div
       className={`phase-resolve-row${visible ? ' phase-resolve-row--visible' : ''}`}
@@ -86,11 +121,10 @@ function PhaseResolveRow({
       <div className="phase-resolve-row__body">
         <div className="phase-resolve-row__name">{phase.name}</div>
         <div className="phase-resolve-row__sub">
-          {tested} check · {pct(chance)}% to hold
+          {tested} check · {pct(chance)}% to hold ·{' '}
+          <span className="phase-resolve-row__mastery">{masteryBand(masteryPct)}</span>
         </div>
-        {visible && !success && (
-          <div className="phase-resolve-row__cause">{failureCause(phase, roster)}</div>
-        )}
+        {visible && causeLine && <div className="phase-resolve-row__cause">{causeLine}</div>}
       </div>
       <div
         className={`phase-resolve-row__pill${visible ? ' phase-resolve-row__pill--visible' : ''}`}
@@ -111,7 +145,12 @@ interface AttemptRevealProps {
   phaseResults: PhaseResult[]
   phasesSucceeded: number
   outcome: Outcome
+  pullsThisBoss: number
+  wipePhaseIndex: number | null
+  quitter: string | null
   onContinue: () => void
+  onRetry: () => void
+  onRetreat: () => void
   onPlayAgain: () => void
   continueLabel: string | null
 }
@@ -121,7 +160,12 @@ function AttemptReveal({
   phaseResults,
   phasesSucceeded,
   outcome,
+  pullsThisBoss,
+  wipePhaseIndex,
+  quitter,
   onContinue,
+  onRetry,
+  onRetreat,
   onPlayAgain,
   continueLabel
 }: AttemptRevealProps): React.JSX.Element {
@@ -147,15 +191,11 @@ function AttemptReveal({
   }, [phaseResults])
 
   const meta = OUTCOME_META[outcome]
+  const isVictory = outcome === Outcome.FULL_VICTORY || outcome === Outcome.NARROW_VICTORY
 
   const performContinue = (): void => {
     if (continueLabel) onContinue()
     else onPlayAgain()
-  }
-
-  const handleOutcomeButtonClick = (): void => {
-    if (outcome === Outcome.DEFEAT) onPlayAgain()
-    else setShowSpoils(true)
   }
 
   if (showSpoils) {
@@ -164,10 +204,18 @@ function AttemptReveal({
     )
   }
 
+  const tally = isVictory
+    ? `${bossName} falls on pull ${pullsThisBoss}`
+    : wipePhaseIndex !== null
+      ? `Wiped in Phase ${ROMAN[wipePhaseIndex]} — pull ${pullsThisBoss}`
+      : `${phasesSucceeded} of 3 phases held`
+
   return (
     <div className="resolution-screen">
       <div className="resolution-screen__header">
-        <div className="resolution-screen__kicker">The Attempt</div>
+        <div className="resolution-screen__kicker">
+          {pullsThisBoss > 1 ? `The Attempt · Pull ${pullsThisBoss}` : 'The Attempt'}
+        </div>
         <div className="resolution-screen__name">{bossName}</div>
       </div>
 
@@ -188,17 +236,35 @@ function AttemptReveal({
           className="resolution-outcome__rule"
           style={{ background: `linear-gradient(90deg, transparent, ${meta.color}, transparent)` }}
         />
-        <div className="resolution-outcome__tally">{phasesSucceeded} of 3 phases held</div>
+        <div className="resolution-outcome__tally">{tally}</div>
         <div
           className="resolution-outcome__head"
           style={{ color: meta.color, textShadow: `0 0 26px ${meta.color}55` }}
         >
           {meta.head}
         </div>
-        <div className="resolution-outcome__sub">{meta.sub}</div>
-        <button className="rm-btn rm-btn--default" onClick={handleOutcomeButtonClick}>
-          {outcome === Outcome.DEFEAT ? (continueLabel ?? 'Muster Again') : 'Claim Your Spoils'}
-        </button>
+        <div className="resolution-outcome__sub">
+          {outcome === Outcome.DISBAND && quitter
+            ? `${quitter} has had enough and quits the guild. ${meta.sub}`
+            : meta.sub}
+        </div>
+        {outcome === Outcome.WIPE ? (
+          <div className="resolution-outcome__actions">
+            <button className="rm-btn rm-btn--default" onClick={onRetry}>
+              Pull Again
+            </button>
+            <button className="rm-btn" onClick={onRetreat}>
+              Retreat to Camp
+            </button>
+          </div>
+        ) : (
+          <button
+            className="rm-btn rm-btn--default"
+            onClick={isVictory ? () => setShowSpoils(true) : onPlayAgain}
+          >
+            {isVictory ? 'Claim Your Spoils' : 'Muster Again'}
+          </button>
+        )}
       </div>
     </div>
   )
@@ -207,6 +273,7 @@ function AttemptReveal({
 export function OutcomeScreen({
   onPlayAgain,
   onChoosePath,
+  onRetreat,
   onInvalidState
 }: OutcomeScreenProps): React.JSX.Element | null {
   const isResolved = useRunStore((s) => s.isResolved)
@@ -216,6 +283,10 @@ export function OutcomeScreen({
   const isRunOver = useRunStore((s) => s.isRunOver)
   const phaseResults = useRunStore((s) => s.phaseResults)
   const phasesSucceeded = useRunStore((s) => s.phasesSucceeded)
+  const pullsThisBoss = useRunStore((s) => s.pullsThisBoss)
+  const wipePhaseIndex = useRunStore((s) => s.wipePhaseIndex)
+  const quitter = useRunStore((s) => s.quitter)
+  const retry = useRunStore((s) => s.retry)
   const reset = useRunStore((s) => s.reset)
 
   useEffect(() => {
@@ -236,12 +307,17 @@ export function OutcomeScreen({
 
   return (
     <AttemptReveal
-      key={bossIndex}
+      key={`${bossIndex}:${pullsThisBoss}`}
       bossName={boss.bossName}
       phaseResults={phaseResults}
       phasesSucceeded={phasesSucceeded}
       outcome={outcome}
+      pullsThisBoss={pullsThisBoss}
+      wipePhaseIndex={wipePhaseIndex}
+      quitter={quitter}
       onContinue={onChoosePath}
+      onRetry={retry}
+      onRetreat={onRetreat}
       onPlayAgain={handlePlayAgain}
       continueLabel={continueLabel}
     />

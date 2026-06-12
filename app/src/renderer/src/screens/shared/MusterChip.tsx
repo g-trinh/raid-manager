@@ -3,6 +3,7 @@ import { MemberData } from '../../domain/data/memberData'
 import { PERSONALITY_META } from '../../domain/data/personality'
 import { ROLE_LABELS } from '../../domain/data/role'
 import { BestowResult, RingType, useLootStore } from '../../domain/stores/useLootStore'
+import { MORALE_MAX, useMoraleStore } from '../../domain/stores/useMoraleStore'
 import { usePersonalityStore } from '../../domain/stores/usePersonalityStore'
 import { ROLE_HEX, lastName } from './formatting'
 import { PersonalityGlyph } from './PersonalityMark'
@@ -37,6 +38,7 @@ export function MusterChip({
 }: MusterChipProps): React.JSX.Element {
   const skill = useLootStore((s) => s.effectiveStat(member, 'skill'))
   const discipline = useLootStore((s) => s.effectiveStat(member, 'discipline'))
+  const morale = useMoraleStore((s) => s.moraleOf(member.memberName))
   const personality = usePersonalityStore((s) => s.personalityOf(member.memberName))
   const meta = PERSONALITY_META[personality]
 
@@ -89,8 +91,13 @@ export function MusterChip({
   const net = skill - member.skill + (discipline - member.discipline)
   const provenance = [
     `Skill: base ${member.skill}${skill !== member.skill ? ` → ${skill}` : ''}`,
-    `Discipline: base ${member.discipline}${discipline !== member.discipline ? ` → ${discipline}` : ''}`
+    `Discipline: base ${member.discipline}${discipline !== member.discipline ? ` → ${discipline}` : ''}`,
+    `Morale: ${morale}/${MORALE_MAX}`
   ].join(' · ')
+
+  // Mood: how close this member is to gquitting
+  const mood = morale >= 8 ? 'steady' : morale >= 4 ? 'strained' : 'breaking'
+  const moodHue = mood === 'steady' ? '#a6b67c' : mood === 'strained' ? '#d99a3c' : '#b8472f'
 
   const flashColor = flash === 'gold' ? LOOT_GOLD : meta.hue
 
@@ -111,6 +118,11 @@ export function MusterChip({
       <div className="muster-chip__head">
         <RoleGlyph role={member.role} size={22} />
         <span className="muster-chip__name">{lastName(member.memberName)}</span>
+        <span
+          aria-hidden="true"
+          className={`muster-chip__mood muster-chip__mood--${mood}`}
+          style={{ background: moodHue }}
+        />
         {net !== 0 && (
           <span
             className="muster-chip__delta"

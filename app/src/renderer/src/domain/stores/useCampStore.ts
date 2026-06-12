@@ -4,6 +4,7 @@ import { LootItemData } from '../data/lootData'
 import { MemberData } from '../data/memberData'
 import { useChronicleStore } from './useChronicleStore'
 import { useLootStore } from './useLootStore'
+import { useMoraleStore } from './useMoraleStore'
 
 export type CampAction = 'rest' | 'scout' | 'skirmish'
 
@@ -63,11 +64,13 @@ export const useCampStore = create<CampState>((set) => ({
     // Patch the weaker stat; on a tie, Discipline
     const stat: RestResult['stat'] = skill < discipline ? 'skill' : 'discipline'
     applyDelta(member.memberName, stat === 'skill' ? 1 : 0, stat === 'discipline' ? 1 : 0)
+    // A night's care also mends the spirit
+    useMoraleStore.getState().restore(member.memberName, 3)
 
     const result: RestResult = { memberName: member.memberName, stat }
     useChronicleStore
       .getState()
-      .log('camp', `Rest — ${member.memberName} recovers: +1 ${STAT_LABEL[stat]}`)
+      .log('camp', `Rest — ${member.memberName} recovers: +1 ${STAT_LABEL[stat]}, +3 morale`)
     set({ chosenAction: 'rest', restResult: result })
     return result
   },

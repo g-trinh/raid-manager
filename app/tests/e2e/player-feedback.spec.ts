@@ -68,14 +68,16 @@ test('chronicle records the attempt, the grant and the muster silence', async ({
 
 // AC: a failed phase names the role and stat it leaned on (actionable cause)
 test('failed phases explain which role average let the muster down', async ({ page }) => {
-  await seedRandom(page, 0.99) // every phase roll fails
+  await seedRandom(page, 0.99) // the pass roll fails → learning wipe in Phase I
   await page.goto('/')
   await draftFullRoster(page)
   await beginAttempt(page)
 
+  // Sequential pulls: the wipe ends the attempt, later phases are never seen
   const causes = page.locator('.phase-resolve-row__cause')
-  await expect(causes).toHaveCount(3)
+  await expect(causes).toHaveCount(1)
   await expect(causes.first()).toHaveText(/Leaned on .* — your .* averages \d\.\d of 5/)
+  await expect(page.locator('.phase-resolve-row--unreached')).toHaveCount(2)
 })
 
 // AC: camp loot distribution gets the same reacts strip and chronicle coverage

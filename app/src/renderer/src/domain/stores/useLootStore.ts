@@ -3,6 +3,7 @@ import { LootItemData } from '../data/lootData'
 import { MemberData } from '../data/memberData'
 import { Personality } from '../data/personality'
 import { useChronicleStore } from './useChronicleStore'
+import { useMoraleStore } from './useMoraleStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
 type StatKey = 'skill' | 'discipline'
@@ -240,10 +241,15 @@ export const useLootStore = create<LootState>((set, get) => ({
       }
     })
 
+    // Being geared keeps people in the guild — rare loot more than commons
+    const moraleGain = item.rarity === 'rare' ? 2 : 1
+    useMoraleStore.getState().restore(member.memberName, moraleGain)
+
     // Chronicle: the grant, every reaction (capped ones included), or the silence
     const { log } = useChronicleStore.getState()
     const grantDelta = deltaText(item.skillBonus, item.disciplineBonus)
     log('loot', `「${item.name}」 bestowed upon ${member.memberName} (${grantDelta})`)
+    log('morale', `${member.memberName} takes heart (+${moraleGain} morale)`)
     for (const reaction of reactions) {
       const wasCapped =
         (reaction.skill !== 0 && capped[reaction.memberName]?.skill) ||
