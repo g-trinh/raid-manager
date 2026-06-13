@@ -49,6 +49,7 @@ ai_context:
     - "Do not add a separate lethality roll. Severity 3 failed check IS the death. One draw per (mechanic, targeted member)."
     - "Do not hardcode U0 / severity damage / budget formula as magic numbers scattered in the resolver — they are named exported dials the harness tunes."
     - "Do not let the resolver mutate stores directly during the pure resolution pass. It returns AttemptResult + PullEvent[] + side-effect intents (fumbles to record); the store applies them. (Keeps the resolver testable and replayable.)"
+    - "Do NOT add severity-3 mechanics to DISCIPLINE_HEAVY phases. The math makes them untunable within the 1-8 fresh / 1-4 mastered harness bands. The discipline/skill asymmetry (discipline=learning wipes, skill=blunder wipes) is intentional design. See §10."
 
   open_questions:
     - "OQ-1: numeric values of U0, severity damage [s1,s2,s3], budget(phaseTarget). Set by the harness, not this ADR."
@@ -226,6 +227,45 @@ reached, masteryPct, fumblers, cause?, blunderer?`) and gains:
 `fumblers` stays (derived as the distinct members in `failedChecks`) so existing
 readers keep working. The store records fumbles/chronicle from `fumbleEvents`
 and calls `applyWipe`/`applyKill` exactly where `attemptBoss` does today.
+
+### 10. Phase-type asymmetry: DISCIPLINE_HEAVY phases cannot produce blunder wipes (intentional)
+
+**This is a deliberate design decision, not a balance accident. Do not "fix" it by adding
+severity-3 mechanics to DISCIPLINE_HEAVY phases.**
+
+All 10 bosses were authored with severity-3 mechanics (TANKBUSTERs) only in SKILL_HEAVY
+phases. DISCIPLINE_HEAVY phases carry severity-2 mechanics only. This was initially a
+balance necessity — the per-pip math makes any discipline-tested severity-3 mechanic against
+a role group untunable within the harness bounds:
+
+- A discipline-tested sev-3 targeting TANKS (Gorvak disc=3, Shieldara disc=1) produces
+  ~51% death chance per pull fresh, and ~33% at full mastery. At full mastery, that mechanic
+  alone exceeds the 1–4 pull band for the entire boss.
+- Targeting HEALS (Lumina disc=4, Patchwick disc=3): ~38% fresh, ~17% at full mastery.
+  Still breaks the mastered constraint.
+- Targeting DPS: ~77% fresh, ~55% mastered. Far outside tolerance.
+
+The discipline stat spread (1–4) combined with FUMBLE_CHANCE_PER_PIP = 0.06 means
+discipline-tested checks are much flatter than skill-tested ones — which is why the
+×4 budget is needed for discipline phases at all. Adding sev-3 on top of ×4 budget
+collapses the progression curve.
+
+**The asymmetry is the design.** It encodes a legible, thematically coherent rule:
+
+| Phase type | Wipe type | Blame | Grievance source |
+|---|---|---|---|
+| SKILL_HEAVY | blunder (instant death) | named member ("Skarn died to X") | `useMoraleStore` serial-fumbler keyed on blunderer |
+| DISCIPLINE_HEAVY | learning (budget exceeded) | nobody | `useMoraleStore` serial-fumbler keyed on F++ accumulation |
+
+Note that DISCIPLINE_HEAVY phases **do** generate fumbles (F++ per failed sev-2 check) and
+therefore **do** feed the serial-fumbler grievance system. The asymmetry is specifically about
+*instant death and named blame*, not about absence of individual accountability. A player who
+consistently fumbles discipline checks will still accumulate F and trigger grievances — they just
+will not be singled out with a death attribution.
+
+This maps cleanly onto real raid experience: discipline failures feel like a collective
+"we didn't read the pattern" (learning wipe), while execution failures feel personal
+("the tank died"). The system makes that distinction mechanical, not cosmetic.
 
 ## pull-intent compatibility (OQ-3, sketch only)
 
