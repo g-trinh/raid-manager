@@ -1,0 +1,93 @@
+import React from 'react'
+import { JSDOM } from 'jsdom'
+
+const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>')
+;(global as unknown as { window: typeof dom.window }).window = dom.window
+;(global as unknown as { document: Document }).document = dom.window.document
+;(global as unknown as { navigator: Navigator }).navigator = dom.window.navigator
+;(global as unknown as { requestAnimationFrame: typeof setTimeout }).requestAnimationFrame = (cb) =>
+  setTimeout(cb, 0) as unknown as number
+;(global as unknown as { cancelAnimationFrame: (id: number) => void }).cancelAnimationFrame = (id) =>
+  clearTimeout(id as unknown as NodeJS.Timeout)
+
+const { createRoot } = await import('react-dom/client')
+const { act } = await import('react')
+const { useRunStore, Outcome } = await import('./src/renderer/src/domain/stores/useRunStore')
+const { useDraftStore } = await import('./src/renderer/src/domain/stores/useDraftStore')
+const { ChoiceScreen } = await import('./src/renderer/src/screens/choice/ChoiceScreen')
+const { OutcomeScreen } = await import('./src/renderer/src/screens/outcome/OutcomeScreen')
+
+function fillDraft(): void {
+  useDraftStore.getState().reset()
+  for (let i = 0; i < 8; i++) {
+    const candidates = useDraftStore.getState().currentCandidates
+    useDraftStore.getState().addMember(candidates[0])
+  }
+}
+
+let s: ReturnType<typeof useRunStore.getState>
+do {
+  useRunStore.getState().reset()
+  fillDraft()
+  useRunStore.getState().resolve()
+  s = useRunStore.getState()
+} while (s.outcome === Outcome.DEFEAT)
+
+console.log('boss1:', s.runBosses[0].bossName, 'outcome:', s.outcome)
+console.log('boss2 candidates:', s.pendingChoice?.map((b) => b.bossName))
+
+const root = dom.window.document.getElementById('root')!
+const reactRoot = createRoot(root)
+
+await act(async () => {
+  reactRoot.render(<ChoiceScreen onPicked={() => console.log('onPicked called')} />)
+})
+
+const html = root.innerHTML
+console.log('\n--- Trial II render ---')
+console.log('html length:', html.length)
+console.log('Title "The Road Forks":', html.includes('The Road Forks'))
+console.log('Kicker "Even Match":', html.includes('Even Match'))
+console.log('Pick buttons:', (html.match(/Face This Foe/g) || []).length)
+for (const b of s.pendingChoice ?? []) {
+  console.log(`  candidate "${b.bossName}" rendered:`, html.includes(b.bossName))
+}
+console.log('Run trail "Sealed" node present (trial III locked):', html.includes('Sealed'))
+
+// Click the first "Face This Foe" button -> picks boss2, advances state
+await act(async () => {
+  const buttons = [...root.querySelectorAll('button')]
+  const pick = buttons.find((b) => b.textContent?.includes('Face This Foe'))
+  pick?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }))
+})
+
+s = useRunStore.getState()
+console.log('\nafter pick: boss2 =', s.runBosses[1]?.bossName, 'outcome:', s.outcome, 'isRunOver:', s.isRunOver)
+
+if (!s.isRunOver) {
+  await act(async () => {
+    reactRoot.render(<ChoiceScreen onPicked={() => {}} />)
+  })
+  const html3 = root.innerHTML
+  console.log('\n--- Trial III render ---')
+  console.log('Title "The Final Trial":', html3.includes('The Final Trial'))
+  console.log('Kicker "The Deep Dark":', html3.includes('The Deep Dark'))
+  console.log('boss1 in trail:', html3.includes(s.runBosses[0].bossName.split(' ').slice(-1)[0]))
+  console.log('boss2 in trail:', html3.includes(s.runBosses[1].bossName.split(' ').slice(-1)[0]))
+}
+
+// Render OutcomeScreen for the resolved boss2 attempt
+await act(async () => {
+  reactRoot.render(
+    <OutcomeScreen onPlayAgain={() => {}} onChoosePath={() => console.log('onChoosePath called')} onInvalidState={() => console.log('INVALID')} />
+  )
+})
+const htmlOutcome = root.innerHTML
+console.log('\n--- OutcomeScreen render ---')
+console.log('html length:', htmlOutcome.length)
+console.log('boss name shown:', htmlOutcome.includes(s.boss.bossName))
+console.log('Continue button text present:', htmlOutcome.includes(s.isRunOver ? 'Muster Again' : 'Choose Your Path'))
+
+await act(async () => {
+  reactRoot.unmount()
+})
