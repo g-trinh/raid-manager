@@ -49,7 +49,7 @@ export function WarTableScreen({ onPull, onRoadTaken }: WarTableScreenProps): Re
   const bestow = useLootStore((s) => s.bestow)
   const discard = useLootStore((s) => s.discard)
   const effectiveRoster = useLootStore((s) => s.effectiveRoster)
-  const rosterMastery = useMasteryStore((s) => s.rosterMastery)
+  const rosterPhaseMastery = useMasteryStore((s) => s.rosterPhaseMastery)
 
   const [resting, setResting] = useState(false)
   const [lastRest, setLastRest] = useState<RestResult | null>(null)
@@ -140,7 +140,7 @@ export function WarTableScreen({ onPull, onRoadTaken }: WarTableScreenProps): Re
             <SectionLabel>The Trial</SectionLabel>
             <div className="war-table__phases">
               {boss.phases.map((phase, i) => {
-                const mastery = rosterMastery(roster, i)
+                const mastery = rosterPhaseMastery(roster, i, phase.mechanics.length)
                 return (
                   <div key={phase.name} className="war-table__phase">
                     <span className="war-table__phase-roman">{ROMAN[i]}</span>
@@ -149,6 +149,9 @@ export function WarTableScreen({ onPull, onRoadTaken }: WarTableScreenProps): Re
                       <div className="war-table__phase-sub">
                         {phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'} check ·{' '}
                         {masteryBand(mastery)}
+                      </div>
+                      <div className="war-table__phase-mechanics">
+                        {phase.mechanics.map((m) => m.name).join(' · ')}
                       </div>
                       <div className="war-table__mastery-track">
                         <div className="war-table__mastery-fill" style={{ width: `${mastery}%` }} />

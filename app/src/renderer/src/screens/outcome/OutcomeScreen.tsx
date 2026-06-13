@@ -76,7 +76,7 @@ function PhaseResolveRow({
   visible,
   roster
 }: PhaseResolveRowProps): React.JSX.Element {
-  const { phase, chance, success, reached, masteryPct, cause, blunderer } = result
+  const { phase, chance, success, reached, masteryPct, cause, blunderer, killerMechanic } = result
   const tested = phase.phaseType === PhaseType.SKILL_HEAVY ? 'Skill' : 'Discipline'
 
   if (!reached) {
@@ -101,7 +101,9 @@ function PhaseResolveRow({
 
   const causeLine =
     cause === 'blunder' && blunderer
-      ? `${blunderer}'s blunder wiped the muster — the mechanics were not the problem`
+      ? killerMechanic
+        ? `${blunderer} died to ${killerMechanic}`
+        : `${blunderer}'s blunder wiped the muster`
       : cause === 'learning'
         ? `${failureCause(phase, roster)} — and the phase isn't learned yet`
         : null

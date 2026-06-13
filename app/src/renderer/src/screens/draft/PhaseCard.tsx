@@ -65,6 +65,12 @@ export function PhaseCard({
         ))}
       </div>
 
+      {phase.mechanics.length > 0 && (
+        <div className="phase-card__mechanics">
+          {phase.mechanics.map((m) => m.name).join(' · ')}
+        </div>
+      )}
+
       <div className="phase-card__projection">
         <div className="phase-card__meter">
           <div

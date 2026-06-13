@@ -2,6 +2,7 @@ import { BossData, createBoss } from './bossData'
 import { createPhase, PhaseType } from './bossPhaseData'
 import { createCommonItem, createLootItem, LootItemData } from './lootData'
 import { createMember, MemberData } from './memberData'
+import { createMechanic, MechanicType } from './mechanic'
 import { Role } from './role'
 
 // Common road-loot: dropped by road clears (trash packs), +1 to a single stat.
@@ -80,7 +81,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.3
+        3.3,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Iron Host'),
+          createMechanic(MechanicType.DODGE, 'Sweeping Cleave'),
+          createMechanic(MechanicType.TANKBUSTER, 'Forgecrush')
+        ]
       ),
       createPhase(
         'The Branding Rite',
@@ -89,7 +95,12 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.5
+        3.5,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Molten Brand'),
+          createMechanic(MechanicType.SPREAD, 'Scorching Marks'),
+          createMechanic(MechanicType.SOAK, 'Brand of the Fallen')
+        ]
       ),
       createPhase(
         'The Last Smelting',
@@ -98,7 +109,11 @@ export const bossPool: BossData[] = [
         2,
         2,
         PhaseType.SKILL_HEAVY,
-        3.0
+        3.0,
+        [
+          createMechanic(MechanicType.DODGE, 'Volcanic Surge'),
+          createMechanic(MechanicType.RAIDWIDE, 'Core Meltdown')
+        ]
       )
     ],
     [
@@ -148,7 +163,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.3
+        3.3,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Spore Cloud', { targets: 'ALL' }),
+          createMechanic(MechanicType.DODGE, 'Plague Lash'),
+          createMechanic(MechanicType.TANKBUSTER, 'Festering Strike')
+        ]
       ),
       createPhase(
         'Communion of Decay',
@@ -157,7 +177,12 @@ export const bossPool: BossData[] = [
         2,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.6
+        3.6,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Toxic Bloom'),
+          createMechanic(MechanicType.SOAK, 'Blight Pool', { targets: 'ALL' }),
+          createMechanic(MechanicType.SPREAD, 'Spore Burst')
+        ]
       ),
       createPhase(
         'The Last Bloom',
@@ -166,7 +191,12 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.SKILL_HEAVY,
-        3.5
+        3.5,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Rot Spawn'),
+          createMechanic(MechanicType.DODGE, 'Petal Surge'),
+          createMechanic(MechanicType.TANKBUSTER, 'Spore Strike')
+        ]
       )
     ],
     [
@@ -214,7 +244,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.6
+        3.6,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Void Rifts'),
+          createMechanic(MechanicType.DODGE, 'Star Shatter'),
+          createMechanic(MechanicType.TANKBUSTER, 'Collapse')
+        ]
       ),
       createPhase(
         'The Devouring Hush',
@@ -223,7 +258,12 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.9
+        3.9,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Silence Wave'),
+          createMechanic(MechanicType.SPREAD, 'Void Scatter'),
+          createMechanic(MechanicType.STACK, 'Star Collapse')
+        ]
       ),
       createPhase(
         'Collapse of the Final Star',
@@ -232,7 +272,12 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.SKILL_HEAVY,
-        3.8
+        3.8,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Nova Burst'),
+          createMechanic(MechanicType.DODGE, 'Star Fragment'),
+          createMechanic(MechanicType.TANKBUSTER, 'Final Collapse')
+        ]
       )
     ],
     [
@@ -282,7 +327,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.3
+        3.3,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Ice Shards'),
+          createMechanic(MechanicType.DODGE, 'Glacial Sweep'),
+          createMechanic(MechanicType.TANKBUSTER, 'Frost Crush')
+        ]
       ),
       createPhase(
         'Wardens of the Frozen Oath',
@@ -291,7 +341,12 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.DISCIPLINE_HEAVY,
-        3.5
+        3.5,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Blizzard'),
+          createMechanic(MechanicType.SOAK, 'Ice Puddle'),
+          createMechanic(MechanicType.SPREAD, 'Shatter Zone')
+        ]
       ),
       createPhase(
         'The Last Thaw',
@@ -300,7 +355,11 @@ export const bossPool: BossData[] = [
         2,
         2,
         PhaseType.SKILL_HEAVY,
-        3.4
+        3.4,
+        [
+          createMechanic(MechanicType.DODGE, 'Melt Surge'),
+          createMechanic(MechanicType.RAIDWIDE, 'Glacial Burst')
+        ]
       )
     ],
     [
@@ -349,7 +408,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.4
+        3.4,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Wind Elementals'),
+          createMechanic(MechanicType.DODGE, 'Gale Strike'),
+          createMechanic(MechanicType.TANKBUSTER, 'Thunder Slam')
+        ]
       ),
       createPhase(
         'Chainlightning Cascade',
@@ -358,7 +422,12 @@ export const bossPool: BossData[] = [
         1,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.7
+        3.7,
+        [
+          createMechanic(MechanicType.SPREAD, 'Chain Lightning'),
+          createMechanic(MechanicType.RAIDWIDE, 'Storm Surge'),
+          createMechanic(MechanicType.STACK, 'Tether Strike')
+        ]
       ),
       createPhase(
         'Eye of the Maelstrom',
@@ -367,7 +436,12 @@ export const bossPool: BossData[] = [
         2,
         2,
         PhaseType.SKILL_HEAVY,
-        3.8
+        3.8,
+        [
+          createMechanic(MechanicType.DODGE, 'Tornado'),
+          createMechanic(MechanicType.RAIDWIDE, 'Eye of the Storm'),
+          createMechanic(MechanicType.TANKBUSTER, "Maelstrom's Heart")
+        ]
       )
     ],
     [
@@ -415,7 +489,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.5
+        3.5,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Risen March'),
+          createMechanic(MechanicType.DODGE, 'Bone Wall'),
+          createMechanic(MechanicType.TANKBUSTER, "Sovereign's Grasp")
+        ]
       ),
       createPhase(
         "The Sovereign's Decree",
@@ -424,7 +503,12 @@ export const bossPool: BossData[] = [
         2,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.6
+        3.6,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Death Decree'),
+          createMechanic(MechanicType.SOAK, 'Bone Pile'),
+          createMechanic(MechanicType.STACK, 'Binding Edict')
+        ]
       ),
       createPhase(
         'Crown of Bones',
@@ -433,7 +517,12 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.SKILL_HEAVY,
-        3.9
+        3.9,
+        [
+          createMechanic(MechanicType.DODGE, 'Bone Shards'),
+          createMechanic(MechanicType.RAIDWIDE, 'Crown Shatter'),
+          createMechanic(MechanicType.TANKBUSTER, 'Last Rite')
+        ]
       )
     ],
     [
@@ -481,7 +570,12 @@ export const bossPool: BossData[] = [
         1,
         1,
         PhaseType.SKILL_HEAVY,
-        3.3
+        3.3,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Pack Hunt'),
+          createMechanic(MechanicType.DODGE, 'Lunge Strike'),
+          createMechanic(MechanicType.TANKBUSTER, 'Maw Clamp')
+        ]
       ),
       createPhase(
         'Thrash and Bleed',
@@ -490,7 +584,12 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.DISCIPLINE_HEAVY,
-        3.6
+        3.6,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Wild Thrash'),
+          createMechanic(MechanicType.SPREAD, 'Blood Spray'),
+          createMechanic(MechanicType.SOAK, 'Blood Pool')
+        ]
       ),
       createPhase(
         "The Alpha's Last Roar",
@@ -499,7 +598,12 @@ export const bossPool: BossData[] = [
         2,
         1,
         PhaseType.SKILL_HEAVY,
-        3.7
+        3.7,
+        [
+          createMechanic(MechanicType.DODGE, 'Primal Surge'),
+          createMechanic(MechanicType.RAIDWIDE, 'Roar Blast'),
+          createMechanic(MechanicType.TANKBUSTER, 'Alpha Strike')
+        ]
       )
     ],
     [
@@ -547,7 +651,12 @@ export const bossPool: BossData[] = [
         1,
         2,
         PhaseType.SKILL_HEAVY,
-        3.5
+        3.5,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Unwritten Constructs'),
+          createMechanic(MechanicType.DODGE, 'Erasing Stroke'),
+          createMechanic(MechanicType.TANKBUSTER, 'Delete')
+        ]
       ),
       createPhase(
         'Pages of the Unwritten',
@@ -556,7 +665,13 @@ export const bossPool: BossData[] = [
         2,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.8
+        3.8,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Blank Pages'),
+          createMechanic(MechanicType.SPREAD, 'Ink Scatter'),
+          createMechanic(MechanicType.SOAK, 'Void Ink'),
+          createMechanic(MechanicType.STACK, 'Rewrite')
+        ]
       ),
       createPhase(
         'The Final Sentence',
@@ -565,7 +680,12 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.SKILL_HEAVY,
-        4.0
+        4.0,
+        [
+          createMechanic(MechanicType.DODGE, 'Punctuation Mark'),
+          createMechanic(MechanicType.RAIDWIDE, 'The Last Word'),
+          createMechanic(MechanicType.TANKBUSTER, 'Period')
+        ]
       )
     ],
     [
@@ -614,7 +734,12 @@ export const bossPool: BossData[] = [
         2,
         1,
         PhaseType.SKILL_HEAVY,
-        3.2
+        3.2,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Bloodguard'),
+          createMechanic(MechanicType.DODGE, 'Crimson Lunge'),
+          createMechanic(MechanicType.TANKBUSTER, 'Feast Strike')
+        ]
       ),
       createPhase(
         'The Crimson Waltz',
@@ -623,7 +748,12 @@ export const bossPool: BossData[] = [
         2,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.7
+        3.7,
+        [
+          createMechanic(MechanicType.SPREAD, 'Blood Waltz'),
+          createMechanic(MechanicType.RAIDWIDE, 'Crimson Mist'),
+          createMechanic(MechanicType.STACK, 'Tether Waltz')
+        ]
       ),
       createPhase(
         'Last Call of the Banquet',
@@ -632,7 +762,12 @@ export const bossPool: BossData[] = [
         1,
         2,
         PhaseType.SKILL_HEAVY,
-        3.9
+        3.9,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Last Guests'),
+          createMechanic(MechanicType.DODGE, 'Desperate Lunge'),
+          createMechanic(MechanicType.TANKBUSTER, 'Final Feast')
+        ]
       )
     ],
     [
@@ -680,7 +815,12 @@ export const bossPool: BossData[] = [
         3,
         1,
         PhaseType.SKILL_HEAVY,
-        3.1
+        3.1,
+        [
+          createMechanic(MechanicType.ADD_WAVE, 'Stone Sentinels'),
+          createMechanic(MechanicType.DODGE, 'Fissure Line'),
+          createMechanic(MechanicType.TANKBUSTER, 'Seismic Slam')
+        ]
       ),
       createPhase(
         'Fissure and Fall',
@@ -689,7 +829,12 @@ export const bossPool: BossData[] = [
         3,
         3,
         PhaseType.DISCIPLINE_HEAVY,
-        3.6
+        3.6,
+        [
+          createMechanic(MechanicType.RAIDWIDE, 'Earthshatter'),
+          createMechanic(MechanicType.SOAK, 'Lava Pool'),
+          createMechanic(MechanicType.SPREAD, 'Stone Shards')
+        ]
       ),
       createPhase(
         "The Titan's Final Stand",
@@ -698,7 +843,12 @@ export const bossPool: BossData[] = [
         3,
         2,
         PhaseType.SKILL_HEAVY,
-        4.0
+        4.0,
+        [
+          createMechanic(MechanicType.DODGE, 'Tectonic Surge'),
+          createMechanic(MechanicType.RAIDWIDE, "World's End"),
+          createMechanic(MechanicType.TANKBUSTER, "Titan's Last Blow")
+        ]
       )
     ],
     [
