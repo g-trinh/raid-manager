@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { bossPool, memberPool } from '../data/gameData'
-import { createMember } from '../data/memberData'
 import { Role } from '../data/role'
 import {
   FUMBLE_CHANCE_PER_PIP,

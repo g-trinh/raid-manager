@@ -5,13 +5,11 @@ import { LootItemData } from '../data/lootData'
 import { drawCandidates, drawOpener, partitionPool } from '../logic/bossTiers'
 import {
   AttemptResult,
-  FumbleEvent,
   MasterySnapshotFn,
   Outcome,
   PausePoint,
   PhaseResult,
   PullEvent,
-  Resolution,
   ResolutionDials,
   WipeCause,
   FUMBLE_CHANCE_PER_PIP,
@@ -29,9 +27,10 @@ import { useLootStore } from './useLootStore'
 import { useMoraleStore } from './useMoraleStore'
 import { usePersonalityStore } from './usePersonalityStore'
 
-// Re-export types consumed by screens so their imports stay clean
-export { Outcome, WipeCause, PhaseResult, PullEvent }
-export type { AttemptResult }
+// Re-export resolver types/values consumed by screens so their imports stay clean.
+// Outcome is an enum (runtime value); the rest are types → export type (isolatedModules).
+export { Outcome }
+export type { AttemptResult, WipeCause, PhaseResult, PullEvent }
 
 const TOTAL_BOSSES = 3
 
@@ -79,10 +78,6 @@ interface RunState {
 function drawBoss1(): BossData {
   return drawOpener(partitionPool(bossPool).easy)
 }
-
-// The suspended generator is held in a module-level ref (non-serialisable).
-// The store's pendingIntervention exposes only the serialisable pause context.
-let _suspendedGen: Generator<PausePoint, AttemptResult, Resolution> | null = null
 
 export const useRunStore = create<RunState>((set, get) => {
   const initialBoss = drawBoss1()
@@ -203,14 +198,12 @@ export const useRunStore = create<RunState>((set, get) => {
 
     const gen = resolvePull(roster, boss, masterySnapshot, DEFAULT_DIALS, Math.random)
 
-    // Driver loop: empty trigger registry → auto-continue every yield
+    // Driver loop (ADR-004): the trigger registry is empty in this feature, so
+    // every PausePoint auto-continues and resolution runs atomically. When the
+    // agency features land they match a trigger here, set pendingIntervention,
+    // hold the suspended generator, and resume via a continuation action.
     let step = gen.next()
     while (!step.done) {
-      const pause = step.value
-      // FUTURE: matchTrigger(pause) — when agency features register triggers,
-      // this sets pendingIntervention and suspends; the continuation feeds the resolution.
-      // For now, always auto-continue.
-      _suspendedGen = null
       step = gen.next({ action: 'continue' })
     }
 
@@ -280,7 +273,6 @@ export const useRunStore = create<RunState>((set, get) => {
 
     reset: () => {
       const boss1 = drawBoss1()
-      _suspendedGen = null
       set({
         bossIndex: 0,
         boss: boss1,
