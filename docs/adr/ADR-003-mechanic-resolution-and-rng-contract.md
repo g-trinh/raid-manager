@@ -167,6 +167,20 @@ export function phaseBudget(phaseTarget: number): number // scales with target
 Exact values are OQ-1 — the design fixes the shape; the harness fixes the
 numbers so balance parity holds.
 
+> **OQ-1 resolved (BM-07b, 2026-06-13).** Committed values that make
+> `pullResolver.balance.test.ts` green across all 10 bosses:
+> `U0 = 0.12`, `FUMBLE_CHANCE_PER_PIP = 0.06`, `SEVERITY_DAMAGE = {1:1, 2:2, 3:3}`,
+> `phaseBudget(t) = round(t * 4)`. The harness asserts a **fresh average roster**
+> kills in a mean of 1–8 pulls/boss and a **fully-mastered roster** in 1–4
+> pulls/boss (500-run Monte-Carlo, seeded `mulberry32` for CI determinism).
+> The budget multiplier landed at ×4 (not the ×2 first tried) because the
+> per-mechanic check is far less punishing than the old single pass roll — at ×2,
+> discipline-heavy phases (3–4 sev-2 mechanics, every member checked) wiped fresh
+> rosters ~20–35 pulls deep, well outside tolerance. ×4 restores the
+> ≈2–4-pull feel while keeping full-mastery wipes execution-only. If a future
+> balance report shows the late game feels too soft, `phaseBudget` is the first
+> dial to retighten.
+
 ### 8. Balance harness (hard requirement)
 
 New `app/src/renderer/src/domain/logic/pullResolver.balance.test.ts` (or
